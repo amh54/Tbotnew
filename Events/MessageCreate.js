@@ -1,4 +1,4 @@
-const { Events, ChannelType } = require('discord.js');
+const {Events} = require('discord.js');
 const prefix = "?";
 const handleCommandNotFound = require("../Utilities/handleCommandNotFound");
 const checkMessagePermissions = require("../Utilities/checkMessagePermissions");
