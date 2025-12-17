@@ -9,6 +9,44 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const axios = require("axios");
+const Tesseract = require('tesseract.js');
+
+async function validateDeckImage(imageUrl) {
+  try {
+    const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng', {
+      logger: m => {}
+    });
+    
+    console.log('[Deck Validation] Detected text sample:', text.substring(0, 200));
+    
+    // Look for deck-like patterns - must have multiple card quantity indicators
+    const xCount = (text.match(/[xX]/g) || []).length;
+    const hasMultipleX = xCount >= 2; // At least 2 "x" marks for card quantities
+    const hasMultipleNumbers = (text.match(/\d/g) || []).length >= 8; // Many numbers (costs, quantities)
+    const hasDecentText = text.length > 50; // Reasonable amount of text (deck name + card names)
+    
+    // Accept if it has the basic markers of a deck screenshot
+    const looksLikeDeck = hasMultipleX && hasMultipleNumbers && hasDecentText;
+    
+    console.log('[Deck Validation] Results:', {
+      xCount,
+      numberCount: (text.match(/\d/g) || []).length,
+      textLength: text.length,
+      looksLikeDeck
+    });
+    
+    return {
+      isValid: looksLikeDeck,
+      hasDeckCount: true,
+      hasCardQuantities: hasMultipleX,
+      cardCount: xCount,
+      detectedText: text
+    };
+  } catch (error) {
+    console.error('Image validation error:', error);
+    return { isValid: false, error: error.message };
+  }
+}
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -155,6 +193,9 @@ module.exports = {
     }
   },
   async execute(interaction) {
+    // Defer reply since validation may take time
+    await interaction.deferReply();
+    
     const db = require("../../index.js");
         const heroDeckMap = {
         "1100172143603482786": "ccdecks",
@@ -184,10 +225,9 @@ module.exports = {
     
     // Verify hero ID is valid
     if (!tableName && heroId !== "1100171558263193700" && heroId !== "1100170925208502282") {
-      return interaction.reply({
+      return interaction.editReply({
         content: `❌ Invalid hero selection. Hero ID: ${heroId}`,
-        flags: MessageFlags.Ephemeral,
-        withResponse: true,
+        ephemeral: true
       });
     }
     
@@ -198,25 +238,24 @@ module.exports = {
         UNION ALL
         SELECT name FROM bcdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
       `;
-       [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+      await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
     } 
     // check for hg/SB
     else if (heroId === "1100170925208502282") {
       query = `SELECT name FROM hgdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
         UNION ALL
         SELECT name FROM sbdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?`;
-      [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+      await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
     }
     else {
-     [rows] = await db.query(`SELECT name FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [name.toLowerCase().replaceAll(/\s+/g, "")]);
+    await db.query(`SELECT name FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [name.toLowerCase().replaceAll(/\s+/g, "")]);
     }
     
     if (rows.length === 0) {
-      return interaction.reply({
+      return interaction.editReply({
         content:
         `❌ Invalid hero name. Please make sure the deck exists in the selected hero's commands by checking <@${interaction.client.id}> heroname.`,
-        flags: MessageFlags.Ephemeral,
-        withResponse: true,
+        ephemeral: true
       });
     }
     const description = interaction.options.getString("description");
@@ -227,6 +266,26 @@ module.exports = {
     const hero = interaction.options.getString("hero");
     const deckcreator = interaction.options.getString("deck_creator");
     const imageUrl = image.url;
+
+    // Validate the deck image
+    console.log(`[updatedeck] Validating deck image for: ${name}`);
+    const validation = await validateDeckImage(imageUrl);
+    
+    if (!validation.isValid) {
+      console.log(`[updatedeck] Validation failed:`, validation);
+      return interaction.editReply({
+        content: `❌ **Invalid image detected!**\n\n` +
+          `The uploaded image doesn't appear to be a PvZ Heroes deck screenshot.\n\n` +
+          `Please ensure you're uploading:\n` +
+          `• A full deck screenshot from PvZ Heroes\n` +
+          `• Not a cropped or edited image\n` +
+          `• A clear, readable screenshot\n\n` +
+          `If you believe this is an error, please contact <@625172218120372225>.`,
+        ephemeral: true
+      });
+    }
+
+    console.log(`[updatedeck] Validation passed for: ${name}`);
     const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
     const buffer = Buffer.from(response.data, "utf-8");
     const file = new AttachmentBuilder(buffer, { name: "deck.png" });
@@ -236,22 +295,21 @@ module.exports = {
         .setStyle(ButtonStyle.Link)
         .setURL("https://discord.gg/2NSwt96vmS")
     );
-    const replyMessage = await interaction.reply({
+    const replyMessage = await interaction.editReply({
       content: `✅ Your deck update has  been submitted successfully! Please join the tbot server below if you haven't already to be notified of updates on your submission or of updates to the bot`,
       files: [file],
       components: [tbotServer],
-      withResponse: true,
+      fetchReply: true,
     });
-    const message = replyMessage.resource.message;
-    const permanentUrl = message.attachments.first().url;
+    const permanentUrl = replyMessage.attachments.first().url;
     const forumChannel = interaction.client.channels.cache.get(
       "1100160031128830104"
     );
 
     if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
-      return interaction.reply({
+      return interaction.editReply({
         content: "❌ Forum channel not found or invalid.",
-        flags: MessageFlags.Ephemeral,
+        ephemeral: true
       });
     }
     const fields = [

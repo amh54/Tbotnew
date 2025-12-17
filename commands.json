@@ -385,7 +385,8 @@
     "ltb",
     "ltbath",
     "ltbr",
-    "lthbroom"
+    "lthbroom",
+    "neogenesis"
    ]
   }
  ],
@@ -594,6 +595,15 @@
     "secret22",
     "ingea",
     "ignea"
+   ]
+  }
+ ],
+ [
+  "ebdecks:6",
+  {
+   "commandName": "flummox",
+   "aliases": [
+    "splashgargs"
    ]
   }
  ],
@@ -812,6 +822,15 @@
   }
  ],
  [
+  "ifdecks:6",
+  {
+   "commandName": "crimps",
+   "aliases": [
+    "ifimps"
+   ]
+  }
+ ],
+ [
   "imdecks:1",
   {
    "commandName": "22savage",
@@ -867,10 +886,11 @@
  [
   "imdecks:6",
   {
-   "commandName": "waxster",
+   "commandName": "bestached",
    "aliases": [
     "imtrickstache",
-    "otkt"
+    "otkt",
+    "waxster"
    ]
   }
  ],
