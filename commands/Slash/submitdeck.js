@@ -4,28 +4,48 @@ const Tesseract = require('tesseract.js');
 
 async function validateDeckImage(imageUrl) {
   try {
-    // Quick OCR check - just verify it's not a blank/random image
+    const sharp = require('sharp');
+    
+    // Download and analyze image
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const deckImage = sharp(response.data);
+    const { data, info } = await deckImage.raw().toBuffer({ resolveWithObject: true });
+    
+    const pixels = info.width * info.height;
+    
+    // Check for bright red overlays (arrows, boxes, highlighting)
+    let totalBrightRed = 0;
+    for (let i = 0; i < data.length; i += (info.channels || 3)) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      
+      // Pure bright red (arrows/boxes/highlights)
+      if (r > 240 && g < 80 && b < 80) {
+        totalBrightRed++;
+      }
+    }
+    
+    const redOverlayRatio = totalBrightRed / pixels;
+    
+    if (redOverlayRatio > 0.005) { // More than 0.5% pure red
+      console.log('[Deck Validation] Detected red overlays (arrows/boxes)');
+      return { isValid: false, reason: 'Red overlays detected' };
+    }
+    
+    // Now do OCR check
     const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng', {
       logger: m => {}
     });
     
     console.log('[Deck Validation] Detected text sample:', text.substring(0, 200));
     
-    // Look for deck-like patterns - must have multiple card quantity indicators
     const xCount = (text.match(/[xX]/g) || []).length;
-    const hasMultipleX = xCount >= 2; // At least 2 "x" marks for card quantities
-    const hasMultipleNumbers = (text.match(/\d/g) || []).length >= 8; // Many numbers (costs, quantities)
-    const hasDecentText = text.length > 50; // Reasonable amount of text (deck name + card names)
+    const hasMultipleX = xCount >= 2;
+    const hasMultipleNumbers = (text.match(/\d/g) || []).length >= 8;
+    const hasDecentText = text.length > 50;
     
-    // Accept if it has the basic markers of a deck screenshot
     const looksLikeDeck = hasMultipleX && hasMultipleNumbers && hasDecentText;
-    
-    console.log('[Deck Validation] Results:', {
-      xCount,
-      numberCount: (text.match(/\d/g) || []).length,
-      textLength: text.length,
-      looksLikeDeck
-    });
     
     return {
       isValid: looksLikeDeck,
