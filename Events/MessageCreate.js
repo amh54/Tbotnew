@@ -1,21 +1,53 @@
-const {Events} = require('discord.js');
+const { Events } = require('discord.js');
 const prefix = "?";
 const handleCommandNotFound = require("../Utilities/handleCommandNotFound");
 const checkMessagePermissions = require("../Utilities/checkMessagePermissions");
 const executeCommand = require("../Utilities/executeCommand");
+const { findClosestCardName } = require("../Utilities/spellCheckCard");
+const sanitizeCommandName = require("../Utilities/sanitizeCommandName");
 
-module.exports ={
+module.exports = {
     name: Events.MessageCreate,
     async run(message) {
-        if (!message.content.toLowerCase().startsWith(prefix)) return;
         if (message.author.bot && message.author.id != "1043528908148052089") return;
 
         const client = message.client;
         const channel = client.channels.cache.get("1050107020008771604");
-        const args = message.content.slice(prefix.length).trim().split(/ +/g);
+
+        const botMentioned = message.mentions.users.has(client.user.id);
+        const usesPrefix = message.content.toLowerCase().startsWith(prefix);
+
+        if (!usesPrefix && !botMentioned) return;
+
+        let commandText = "";
+        if (usesPrefix) {
+            commandText = message.content.slice(prefix.length).trim();
+        } else if (botMentioned) {
+            commandText = message.content
+                .replace(new RegExp(`<@!?${client.user.id}>`, 'g'), '')
+                .trim();
+        }
+
+        if (!commandText) return;
+
+        const args = commandText.split(/ +/g);
+        const originalInput = commandText.toLowerCase();
         const invokedRaw = args.join("").toLowerCase();
-        const invoked = invokedRaw.replaceAll(/[^a-z0-9]+/g, ""); 
-        const command = client.commands.get(invoked) || client.commands.find((a) => a.aliases?.includes(invoked));
+        const invoked = invokedRaw.replaceAll(/[^a-z0-9]+/g, "");
+        let command = client.commands.get(invoked) || client.commands.find((a) => a.aliases?.includes(invoked));
+
+
+        if (!command) {
+            let closestCardName = await findClosestCardName(originalInput, 50);
+            if (!closestCardName) {
+                closestCardName = await findClosestCardName(originalInput, 40);
+            }
+            if (closestCardName) {
+                const sanitizedCardName = sanitizeCommandName(closestCardName);
+                command = client.commands.get(sanitizedCardName) || client.commands.find((a) => a.aliases?.includes(sanitizedCardName));
+            }
+        }
+
         if (handleCommandNotFound(command, message, channel)) return;
         if (message.guild && !checkMessagePermissions(message, channel)) return;
         await executeCommand(command, client, message, args);

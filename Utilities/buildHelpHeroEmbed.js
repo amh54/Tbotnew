@@ -14,7 +14,8 @@ function buildHelpHeroEmbed(heroRow, allDecks) {
   const deckColor = heroRow.deck_color || "Random";
   const thumbnailUrl = heroRow.thumbnail;
   const heroEmoji = heroRow.hero_emoji;
-  const heroCommand = heroRow.herocommand;
+  // Sanitize hero command to avoid whitespace/case mismatches
+  const heroCommand = (heroRow.herocommand || "").toString().replaceAll(/\s+/g, "").toLowerCase();
 
   // Normalize decks and categorize them
   const normalized = allDecks.map((r) => {
