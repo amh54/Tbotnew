@@ -1,65 +1,6 @@
 const { SlashCommandBuilder, ChannelType, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const axios = require('axios');
-const Tesseract = require('tesseract.js');
-
-async function validateDeckImage(imageUrl) {
-  try {
-    const sharp = require('sharp');
-    
-    // Download and analyze image
-    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    const deckImage = sharp(response.data);
-    const { data, info } = await deckImage.raw().toBuffer({ resolveWithObject: true });
-    
-    const pixels = info.width * info.height;
-    
-    // Check for bright red overlays (arrows, boxes, highlighting)
-    let totalBrightRed = 0;
-    for (let i = 0; i < data.length; i += (info.channels || 3)) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      
-      // Pure bright red (arrows/boxes/highlights)
-      if (r > 240 && g < 80 && b < 80) {
-        totalBrightRed++;
-      }
-    }
-    
-    const redOverlayRatio = totalBrightRed / pixels;
-    
-    if (redOverlayRatio > 0.005) { // More than 0.5% pure red
-      console.log('[Deck Validation] Detected red overlays (arrows/boxes)');
-      return { isValid: false, reason: 'Red overlays detected' };
-    }
-    
-    // Now do OCR check
-    const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng', {
-      logger: m => {}
-    });
-    
-    console.log('[Deck Validation] Detected text sample:', text.substring(0, 200));
-    
-    const xCount = (text.match(/[xX]/g) || []).length;
-    const hasMultipleX = xCount >= 2;
-    const hasMultipleNumbers = (text.match(/\d/g) || []).length >= 8;
-    const hasDecentText = text.length > 50;
-    
-    const looksLikeDeck = hasMultipleX && hasMultipleNumbers && hasDecentText;
-    
-    return {
-      isValid: looksLikeDeck,
-      hasDeckCount: true,
-      hasCardQuantities: hasMultipleX,
-      cardCount: xCount,
-      detectedText: text
-    };
-  } catch (error) {
-    console.error('Image validation error:', error);
-    return { isValid: false, error: error.message };
-  }
-}
-
+const {validateDeckImage} = require('../../Utilities/validateDeckImage');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('submitdeck')
