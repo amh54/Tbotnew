@@ -218,7 +218,6 @@ async function findClosestCardName(input, threshold = 60) {
 
 module.exports = {
   findClosestCardName,
-
   getAllCardNames,
   calculateSimilarity
 };

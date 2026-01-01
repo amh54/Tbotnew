@@ -13,11 +13,15 @@ module.exports = {
 
         const client = message.client;
         const channel = client.channels.cache.get("1050107020008771604");
-
-        const botMentioned = message.mentions.users.has(client.user.id);
+        const botMentionInContent = new RegExp(`<@!?${client.user.id}>`).test(message.content);
+        const isReplyToBot = message.reference && message.mentions.repliedUser?.id === client.user.id;
+        const isReplyWithoutMention = isReplyToBot && !botMentionInContent;
+        
+        const botMentioned = botMentionInContent;
         const usesPrefix = message.content.toLowerCase().startsWith(prefix);
 
         if (!usesPrefix && !botMentioned) return;
+        if (isReplyWithoutMention) return;
 
         let commandText = "";
         if (usesPrefix) {
