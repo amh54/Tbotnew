@@ -24,7 +24,11 @@ module.exports = {
             commandText = message.content.slice(prefix.length).trim();
         } else if (botMentioned) {
             commandText = message.content
+<<<<<<< HEAD
                 .replaceAll(new RegExp(`<@!?${client.user.id}>`, 'g'), '')
+=======
+                .replace(new RegExp(`<@!?${client.user.id}>`, 'g'), '')
+>>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
                 .trim();
         }
 
