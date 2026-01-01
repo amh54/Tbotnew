@@ -1,8 +1,4 @@
 const db = require("../index.js");
-<<<<<<< HEAD
-=======
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
 /**
  * @description Calculates Levenshtein distance between two strings
  * @param {string} str1 - First string
@@ -14,10 +10,7 @@ function levenshteinDistance(str1, str2) {
   const len2 = str2.length;
   const matrix = [];
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   for (let i = 0; i <= len1; i++) {
     matrix[i] = [i];
   }
@@ -25,10 +18,7 @@ function levenshteinDistance(str1, str2) {
     matrix[0][j] = j;
   }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   for (let i = 1; i <= len1; i++) {
     for (let j = 1; j <= len2; j++) {
       if (str1[i - 1] === str2[j - 1]) {
@@ -43,17 +33,11 @@ function levenshteinDistance(str1, str2) {
     }
   }
 
-<<<<<<< HEAD
 
   return matrix[len1][len2];
 }
 
 
-=======
-  return matrix[len1][len2];
-}
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
 /**
  * @description Calculates similarity percentage between two strings
  * Uses multiple methods for more forgiving matching
@@ -68,57 +52,38 @@ function calculateSimilarity(str1, str2) {
   const minLen = Math.min(s1.length, s2.length);
   if (maxLen === 0) return 100;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   const lengthRatio = minLen / maxLen;
   if (lengthRatio < 0.3 && minLen < 4) {
     return 0;
   }
 
-<<<<<<< HEAD
 
   const distance = levenshteinDistance(s1, s2);
   let similarity = ((maxLen - distance) / maxLen) * 100;
 
 
-=======
-  const distance = levenshteinDistance(s1, s2);
-  let similarity = ((maxLen - distance) / maxLen) * 100;
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   if (minLen >= 3 && (s1.includes(s2) || s2.includes(s1))) {
     const containmentBonus = (minLen / maxLen) * 25;
     similarity = Math.max(similarity, 50 + containmentBonus);
   }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   const startLen = Math.min(4, minLen);
   if (startLen >= 3 && s1.substring(0, startLen) === s2.substring(0, startLen)) {
     similarity += 10;
   }
 
-<<<<<<< HEAD
 
   return Math.min(100, similarity);
 }
 
 
-=======
-  return Math.min(100, similarity);
-}
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
 let cardNamesCache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
 /**
-<<<<<<< HEAD
  * @description Queries a single table and adds names to the set
  * @param {string} table - Table name
  * @param {string} columnName - Column name to extract
@@ -151,8 +116,6 @@ async function queryMultipleTables(tables, columnName, namesSet) {
 }
 
 /**
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
  * @description Gets all card names from the database
  * @returns {Promise<Array<string>>} - Array of card names
  */
@@ -174,7 +137,6 @@ async function getAllCardNames() {
       'heartycards', 'heartytricks',
       'sneakycards', 'sneakytricks'
     ];
-<<<<<<< HEAD
     
     const deckTables = [
       "rbdecks", "zmdecks", "ctdecks",
@@ -197,25 +159,6 @@ async function getAllCardNames() {
 
 
     cardNamesCache = Array.from(commandNames);
-=======
-
-    const allCardNames = new Set();
-
-    for (const table of cardTables) {
-      try {
-        const [rows] = await db.query(`SELECT card_name FROM \`${table}\``);
-        for (const row of rows) {
-          if (row.card_name) {
-            allCardNames.add(row.card_name);
-          }
-        }
-      } catch (error) {
-        console.error(`Error querying ${table}:`, error);
-      }
-    }
-
-    cardNamesCache = Array.from(allCardNames);
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
     cacheTimestamp = Date.now();
     return cardNamesCache;
   } catch (error) {
@@ -224,10 +167,7 @@ async function getAllCardNames() {
   }
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
 /**
  * @description Finds the closest matching card name for a given input
  * @param {string} input - The input string to match
@@ -239,56 +179,37 @@ async function findClosestCardName(input, threshold = 60) {
     return null;
   }
 
-<<<<<<< HEAD
 
   const cardNames = await getAllCardNames();
   const sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
 
 
-=======
-  const cardNames = await getAllCardNames();
-  const sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   // Reject very short inputs that are unlikely to be card names
   if (sanitizedInput.length < 2) {
     return null;
   }
 
-<<<<<<< HEAD
 
   let bestMatch = null;
   let bestSimilarity = 0;
 
 
-=======
-  let bestMatch = null;
-  let bestSimilarity = 0;
-
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   for (const cardName of cardNames) {
     const sanitizedCardName = cardName.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
     const similarity = calculateSimilarity(sanitizedInput, sanitizedCardName);
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
     if (similarity > bestSimilarity) {
       bestSimilarity = similarity;
       bestMatch = cardName;
     }
   }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
   if (bestMatch && bestSimilarity >= threshold) {
     return bestMatch;
   }
 
-<<<<<<< HEAD
 
   return null;
 }
@@ -301,13 +222,3 @@ module.exports = {
   getAllCardNames,
   calculateSimilarity
 };
-=======
-  return null;
-}
-
-module.exports = {
-  findClosestCardName,
-  getAllCardNames,
-  calculateSimilarity
-};
->>>>>>> e1f315d952bb3f70e6d52c104d61a5db9fcb58e9
