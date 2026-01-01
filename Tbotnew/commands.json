@@ -1,0 +1,37 @@
+[
+ [
+  "guardiancards:1",
+  {
+   "commandName": "peashooter",
+   "aliases": []
+  }
+ ],
+ [
+  "guardiancards:2",
+  {
+   "commandName": "wallnut",
+   "aliases": []
+  }
+ ],
+ [
+  "guardiancards:3",
+  {
+   "commandName": "cornucopia",
+   "aliases": []
+  }
+ ],
+ [
+  "guardiancards:4",
+  {
+   "commandName": "galacticcactus",
+   "aliases": []
+  }
+ ],
+ [
+  "guardiancards:5",
+  {
+   "commandName": "kernelcorn",
+   "aliases": []
+  }
+ ]
+]
