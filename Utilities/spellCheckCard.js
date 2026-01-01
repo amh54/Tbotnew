@@ -46,28 +46,24 @@ function calculateSimilarity(str1, str2) {
   const s1 = str1.toLowerCase();
   const s2 = str2.toLowerCase();
   const maxLen = Math.max(s1.length, s2.length);
+  const minLen = Math.min(s1.length, s2.length);
   if (maxLen === 0) return 100;
+
+  const lengthRatio = minLen / maxLen;
+  if (lengthRatio < 0.3 && minLen < 4) {
+    return 0;
+  }
 
   const distance = levenshteinDistance(s1, s2);
   let similarity = ((maxLen - distance) / maxLen) * 100;
 
-  if (s1.includes(s2) || s2.includes(s1)) {
-    const minLen = Math.min(s1.length, s2.length);
-    const containmentBonus = (minLen / maxLen) * 30;
-    similarity = Math.max(similarity, containmentBonus);
+  if (minLen >= 3 && (s1.includes(s2) || s2.includes(s1))) {
+    const containmentBonus = (minLen / maxLen) * 25;
+    similarity = Math.max(similarity, 50 + containmentBonus);
   }
 
-  const chars1 = new Set(s1.split(''));
-  const chars2 = new Set(s2.split(''));
-  const commonChars = [...chars1].filter(c => chars2.has(c)).length;
-  const totalUniqueChars = new Set([...chars1, ...chars2]).size;
-  if (totalUniqueChars > 0) {
-    const charSimilarity = (commonChars / totalUniqueChars) * 100;
-    similarity = Math.max(similarity, charSimilarity * 0.8);
-  }
-
-  const startLen = Math.min(4, Math.min(s1.length, s2.length));
-  if (startLen > 0 && s1.substring(0, startLen) === s2.substring(0, startLen)) {
+  const startLen = Math.min(4, minLen);
+  if (startLen >= 3 && s1.substring(0, startLen) === s2.substring(0, startLen)) {
     similarity += 10;
   }
 
@@ -131,13 +127,18 @@ async function getAllCardNames() {
  * @param {number} threshold - Minimum similarity percentage (default: 50, more forgiving)
  * @returns {Promise<string|null>} - The closest matching card name or null if no match above threshold
  */
-async function findClosestCardName(input, threshold = 50) {
+async function findClosestCardName(input, threshold = 60) {
   if (!input || typeof input !== 'string') {
     return null;
   }
 
   const cardNames = await getAllCardNames();
   const sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+
+  // Reject very short inputs that are unlikely to be card names
+  if (sanitizedInput.length < 2) {
+    return null;
+  }
 
   let bestMatch = null;
   let bestSimilarity = 0;

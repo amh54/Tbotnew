@@ -32,15 +32,13 @@ module.exports = {
 
         const args = commandText.split(/ +/g);
         const originalInput = commandText.toLowerCase();
-        const invokedRaw = args.join("").toLowerCase();
-        const invoked = invokedRaw.replaceAll(/[^a-z0-9]+/g, "");
+        const invoked = commandText.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
         let command = client.commands.get(invoked) || client.commands.find((a) => a.aliases?.includes(invoked));
 
-
         if (!command) {
-            let closestCardName = await findClosestCardName(originalInput, 50);
+            let closestCardName = await findClosestCardName(originalInput, 70);
             if (!closestCardName) {
-                closestCardName = await findClosestCardName(originalInput, 40);
+                closestCardName = await findClosestCardName(originalInput, 60);
             }
             if (closestCardName) {
                 const sanitizedCardName = sanitizeCommandName(closestCardName);
