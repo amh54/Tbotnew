@@ -56,13 +56,15 @@ async function validateDeckImage(imageUrl) {
     let flags = [];
 
     /* ---------- 2A: Large red scribbles / arrows ---------- */
+    // Check for large red annotation clusters (arrows, scribbles)
     const visited = new Uint8Array(width * height);
 
     const isAnnotationRed = (i) => {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
-      return r > 220 && g < 90 && b < 90;
+      // Ultra-strict red detection for annotations (pure red scribbles/arrows)
+      return r > 245 && g < 50 && b < 50;
     };
 
     let largestRedCluster = 0;
@@ -98,8 +100,8 @@ async function validateDeckImage(imageUrl) {
       if (size > largestRedCluster) largestRedCluster = size;
     }
 
-    // PvZ UI reds are small & repeated — annotations are large & connected
-    if (largestRedCluster > 2000) {
+    // Significantly increased threshold: only flag massive red annotations (10000+ pixels)
+    if (largestRedCluster > 10000) {
       flags.push('red_annotations');
     }
 
@@ -159,8 +161,9 @@ async function validateDeckImage(imageUrl) {
       colorBins.set(bin, (colorBins.get(bin) || 0) + 1);
     }
     
-    // PvZ decks have consistent color palette, overlays add random colors
-    if (colorBins.size > 180) {
+    // PvZ decks have consistent color palette (card art), overlays add excessive random colors
+    // Very high threshold: normal decks ~150-250, meme overlays often 300+
+    if (colorBins.size > 280) {
       flags.push('excessive_color_diversity');
     }
 
@@ -179,23 +182,45 @@ async function validateDeckImage(imageUrl) {
     }
     variance /= (width * height);
 
-    // Meme photos spike variance heavily
-    if (variance > 7000 && text.length > 150) {
-  flags.push('photo_or_meme_overlay');
-}
+    // Meme photos spike variance heavily - increased threshold
+    if (variance > 9000 && text.length > 150) {
+      flags.push('photo_or_meme_overlay');
+    }
 
-    // Require 2 independent edit signals to reject
-    const isValid = flags.length < 2;
-console.log('[Deck OCR]', {
-  deckSizePresent,
-  quantityMatches,
-  flags,
-  variance
-});
+    // Grid detection validates structure, flags indicate content issues
+    // If grid detected: allow 1-2 minor flags (UI elements), but ban meme/annotation flags
+    // If no grid: need strong OCR signals and fewer flags
+    const criticalFlags = flags.filter(f => 
+      f === 'red_annotations' || 
+      f === 'non_game_text' || 
+      f === 'handwritten_or_overlay_text' ||
+      f === 'overlay_images'
+    );
+
+    let isValid;
+    if (grid.hasGrid) {
+      // Grid detected: reject only if critical flags present
+      isValid = criticalFlags.length === 0;
+    } else {
+      // No grid: need OCR confirmation AND no critical flags
+      isValid = (deckSizePresent || quantityMatches >= 3) && criticalFlags.length === 0;
+    }
+
+    console.log('[Deck OCR]', {
+      deckSizePresent,
+      quantityMatches,
+      hasGrid: grid.hasGrid,
+      flags,
+      criticalFlags,
+      variance,
+      colorBins: colorBins.size,
+      isValid
+    });
 
     return {
       isValid,
       flags,
+      criticalFlags,
       detectedTextSample: text.substring(0, 200)
     };
 
