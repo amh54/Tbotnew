@@ -63,9 +63,14 @@ function calculateSimilarity(str1, str2) {
   let similarity = ((maxLen - distance) / maxLen) * 100;
 
 
+  // Containment bonus: only apply if the shorter string is substantial enough
+  // and the length difference isn't too extreme
   if (minLen >= 3 && (s1.includes(s2) || s2.includes(s1))) {
-    const containmentBonus = (minLen / maxLen) * 25;
-    similarity = Math.max(similarity, 50 + containmentBonus);
+    const lengthDiff = Math.abs(s1.length - s2.length);
+    if (lengthDiff <= 3 || lengthRatio >= 0.7) {
+      const containmentBonus = (minLen / maxLen) * 25;
+      similarity = Math.max(similarity, 50 + containmentBonus);
+    }
   }
 
 
@@ -104,14 +109,45 @@ async function queryTableAndAddNames(table, columnName, namesSet) {
 }
 
 /**
+ * @description Queries a single table and adds comma-separated aliases to the set
+ * @param {string} table - Table name
+ * @param {string} columnName - Column name containing comma-separated aliases
+ * @param {Set} namesSet - Set to add aliases to
+ */
+async function queryTableAndAddAliases(table, columnName, namesSet) {
+  try {
+    const [rows] = await db.query(`SELECT ${columnName} FROM \`${table}\``);
+    rows.forEach(row => {
+      const value = row[columnName];
+      if (value && typeof value === 'string') {
+        // Split by comma and trim whitespace from each alias
+        const aliases = value.split(',').map(alias => alias.trim()).filter(alias => alias.length > 0);
+        aliases.forEach(alias => namesSet.add(alias));
+      }
+    });
+  } catch (error) {
+    console.error(`Error querying aliases from ${table}:`, error);
+  }
+}
+
+/**
  * @description Queries multiple tables with the same column name
  * @param {Array<string>} tables - Array of table names
  * @param {string} columnName - Column name to extract
  * @param {Set} namesSet - Set to add names to
  */
 async function queryMultipleTables(tables, columnName, namesSet) {
+  // Check if this is an aliases column (comma-separated values)
+  const isAliasColumn = columnName.toLowerCase().includes('alias');
+  
   await Promise.all(
-    tables.map(table => queryTableAndAddNames(table, columnName, namesSet))
+    tables.map(table => {
+      if (isAliasColumn) {
+        return queryTableAndAddAliases(table, columnName, namesSet);
+      } else {
+        return queryTableAndAddNames(table, columnName, namesSet);
+      }
+    })
   );
 }
 
@@ -152,6 +188,7 @@ async function getAllCardNames() {
     const commandNames = new Set();
 
     await queryMultipleTables(cardTables, 'card_name', commandNames);
+    await queryMultipleTables(cardTables, 'aliases', commandNames);
     await queryMultipleTables(deckTables, 'name', commandNames);
     await queryTableAndAddNames('herocommands', 'heroname', commandNames);
     await queryTableAndAddNames('deckbuilders', 'deckbuilder_name', commandNames);
@@ -181,7 +218,17 @@ async function findClosestCardName(input, threshold = 60) {
 
 
   const cardNames = await getAllCardNames();
-  const sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+  let sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+
+  // Strip common suffixes that users might add (like "decks")
+  // This prevents "dance decks" from matching "danceoff"
+  const commonSuffixes = ['decks', 'deck', 'card'];
+  for (const suffix of commonSuffixes) {
+    if (sanitizedInput.endsWith(suffix) && sanitizedInput.length > suffix.length + 2) {
+      sanitizedInput = sanitizedInput.slice(0, -suffix.length);
+      break;
+    }
+  }
 
 
   // Reject very short inputs that are unlikely to be card names

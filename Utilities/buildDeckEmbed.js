@@ -13,17 +13,17 @@ function buildDeckEmbed(row, deckColor) {
     .addFields(
       {
         name: "Deck Type",
-        value: `**__${row.type}__**` || "N/A",
+        value: `**__${row.type || "N/A"}__**`,
         inline: true,
       },
       {
         name: "Archetype",
-        value: `**__${row.archetype}__**` || "N/A",
+        value: `**__${row.archetype || "N/A"}__**`,
         inline: true,
       },
       {
         name: "Deck Cost",
-        value: `${row.cost} <:spar:1057791557387956274>` || "N/A",
+        value: row.cost || "**__N/A__**",
         inline: true,
       }
     )

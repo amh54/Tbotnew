@@ -289,6 +289,16 @@
   }
  ],
  [
+  "gsdecks:8",
+  {
+   "commandName": "otkcryoyeti",
+   "aliases": [
+    "freezegs",
+    "gsfreeze"
+   ]
+  }
+ ],
+ [
   "bcdecks:1",
   {
    "commandName": "carroot",
@@ -501,20 +511,6 @@
   }
  ],
  [
-  "czdecks:2",
-  {
-   "commandName": "laserrings",
-   "aliases": [
-    "hollowpurple",
-    "snaplaser",
-    "czhollowpurple",
-    "lazerrings",
-    "lazerings",
-    "laserings"
-   ]
-  }
- ],
- [
   "czdecks:3",
   {
    "commandName": "leafystrike",
@@ -535,6 +531,16 @@
     "czotktrickster",
     "apotatootk",
     "apotk"
+   ]
+  }
+ ],
+ [
+  "czdecks:5",
+  {
+   "commandName": "cyclezilla",
+   "aliases": [
+    "cyclecz",
+    "czcycle"
    ]
   }
  ],
@@ -774,29 +780,8 @@
  [
   "ifdecks:2",
   {
-   "commandName": "nohokaistars",
-   "aliases": [
-    "lbamid",
-    "nohokai",
-    "gargolithmid",
-    "midlba",
-    "midgargolith",
-    "nhkstars",
-    "nhs",
-    "hokaistars"
-   ]
-  }
- ],
- [
-  "ifdecks:3",
-  {
-   "commandName": "spacestars",
-   "aliases": [
-    "ifspacestars",
-    "sps",
-    "spacestar",
-    "rapstars"
-   ]
+   "commandName": "clocksup",
+   "aliases": []
   }
  ],
  [
@@ -8061,6 +8046,18 @@
     "crimptonhelp",
     "helpcrimpton",
     "decksmadebycrimpton"
+   ]
+  }
+ ],
+ [
+  "deckbuilders:45",
+  {
+   "commandName": "mososaurus",
+   "aliases": [
+    "mososaurusdecks",
+    "mososaurushelp",
+    "helpmososaurus",
+    "decksmadebymososaurus"
    ]
   }
  ],

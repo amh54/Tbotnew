@@ -6,9 +6,16 @@
  */
 function rowHash(row) {
   try {
-    return require("crypto")
+    // Sort keys to ensure consistent hash regardless of property order
+    const sortedRow = Object.keys(row)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = row[key];
+        return acc;
+      }, {});
+    return require("node:crypto")
       .createHash("md5")
-      .update(JSON.stringify(row))
+      .update(JSON.stringify(sortedRow))
       .digest("hex");
   } catch {
     return Date.now().toString();

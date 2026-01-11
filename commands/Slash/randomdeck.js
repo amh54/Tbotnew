@@ -136,7 +136,7 @@ module.exports = {
       union all SELECT * from pbdecks where type NOT LIKE '%budget%'
       union all SELECT * from imdecks where type NOT LIKE '%budget%'
       union all SELECT * from ntdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query, "Random Deck", "Here is your random deck");
+      await getAndSendRandomDeck(query);
     } else if (heroInput === "Plants") {
       const query = `SELECT * from ccdecks where type NOT LIKE '%budget%' 
       union all SELECT * from sfdecks where type NOT LIKE '%budget%'
@@ -149,7 +149,7 @@ module.exports = {
       union all SELECT * from bcdecks where type NOT LIKE '%budget%'
       union all SELECT * from gkdecks where type NOT LIKE '%budget%'
       union all SELECT * from ncdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query, "Random Plant Deck", "Here is your random plant Deck");
+      await getAndSendRandomDeck(query);
     } else if (heroInput === "Zombies") {
       const query = `SELECT * FROM sbdecks where type NOT LIKE '%budget%' 
       union all SELECT * from hgdecks where type NOT LIKE '%budget%' 

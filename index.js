@@ -5,7 +5,7 @@ and showcases Unique and Viable opitimized decks for the card game
 Author: Tbone Gaming 
         Tbonegaming18@gmail.com
 */
-const { token, user, host, password, database } = require("./config.json");
+const { token, user, host, password, database, deckNotificationChannelId } = require("./config.json");
 const scanAllTablesAndSync = require("./Utilities/scanAllTablesAndSync");
 const mysql = require(`mysql2`);
 const {
@@ -188,13 +188,13 @@ const dbTableColors = {
   sneakytricks: "#000000",
 };
 
+// Start with empty map - let initial scan populate it fresh
 const dbCommandMap = new Map();
 
+// initial load - skip notifications to prevent spam on startup
+scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors, deckNotificationChannelId, true);
 
-// initial load
-scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors);
-
-// poll every 30s (adjust as needed)
+// poll every 30s (adjust as needed) - enable notifications for real changes
 setInterval(() => {
-  scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors);
+  scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors, deckNotificationChannelId, false);
 }, 30_000);

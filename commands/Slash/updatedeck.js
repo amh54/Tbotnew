@@ -9,44 +9,7 @@ const {
   ButtonStyle,
 } = require("discord.js");
 const axios = require("axios");
-const Tesseract = require('tesseract.js');
-
-async function validateDeckImage(imageUrl) {
-  try {
-    const { data: { text } } = await Tesseract.recognize(imageUrl, 'eng', {
-      logger: m => {}
-    });
-    
-    console.log('[Deck Validation] Detected text sample:', text.substring(0, 200));
-    
-    // Look for deck-like patterns - must have multiple card quantity indicators
-    const xCount = (text.match(/[xX]/g) || []).length;
-    const hasMultipleX = xCount >= 2; // At least 2 "x" marks for card quantities
-    const hasMultipleNumbers = (text.match(/\d/g) || []).length >= 8; // Many numbers (costs, quantities)
-    const hasDecentText = text.length > 50; // Reasonable amount of text (deck name + card names)
-    
-    // Accept if it has the basic markers of a deck screenshot
-    const looksLikeDeck = hasMultipleX && hasMultipleNumbers && hasDecentText;
-    
-    console.log('[Deck Validation] Results:', {
-      xCount,
-      numberCount: (text.match(/\d/g) || []).length,
-      textLength: text.length,
-      looksLikeDeck
-    });
-    
-    return {
-      isValid: looksLikeDeck,
-      hasDeckCount: true,
-      hasCardQuantities: hasMultipleX,
-      cardCount: xCount,
-      detectedText: text
-    };
-  } catch (error) {
-    console.error('Image validation error:', error);
-    return { isValid: false, error: error.message };
-  }
-}
+const {validateDeckImage} = require('../../Utilities/validateDeckImage');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -232,23 +195,24 @@ module.exports = {
     }
     
     let query;
+    let rows;
     if (heroId === "1100171558263193700") {
       query = `
         SELECT name FROM ctdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
         UNION ALL
         SELECT name FROM bcdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
       `;
-      await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+      [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
     } 
     // check for hg/SB
     else if (heroId === "1100170925208502282") {
       query = `SELECT name FROM hgdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
         UNION ALL
         SELECT name FROM sbdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?`;
-      await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+      [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
     }
     else {
-    await db.query(`SELECT name FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [name.toLowerCase().replaceAll(/\s+/g, "")]);
+    [rows] = await db.query(`SELECT name FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [name.toLowerCase().replaceAll(/\s+/g, "")]);
     }
     
     if (rows.length === 0) {

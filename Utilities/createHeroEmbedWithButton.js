@@ -1,7 +1,7 @@
 
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
-async function createHeroEmbedFromButton(row) {
+async function createHeroEmbedWithButton(row) {
   // Map hero names to their command equivalents and deck tables
   const heroCommandMap = {
     "Beta-Carrotina": { command: "helpbc", table: "bcdecks" },
@@ -36,7 +36,7 @@ async function createHeroEmbedFromButton(row) {
   const embed = new EmbedBuilder()
     .setThumbnail(row.thumbnail)
     .setTitle(`${row.title}`)
-    .setDescription(`**\\- ${row.description} -**`)
+    .setDescription(String.raw`**\- ${row.description} -**`)
     .setColor(row.deck_color)
     .addFields(
       {
@@ -67,4 +67,4 @@ async function createHeroEmbedFromButton(row) {
   return { embed, button };
 }
 
-module.exports = createHeroEmbedFromButton;
+module.exports = createHeroEmbedWithButton;
