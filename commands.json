@@ -67,20 +67,6 @@
   }
  ],
  [
-  "rbdecks:6",
-  {
-   "commandName": "mechacontrol",
-   "aliases": [
-    "mptrickster",
-    "mechasaurcontrol",
-    "brickasaurctrl",
-    "brickasaur",
-    "brickasaurcontrol",
-    "mechcontrol"
-   ]
-  }
- ],
- [
   "rbdecks:7",
   {
    "commandName": "scimania",
@@ -257,11 +243,11 @@
  [
   "gsdecks:5",
   {
-   "commandName": "peabound",
+   "commandName": "pbeans",
    "aliases": [
     "peabeans",
     "pbean",
-    "pbeans"
+    "peabound"
    ]
   }
  ],
@@ -336,15 +322,6 @@
   }
  ],
  [
-  "bfdecks:1",
-  {
-   "commandName": "bfmidgargs",
-   "aliases": [
-    "midgargsbf"
-   ]
-  }
- ],
- [
   "bfdecks:2",
   {
    "commandName": "budgetgraveimps",
@@ -397,17 +374,6 @@
     "ltbr",
     "lthbroom",
     "neogenesis"
-   ]
-  }
- ],
- [
-  "bfdecks:6",
-  {
-   "commandName": "watersports",
-   "aliases": [
-    "omorashi",
-    "bffreeze",
-    "freezebf"
    ]
   }
  ],
@@ -560,15 +526,6 @@
   }
  ],
  [
-  "ebdecks:2",
-  {
-   "commandName": "gargstar22",
-   "aliases": [
-    "gargstar"
-   ]
-  }
- ],
- [
   "ebdecks:3",
   {
    "commandName": "huntgargs",
@@ -670,17 +627,6 @@
    "aliases": [
     "conjureleaphg",
     "cleap"
-   ]
-  }
- ],
- [
-  "hgdecks:3",
-  {
-   "commandName": "frozentelimps",
-   "aliases": [
-    "teleimpsonice",
-    "frozenteleimps",
-    "freezetelimps"
    ]
   }
  ],
@@ -1241,13 +1187,6 @@
   "smdecks:3",
   {
    "commandName": "midgargs",
-   "aliases": []
-  }
- ],
- [
-  "smdecks:4",
-  {
-   "commandName": "pankration",
    "aliases": []
   }
  ],
