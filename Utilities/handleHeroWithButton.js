@@ -1,3 +1,4 @@
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 /**
  * Handles hero commands with card button (heroname, hero_emoji, herocard_button)
  */

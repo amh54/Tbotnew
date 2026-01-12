@@ -1299,13 +1299,14 @@
  [
   "spdecks:3",
   {
-   "commandName": "nuttin",
+   "commandName": "nutcracker",
    "aliases": [
     "spnuts",
     "nutssp",
     "splashnuts",
     "nutssplash",
-    "nutting"
+    "nutting",
+    "nuttin"
    ]
   }
  ],

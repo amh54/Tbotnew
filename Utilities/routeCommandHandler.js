@@ -1,4 +1,4 @@
-const handleHeroWithCardButton = require("./handleHeroWithCardButton");
+const handleHeroWithCardButton = require("./handleHeroWithButton");
 const handleHeroCommand = require("./handleHeroCommand");
 const handleHeroHelpCommand = require("./handleHeroHelpCommand");
 const handleSuperpowerOrToken = require("./handleSuperpowerOrToken");

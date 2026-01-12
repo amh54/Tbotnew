@@ -162,7 +162,7 @@ module.exports = {
       union all SELECT * from pbdecks where type NOT LIKE '%budget%'
       union all SELECT * from imdecks where type NOT LIKE '%budget%'
       union all SELECT * from ntdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query, "Random Zombie Deck", "Here is your random Zombie Deck");
+      await getAndSendRandomDeck(query);
     } else if (tableName) {
       // This is now the final case for a valid hero
       const query = `SELECT * FROM ${tableName} where type NOT LIKE '%budget%'`;

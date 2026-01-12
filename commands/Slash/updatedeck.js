@@ -2,7 +2,6 @@ const {
   SlashCommandBuilder,
   ChannelType,
   EmbedBuilder,
-  MessageFlags,
   AttachmentBuilder,
   ActionRowBuilder,
   ButtonBuilder,

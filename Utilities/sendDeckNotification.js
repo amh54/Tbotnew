@@ -1,14 +1,23 @@
 const { EmbedBuilder } = require("discord.js");  
 /**
- * Sends a notification for a new or updated deck
+ * Sends a notification for a new, updated, or deleted deck
+ * @param {string} notificationType - 'new', 'update', or 'delete'
  */
-async function sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, isNewDeck) {
+async function sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, notificationType = 'new') {
   try {
     const channel = await client.channels.fetch(notificationChannelId).catch(() => null);
     if (!channel) return;
 
     const deckColor = dbTableColors[tableConfig.table] || "#00FF00";
-    const statusText = isNewDeck ? "✨ New Deck Added" : "🔄 Deck Updated";
+    
+    let statusText;
+    if (notificationType === 'new') {
+      statusText = "✨ New Deck Added";
+    } else if (notificationType === 'delete') {
+      statusText = "🗑️ Deck Deleted";
+    } else {
+      statusText = "🔄 Deck Updated";
+    }
     
     const embed = new EmbedBuilder()
       .setTitle(`${statusText}: ${row.name || "Unknown"}`)
@@ -19,7 +28,7 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
         { name: "Archetype", value: `**__${row.archetype || "N/A"}__**`, inline: true },
         { name: "Deck Cost", value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**", inline: true }
       )
-      .setFooter({ text: `Created by ${row.creator || "Unknown"}` });
+      .setFooter({ text: `${row.creator || "Unknown"}` });
     
     if (row.image && typeof row.image === "string" && row.image.startsWith("http")) {
       embed.setImage(row.image);

@@ -3,7 +3,7 @@ const prefix = "?";
 const handleCommandNotFound = require("../Utilities/handleCommandNotFound");
 const checkMessagePermissions = require("../Utilities/checkMessagePermissions");
 const executeCommand = require("../Utilities/executeCommand");
-const { findClosestCardName } = require("../Utilities/spellCheckCard");
+const { findClosestCardName } = require("../Utilities/spellChecker");
 const sanitizeCommandName = require("../Utilities/sanitizeCommandName");
 
 module.exports = {

@@ -89,6 +89,15 @@ let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000;
 
 /**
+ * @description List of words that should never be spell-checked or corrected
+ * These are common words, commands, or phrases that users might type
+ */
+const excludedWords = new Set([
+  "bfmidgargs", "spacestars", "gargstar22", 
+  "fuck",
+]);
+
+/**
  * @description Queries a single table and adds names to the set
  * @param {string} table - Table name
  * @param {string} columnName - Column name to extract
@@ -216,9 +225,13 @@ async function findClosestCardName(input, threshold = 60) {
     return null;
   }
 
-
   const cardNames = await getAllCardNames();
   let sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+
+  // Check if input is in the excluded words list (exact match only)
+  if (excludedWords.has(sanitizedInput)) {
+    return null;
+  }
 
   // Strip common suffixes that users might add (like "decks")
   // This prevents "dance decks" from matching "danceoff"
@@ -230,6 +243,10 @@ async function findClosestCardName(input, threshold = 60) {
     }
   }
 
+  // Check again after suffix removal
+  if (excludedWords.has(sanitizedInput)) {
+    return null;
+  }
 
   // Reject very short inputs that are unlikely to be card names
   if (sanitizedInput.length < 2) {

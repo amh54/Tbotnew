@@ -8,7 +8,7 @@ function rowHash(row) {
   try {
     // Sort keys to ensure consistent hash regardless of property order
     const sortedRow = Object.keys(row)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .reduce((acc, key) => {
         acc[key] = row[key];
         return acc;

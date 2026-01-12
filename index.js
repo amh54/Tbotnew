@@ -14,6 +14,7 @@ const {
   Collection,
   GatewayIntentBits,
 } = require("discord.js");
+require("./deploy-commands");
 const client = new Client({
   partials: [Partials.Channel],
   intents: [
