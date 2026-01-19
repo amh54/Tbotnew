@@ -27,13 +27,35 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
   const existing = dbCommandMap.get(key);
   // if unchanged, nothing to do
   if (existing?.hash === hash) return;
-
-  // Detect if this is a deck (has DeckID/deckID/id and is in a deck table)
   const hasDeckIdentifier = row.DeckID || row.deckID || row.id || row.deck_id;
   const isDeckTable = tableConfig.table?.includes("decks");
   const isDeck = hasDeckIdentifier && isDeckTable;
-  const isNewDeck = isDeck && !existing;
-  const isUpdatedDeck = isDeck && existing && existing.hash !== hash;
+  
+  // Check if this is truly a new deck or just an ID change
+  let isTrulyNew = true;
+  if (isDeck && existing?.rowData) {
+    // If the name and description match an existing deck, it's just an ID change, not a new deck
+    const nameMatches = existing.rowData.name === row.name;
+    const descMatches = existing.rowData.description === row.description;
+    if (nameMatches && descMatches) {
+      isTrulyNew = false;
+    }
+  } else if (isDeck && !existing) {
+    // Check if this deck exists elsewhere with a different ID
+    for (const [existingKey, existingValue] of dbCommandMap.entries()) {
+      if (existingKey.startsWith(tableConfig.table + ':') && existingValue.rowData) {
+        const nameMatches = existingValue.rowData.name === row.name;
+        const descMatches = existingValue.rowData.description === row.description;
+        if (nameMatches && descMatches) {
+          isTrulyNew = false;
+          break;
+        }
+      }
+    }
+  }
+  
+  const isNewDeck = isDeck && !existing && isTrulyNew;
+  const isUpdatedDeck = isDeck && existing && existing.hash !== hash && existing.rowData?.name === row.name;
 
   // Detect which fields changed for deck updates
   let changedFields = [];

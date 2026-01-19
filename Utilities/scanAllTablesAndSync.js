@@ -15,12 +15,19 @@ async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableC
           return [[]];
         });
       const seenKeys = new Set();
+      const currentDeckNames = new Set();
 
       for (const row of rows || []) {
         const key = `${t.table}:${row.DeckID ?? row.deckID ?? row.id ?? row.cardid ?? row.heroID ?? 
   row.card_name ?? row.title ?? row.name ?? row.deckbuilder_name 
   ?? row.herocommand ?? row.heroname}`;
         seenKeys.add(key);
+        
+        // Track deck names from current database scan
+        if (row.name) {
+          currentDeckNames.add(row.name);
+        }
+        
         // Skip notifications on initial load to prevent spam
         const channelId = isInitialLoad ? null : notificationChannelId;
         await registerOrUpdateDbCommand(t, row, client, dbCommandMap, dbTableColors, channelId);
@@ -29,8 +36,10 @@ async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableC
       // remove DB commands for rows that no longer exist
       for (const existingKey of Array.from(dbCommandMap.keys())) {
         if (!existingKey.startsWith(`${t.table}:`)) continue;
-        if (!seenKeys.has(existingKey))
-          await unregisterDbCommandByKey(existingKey, client, dbCommandMap);
+        if (!seenKeys.has(existingKey)) {
+          const channelId = isInitialLoad ? null : notificationChannelId;
+          await unregisterDbCommandByKey(existingKey, client, dbCommandMap, t, dbTableColors, channelId, currentDeckNames);
+        }
       }
     }
   } catch (err) {

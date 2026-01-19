@@ -67,7 +67,7 @@
   }
  ],
  [
-  "rbdecks:7",
+  "rbdecks:6",
   {
    "commandName": "scimania",
    "aliases": [
@@ -77,7 +77,7 @@
   }
  ],
  [
-  "rbdecks:8",
+  "rbdecks:7",
   {
    "commandName": "sunbandits",
    "aliases": [
@@ -479,16 +479,6 @@
  [
   "czdecks:3",
   {
-   "commandName": "leafystrike",
-   "aliases": [
-    "leafysmasher",
-    "leafyhc"
-   ]
-  }
- ],
- [
-  "czdecks:4",
-  {
    "commandName": "venice",
    "aliases": [
     "otktcz",
@@ -497,6 +487,16 @@
     "czotktrickster",
     "apotatootk",
     "apotk"
+   ]
+  }
+ ],
+ [
+  "czdecks:4",
+  {
+   "commandName": "cyclezilla",
+   "aliases": [
+    "cyclecz",
+    "czcycle"
    ]
   }
  ],
@@ -526,7 +526,7 @@
   }
  ],
  [
-  "ebdecks:3",
+  "ebdecks:2",
   {
    "commandName": "huntgargs",
    "aliases": [
@@ -536,14 +536,14 @@
   }
  ],
  [
-  "ebdecks:4",
+  "ebdecks:3",
   {
    "commandName": "pianoman",
    "aliases": []
   }
  ],
  [
-  "ebdecks:5",
+  "ebdecks:4",
   {
    "commandName": "seacret",
    "aliases": [
@@ -562,7 +562,7 @@
   }
  ],
  [
-  "ebdecks:6",
+  "ebdecks:5",
   {
    "commandName": "flummox",
    "aliases": [
@@ -584,28 +584,25 @@
  [
   "gkdecks:2",
   {
-   "commandName": "omose",
-   "aliases": [
-    "espressotree",
-    "omosessualità"
-   ]
-  }
- ],
- [
-  "gkdecks:3",
-  {
    "commandName": "healthotk",
    "aliases": []
   }
  ],
  [
-  "gkdecks:4",
+  "gkdecks:3",
   {
    "commandName": "pawntrickstab",
    "aliases": [
     "ptstab",
     "pawn"
    ]
+  }
+ ],
+ [
+  "gkdecks:4",
+  {
+   "commandName": "kusarigama",
+   "aliases": []
   }
  ],
  [
@@ -633,17 +630,6 @@
  [
   "hgdecks:4",
   {
-   "commandName": "gravepiratestaches",
-   "aliases": [
-    "gps",
-    "hgaggro",
-    "aggrohg"
-   ]
-  }
- ],
- [
-  "hgdecks:5",
-  {
    "commandName": "telimps",
    "aliases": [
     "teleimps",
@@ -658,7 +644,7 @@
   }
  ],
  [
-  "hgdecks:6",
+  "hgdecks:5",
   {
    "commandName": "youngkenmartin",
    "aliases": [
@@ -1195,13 +1181,6 @@
  ],
  [
   "smdecks:5",
-  {
-   "commandName": "stalemate",
-   "aliases": []
-  }
- ],
- [
-  "smdecks:6",
   {
    "commandName": "whalepharaoh",
    "aliases": [
@@ -6435,7 +6414,8 @@
    "aliases": [
     "tsz",
     "turquoise",
-    "turquoiseskull"
+    "turquoiseskull",
+    "turq"
    ]
   }
  ],
@@ -8741,6 +8721,34 @@
     "zm",
     "mech",
     "z-mech"
+   ]
+  }
+ ],
+ [
+  "smdecks:4",
+  {
+   "commandName": "stalemate",
+   "aliases": []
+  }
+ ],
+ [
+  "hgdecks:3",
+  {
+   "commandName": "gravepiratestaches",
+   "aliases": [
+    "gps",
+    "hgaggro",
+    "aggrohg"
+   ]
+  }
+ ],
+ [
+  "czdecks:2",
+  {
+   "commandName": "leafystrike",
+   "aliases": [
+    "leafysmasher",
+    "leafyhc"
    ]
   }
  ]
