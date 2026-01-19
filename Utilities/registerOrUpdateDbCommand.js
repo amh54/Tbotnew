@@ -35,6 +35,17 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
   const isNewDeck = isDeck && !existing;
   const isUpdatedDeck = isDeck && existing && existing.hash !== hash;
 
+  // Detect which fields changed for deck updates
+  let changedFields = [];
+  if (isUpdatedDeck && existing.rowData) {
+    if (existing.rowData.description !== row.description) {
+      changedFields.push('description');
+    }
+    if (existing.rowData.image !== row.image) {
+      changedFields.push('image');
+    }
+  }
+
   // parse aliases from possible columns (comma-separated)
   const aliasField = (
     row.aliases ||
@@ -66,13 +77,14 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
 
   // set or overwrite command in client.commands
   client.commands.set(cmdName, commandModule);
-  dbCommandMap.set(key, { commandName: cmdName, aliases: aliasesArray, hash });
+  dbCommandMap.set(key, { commandName: cmdName, aliases: aliasesArray, hash, rowData: row });
 
   // Send notification for new or updated decks
-  if ((isNewDeck || isUpdatedDeck) && notificationChannelId) {
-    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, isNewDeck);
+  if (isNewDeck && notificationChannelId) {
+    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'new');
+  } else if (isUpdatedDeck && notificationChannelId && changedFields.length > 0) {
+    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'update', changedFields);
   }
-
   const commandsForFile = Array.from(dbCommandMap.entries()).map(([key, value]) => [
   key,
   {

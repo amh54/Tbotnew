@@ -50,17 +50,12 @@ module.exports = {
       "Highlight Em Up",
     ];
     const streamers = [
-      "Tbonegaming344",
-      "PvzTryHard",
       "FryEmUp",
       "CardShark73",
-      "koiuyp",
       "firsthero",
       "bluzacy_hipokryta",
       "stormallan",
       "Antonio009_PVZ",
-      "boris_pvzh",
-      "efesman",
     ];
 
     // Update status data every 30 minutes

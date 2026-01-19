@@ -2,9 +2,15 @@ const { EmbedBuilder } = require("discord.js");
 /**
  * Sends a notification for a new, updated, or deleted deck
  * @param {string} notificationType - 'new', 'update', or 'delete'
+ * @param {Array<string>} changedFields - Array of field names that changed (for updates)
  */
-async function sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, notificationType = 'new') {
+async function sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, notificationType = 'new', changedFields = []) {
   try {
+    if (notificationType === 'update') {
+      const shouldNotify = changedFields.includes('image') || changedFields.includes('description');
+      if (!shouldNotify) return;
+    }
+
     const channel = await client.channels.fetch(notificationChannelId).catch(() => null);
     if (!channel) return;
 
@@ -16,7 +22,11 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
     } else if (notificationType === 'delete') {
       statusText = "🗑️ Deck Deleted";
     } else {
-      statusText = "🔄 Deck Updated";
+      if (changedFields.includes('description')) {
+        statusText = "🔄 Description Updated";
+      } else {
+        statusText = "🔄 Deck Updated";
+      }
     }
     
     const embed = new EmbedBuilder()

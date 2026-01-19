@@ -46,8 +46,8 @@ function levenshteinDistance(str1, str2) {
  * @returns {number} - Similarity percentage (0-100)
  */
 function calculateSimilarity(str1, str2) {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
+  const s1 = String(str1).toLowerCase();
+  const s2 = String(str2).toLowerCase();
   const maxLen = Math.max(s1.length, s2.length);
   const minLen = Math.min(s1.length, s2.length);
   if (maxLen === 0) return 100;
@@ -199,9 +199,13 @@ async function getAllCardNames() {
     await queryMultipleTables(cardTables, 'card_name', commandNames);
     await queryMultipleTables(cardTables, 'aliases', commandNames);
     await queryMultipleTables(deckTables, 'name', commandNames);
+    await queryMultipleTables(deckTables, 'aliases', commandNames);
     await queryTableAndAddNames('herocommands', 'heroname', commandNames);
+    await queryTableAndAddAliases('herocommands', 'aliases', commandNames);
     await queryTableAndAddNames('deckbuilders', 'deckbuilder_name', commandNames);
+    await queryTableAndAddAliases('deckbuilders', 'aliases', commandNames);
     await queryTableAndAddNames('helpcommands', 'herocommand', commandNames);
+    await queryTableAndAddAliases('helpcommands', 'aliases', commandNames);
 
 
     cardNamesCache = Array.from(commandNames);
@@ -225,8 +229,12 @@ async function findClosestCardName(input, threshold = 60) {
     return null;
   }
 
-  const cardNames = await getAllCardNames();
-  let sanitizedInput = input.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+  // Join and normalize the input string
+  const joinedInput = String(input).trim();
+  
+  // Sanitize the input by removing all non-alphanumeric characters
+  // This joins multi-word inputs like "gs decka" -> "gsdecka"
+  let sanitizedInput = joinedInput.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
 
   // Check if input is in the excluded words list (exact match only)
   if (excludedWords.has(sanitizedInput)) {
@@ -235,9 +243,10 @@ async function findClosestCardName(input, threshold = 60) {
 
   // Strip common suffixes that users might add (like "decks")
   // This prevents "dance decks" from matching "danceoff"
+  // But only if the remaining string would be substantial (at least 4 chars)
   const commonSuffixes = ['decks', 'deck', 'card'];
   for (const suffix of commonSuffixes) {
-    if (sanitizedInput.endsWith(suffix) && sanitizedInput.length > suffix.length + 2) {
+    if (sanitizedInput.endsWith(suffix) && sanitizedInput.length > suffix.length + 3) {
       sanitizedInput = sanitizedInput.slice(0, -suffix.length);
       break;
     }
@@ -253,13 +262,22 @@ async function findClosestCardName(input, threshold = 60) {
     return null;
   }
 
+  // Reject very long inputs that are clearly multi-word queries, not card names
+  // Most card names are under 15 characters when sanitized
+  // This catches things like "plantaggrodecks" (15 chars) but allows "gsdecka" (7 chars)
+  if (sanitizedInput.length > 15) {
+    return null;
+  }
+
+  const cardNames = await getAllCardNames();
+
 
   let bestMatch = null;
   let bestSimilarity = 0;
 
 
   for (const cardName of cardNames) {
-    const sanitizedCardName = cardName.toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
+    const sanitizedCardName = String(cardName).toLowerCase().replaceAll(/[^a-z0-9]+/g, "");
     const similarity = calculateSimilarity(sanitizedInput, sanitizedCardName);
 
 

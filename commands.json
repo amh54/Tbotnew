@@ -908,7 +908,10 @@
     "gomorrahnt",
     "gravegargs",
     "garggraves",
-    "doublegg"
+    "doublegg",
+    "gargtuna",
+    "ntgargs",
+    "gargsnt"
    ]
   }
  ],
@@ -2287,7 +2290,11 @@
   "kabloomcards:31",
   {
    "commandName": "sourgrapes",
-   "aliases": []
+   "aliases": [
+    "sour",
+    "grapes1",
+    "sg1"
+   ]
   }
  ],
  [
@@ -2991,7 +2998,9 @@
   "megagrowcards:38",
   {
    "commandName": "bamboozle",
-   "aliases": []
+   "aliases": [
+    "bamboo"
+   ]
   }
  ],
  [
@@ -3603,7 +3612,11 @@
   "smartycards:43",
   {
    "commandName": "wintermelon",
-   "aliases": []
+   "aliases": [
+    "winter2",
+    "melon2",
+    "wm"
+   ]
   }
  ],
  [
@@ -4028,7 +4041,11 @@
   "solarcards:24",
   {
    "commandName": "bloomerang",
-   "aliases": []
+   "aliases": [
+    "bloom",
+    "bloomer",
+    "boomerang"
+   ]
   }
  ],
  [
@@ -4178,7 +4195,11 @@
   "solarcards:39",
   {
    "commandName": "astrovera",
-   "aliases": []
+   "aliases": [
+    "astro3",
+    "vera",
+    "av1"
+   ]
   }
  ],
  [
@@ -4478,9 +4499,9 @@
   {
    "commandName": "piedpiper",
    "aliases": [
-    "pied`",
-    "`piper`",
-    "`rats`"
+    "pied",
+    "piper",
+    "rats"
    ]
   }
  ],
@@ -4529,7 +4550,11 @@
   "beastlycards:28",
   {
    "commandName": "hovergoat3000",
-   "aliases": []
+   "aliases": [
+    "hover",
+    "hovergoat",
+    "hg3"
+   ]
   }
  ],
  [
@@ -5661,21 +5686,33 @@
   "crazycards:8",
   {
    "commandName": "tennischamp",
-   "aliases": []
+   "aliases": [
+    "tennis",
+    "tc3"
+   ]
   }
  ],
  [
   "crazycards:10",
   {
    "commandName": "unlifeoftheparty",
-   "aliases": []
+   "aliases": [
+    "unlife",
+    "uotp",
+    "up1"
+   ]
   }
  ],
  [
   "crazycards:11",
   {
    "commandName": "aerobicsinstructor",
-   "aliases": []
+   "aliases": [
+    "aerobics",
+    "instructor",
+    "ai",
+    "richardsimmons"
+   ]
   }
  ],
  [
@@ -5692,7 +5729,10 @@
   "crazycards:13",
   {
    "commandName": "congazombie",
-   "aliases": []
+   "aliases": [
+    "conga",
+    "cz2"
+   ]
   }
  ],
  [
@@ -5720,7 +5760,9 @@
   "crazycards:19",
   {
    "commandName": "newspaperzombie",
-   "aliases": []
+   "aliases": [
+    "newspaper"
+   ]
   }
  ],
  [
@@ -5883,7 +5925,9 @@
   "crazycards:41",
   {
    "commandName": "valkyrie",
-   "aliases": []
+   "aliases": [
+    "valk"
+   ]
   }
  ],
  [
@@ -6032,7 +6076,9 @@
   "crazytricks:4",
   {
    "commandName": "finalmission",
-   "aliases": []
+   "aliases": [
+    "fm1"
+   ]
   }
  ],
  [
@@ -6090,7 +6136,10 @@
   "crazytricks:10",
   {
    "commandName": "thechickening",
-   "aliases": []
+   "aliases": [
+    "chickening",
+    "tc4"
+   ]
   }
  ],
  [
@@ -6464,7 +6513,10 @@
   "heartycards:42",
   {
    "commandName": "razombie",
-   "aliases": []
+   "aliases": [
+    "ra",
+    "rz2"
+   ]
   }
  ],
  [
@@ -7153,7 +7205,15 @@
   "sneakycards:41",
   {
    "commandName": "blowgunimp",
-   "aliases": []
+   "aliases": [
+    "blowgun",
+    "invisible",
+    "camouflage",
+    "nothing",
+    "johncena",
+    "youcantseeme",
+    "bi"
+   ]
   }
  ],
  [
