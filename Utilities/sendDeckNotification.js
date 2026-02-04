@@ -22,7 +22,8 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
     } else if (notificationType === 'delete') {
       statusText = "🗑️ Deck Deleted";
     } else {
-      if (changedFields.includes('description')) {
+      // Only show "Description Updated" if ONLY description changed (not image)
+      if (changedFields.includes('description') && !changedFields.includes('image')) {
         statusText = "🔄 Description Updated";
       } else {
         statusText = "🔄 Deck Updated";

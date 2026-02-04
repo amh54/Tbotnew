@@ -1,6 +1,7 @@
 const {SlashCommandBuilder} = require('discord.js');
 const {ownerId} = require("../../config.json");
 const sendDeckNotification = require("../../Utilities/sendDeckNotification.js");
+const heroDeckThreadMap = require("../../Utilities/heroDeckThreadMap.js");
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('deletedeck')
@@ -98,42 +99,13 @@ module.exports = {
         const heroTable = interaction.options.getString("hero");
         const db = require("../../index.js");
         try {
-            // Maps herotables to thread channels to send deleted deck notifications
-            const heroDeckMap = {
-                "czdecks": "1455954138264244296", 
-                "zmdecks": "1456042483849892062",
-                "wkdecks": "1456039878029611108", 
-                "smdecks": "1456036962560508078", 
-                "spdecks": "1456033811216470026", 
-                "sfdecks": "1456030464908464314", 
-                "rbdecks": "1456027492879044674",
-                "rodecks": "1456025499267764378", 
-                "pbdecks": "1456021380477882368", 
-                "ncdecks": "1456018979507273871",
-                "ntdecks": "1456015932605595799", 
-                "ifdecks": "1456013109599666378", 
-                "imdecks": "1456009976840720506",
-                "hgdecks": "1456004454351507589",
-                "sbdecks": "1456004454351507589", 
-                "gsdecks": "1455999782739771422", 
-                "gkdecks": "1455991424796459121", 
-                "ebdecks": "1455987124083097670",
-                "ctdecks": "1455979923716964452", 
-                "bcdecks": "1455979923716964452",  
-                "ccdecks": "1455946478370422918",
-                "bfdecks": "1455937170610327766"
-            }
             const table = heroTable;
             const [rows] = await db.query(`SELECT * FROM ${table} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [deckNameInput]);
             if (rows.length === 0) {
                 return interaction.editReply(`No deck found with the name "${deckNameInput}" in the ${table} table.`);
             }
-            // need to send notification before deletion to get deck info
             const deckData = rows[0];
-            
-            // Send deletion notification
-            const threadChannelId = heroDeckMap[table];
-            
+            const threadChannelId = heroDeckThreadMap[table];
             if (threadChannelId) {
                 const dbTableColors = {
                     "sbdecks": "#9B59B6",
@@ -159,7 +131,6 @@ module.exports = {
                     "imdecks": "#8E44AD",
                     "ntdecks": "#3498DB"
                 };
-                
                 try {
                     await sendDeckNotification(
                         interaction.client,
@@ -177,8 +148,16 @@ module.exports = {
                 console.log('No thread channel ID found for table:', table);
             }
             
-            // Delete the deck from the database
+            if (!global.manuallyDeletedDecks) {
+                global.manuallyDeletedDecks = new Set();
+            }
+            global.manuallyDeletedDecks.add(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
+            
             await db.query(`DELETE FROM ${table} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [deckNameInput]);
+            // Clean up the marker after a short delay (longer than scan interval)
+            setTimeout(() => {
+                global.manuallyDeletedDecks?.delete(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
+            }, 10000);
             
             return interaction.editReply(`✅ Successfully deleted the deck "${deckData.name}" from the ${table} table.`);
             

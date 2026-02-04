@@ -94,7 +94,7 @@ const CACHE_DURATION = 5 * 60 * 1000;
  */
 const excludedWords = new Set([
   "bfmidgargs", "spacestars", "gargstar22", 
-  "fuck",
+  "fuck", "marxbolt"
 ]);
 
 /**
@@ -242,8 +242,7 @@ async function findClosestCardName(input, threshold = 60) {
   }
 
   // Strip common suffixes that users might add (like "decks")
-  // This prevents "dance decks" from matching "danceoff"
-  // But only if the remaining string would be substantial (at least 4 chars)
+
   const commonSuffixes = ['decks', 'deck', 'card'];
   for (const suffix of commonSuffixes) {
     if (sanitizedInput.endsWith(suffix) && sanitizedInput.length > suffix.length + 3) {
@@ -263,8 +262,6 @@ async function findClosestCardName(input, threshold = 60) {
   }
 
   // Reject very long inputs that are clearly multi-word queries, not card names
-  // Most card names are under 15 characters when sanitized
-  // This catches things like "plantaggrodecks" (15 chars) but allows "gsdecka" (7 chars)
   if (sanitizedInput.length > 15) {
     return null;
   }

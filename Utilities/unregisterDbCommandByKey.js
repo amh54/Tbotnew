@@ -1,4 +1,5 @@
 const sendDeckNotification = require("./sendDeckNotification");
+const heroDeckThreadMap = require("./heroDeckThreadMap");
 
 /**
  * @description Unregisters a database command by its key
@@ -30,10 +31,17 @@ async function unregisterDbCommandByKey(key, client, dbCommandMap, tableConfig, 
   dbCommandMap.delete(key);
   console.log(`DB command unregistered: ${info.commandName}${commandStillInUse ? ' (command still in use by another ID)' : ''}`);
   
-  // Only send delete notification if deck was truly deleted, not just moved to new ID
+  // Check if this was a manual deletion (to prevent duplicate notifications)
+  const isManuallyDeleted = global.manuallyDeletedDecks?.has(key);
+  
+  // Only send delete notification if deck was truly deleted, not just moved to new ID, and not manually deleted
   const isDeck = key.includes("decks");
-  if (isDeck && !deckMovedToNewId && notificationChannelId && info.rowData && tableConfig && dbTableColors) {
-    await sendDeckNotification(client, notificationChannelId, info.rowData, tableConfig, dbTableColors, 'delete');
+  if (isDeck && !deckMovedToNewId && !isManuallyDeleted && info.rowData && tableConfig && dbTableColors) {
+    // Use hero-specific thread channel instead of general notification channel
+    const threadChannelId = heroDeckThreadMap[tableConfig.table];
+    if (threadChannelId) {
+      await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, 'delete');
+    }
   }
 }
 module.exports = unregisterDbCommandByKey;
