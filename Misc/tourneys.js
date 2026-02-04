@@ -42,7 +42,9 @@ The server also features a database of decks used by tournament players from var
     container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const tourneyText3 = new TextDisplayBuilder().setContent([
       "# Quicksand", 
-      "Quicksand Tournaments is an elo system server, meaning that rather than participating in a bracket-style tournament, you can play at any time you like as long as there is another player who is down to play against you. Top 8 of each season (=3 months) participates in a special Playoffs Tournament. Hope to see you there!"
+      `Quicksand Tournaments is an elo system server, meaning that rather than participating in a bracket-style tournament, you can play at any time you like as long as there is another player who is down to play against you. 
+Top 8 of each season (=3 months) participates in a special Playoffs Tournament. 
+Hope to see you there!`
     ].join('\n'));
     const quicksand = new ButtonBuilder()
       .setLabel('Quicksand')
@@ -54,7 +56,8 @@ The server also features a database of decks used by tournament players from var
     container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const tourneyText4 = new TextDisplayBuilder().setContent([
       "# pvzhtwjizñë", 
-      "Essentially a tournament-focused server that aims to invite both new and experienced players. We tend to have tournaments every few months, sometimes being “gimmick” tournaments with special rules, while other times being a regular tournament with two brackets"
+      `Essentially a tournament-focused server that aims to invite both new and experienced players. 
+We tend to have tournaments every few months, sometimes being “gimmick” tournaments with special rules, while other times being a regular tournament with two brackets`
     ].join('\n'));
     const pvzhtwjizne = new ButtonBuilder()
       .setLabel('pvzhtwjizñë')
@@ -66,7 +69,10 @@ The server also features a database of decks used by tournament players from var
     container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const tourneyText5 = new TextDisplayBuilder().setContent([
       "# Soup Gang", 
-      "The Official Soup Gang is a server built to stop broth gang and revive Plants vs Zombies: Heroes tournaments. Quick Draft Tournaments are being host here every 1-2 months. What's Quick Draft you ask? Quick Draft is a tournament with gimmicks which those are; hero picks being randomised, no hero bans, a card ban for both sides! The soup is waiting for you..."
+      `The Official Soup Gang is a server built to stop broth gang and revive Plants vs Zombies: Heroes tournaments. 
+Quick Draft Tournaments are being host here every 1-2 months. 
+What's Quick Draft you ask? Quick Draft is a tournament with gimmicks which those are; hero picks being randomised, no hero bans, a card ban for both sides! 
+The soup is waiting for you...`
     ].join("\n"))
     const soupGang = new ButtonBuilder()
     .setLabel('Soup Gang')
@@ -78,7 +84,8 @@ The server also features a database of decks used by tournament players from var
     container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const tourneyText6 = new TextDisplayBuilder().setContent([
       "# Xera's White Space",
-      "Xera's White Space is a server hosting of both normal and gimmick-focused tournaments, as well as the place for a passion project, that aims to revamp all strategy decks into community-chosen good decks and improve the pvzh AI. Tournaments are hosted around every 2 months."
+      `Xera's White Space is a server hosting of both normal and gimmick-focused tournaments, as well as the place for a passion project, that aims to revamp all strategy decks into community-chosen good decks and improve the pvzh AI. 
+Tournaments are hosted around every 2 months.`
     ].join("\n"))
     const xera = new ButtonBuilder()
     .setLabel("Xera's White Space")
