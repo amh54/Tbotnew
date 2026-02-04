@@ -29,8 +29,8 @@ module.exports = {
     const tourneyText2 = new TextDisplayBuilder().setContent([
        "# Gray District",
       `Welcome to the Grey District, a server that aims to host gimmick tournaments with unique rules regularly. 
-      Not interested in playing tournaments? No worries. 
-      The server also features a database of decks used by tournament players from various tournaments as well!`
+Not interested in playing tournaments? No worries. 
+The server also features a database of decks used by tournament players from various tournaments as well!`
     ].join('\n'));
     const greyDistrict = new ButtonBuilder()
       .setLabel('Grey District')
