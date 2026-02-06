@@ -45,18 +45,16 @@ function createCategoryEmbed(hero, categoryColor, categoryName, deckNames, total
         return `**${name.toLowerCase().replaceAll(/\s+/g, "")}**`;
       }
     })
-    .join("\n<@1043528908148052089> ");
-    
-  const description = formattedDeckNames
-    ? `\n<@1043528908148052089> ${formattedDeckNames}`
-    : "No decks available";
+    .join("\n");
+
+  const description = formattedDeckNames || "No decks available";
     
   return new EmbedBuilder()
     .setTitle(isAll ? `${hero} Decks` : `${hero} ${displayName} Decks`)
     .setDescription(
       isAll
-        ? `All ${hero} decks in Tbot are:${description}`
-        : `My ${displayName} ${hero} decks are: ${description}` 
+        ? `All ${hero} decks in Tbot are:\n${description}`
+        : `My ${displayName} ${hero} decks are:\n${description}`
     )
     .setThumbnail(thumbnail)
     .setColor(categoryColor)

@@ -94,7 +94,7 @@ const CACHE_DURATION = 5 * 60 * 1000;
  */
 const excludedWords = new Set([
   "bfmidgargs", "spacestars", "gargstar22", 
-  "fuck", "marxbolt"
+  "fuck", "marxbolt", "penis"
 ]);
 
 /**

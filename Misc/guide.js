@@ -10,11 +10,8 @@ const {
     SeparatorSpacingSize, 
     MediaGalleryBuilder
 } = require('discord.js');
-module.exports = {
-    name: `guide`, 
-    aliases: [`deckbuildingguide`, `deckbuilding`, `guidelines`, `deckhelp`],
-    category: `Miscellaneous`,
-    run: async (client, message, args) => {
+
+function buildGuideContainers(includeSelect = true) {
     const selectGuide = new StringSelectMenuBuilder()
     .setCustomId("selectGuide")
     .setPlaceholder("Select an option below to view the guide")
@@ -61,18 +58,16 @@ module.exports = {
         "Are you looking to build your very own deck? Well, conveniently for you, you're in the r/PvZH community's deck building section.", 
         "Before we get into it, I'd like to mention you can ping @Deck Helper or just @ me (shortbow) personally if you need any hands-on assistance.", 
         "If you're looking for decks, make sure to check out the <#1236513132260884560> or <#1236528269092720670>, depending on how many sparks you have. You may also check out <#1236515727998193664> for a few cheeky options.", 
-        "You can also use <@1043528908148052089> help to see the wide array of lists that are offered."
+        "You can also use /help to see the wide array of lists that are offered."
    ].join("\n"));
    guideContainer.addTextDisplayComponents(guideText2);
    guideContainer.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
    const guideText3 = new TextDisplayBuilder().setContent(
     "If you're confused and feel you need both rundowns of abbreviations and more visual examples, check out the glossary option in the select menu below: The deck building guide parts from the doc are divided into specific sections on the select menu below, and the examples page can give some examples of bad deckbuilding")
    guideContainer.addTextDisplayComponents(guideText3);
-    guideContainer.addActionRowComponents(selectRow);
-   message.channel.send({
-    components: [guideContainer],
-    flags: MessageFlags.IsComponentsV2
-   })
+     if (includeSelect) {
+         guideContainer.addActionRowComponents(selectRow);
+     }
    const curveContainer = new ContainerBuilder()
    const curveTitle = new TextDisplayBuilder().setContent("# __1. Curve__");
     curveContainer.addTextDisplayComponents(curveTitle);
@@ -93,7 +88,9 @@ module.exports = {
     "**__Control__** - 4x-8x one costs. The control rule is far looser than the rest, as it heavily depends on what hero you're running. Heroes like WK may not be as concerned with answering early game threats as we plan to just heal it off anyway, while GK has to take control very early on."
    ].join("\n"))
    curveContainer.addTextDisplayComponents(curveText3);
-   curveContainer.addActionRowComponents(selectRow);
+     if (includeSelect) {
+         curveContainer.addActionRowComponents(selectRow);
+     }
    const archetypesContainer = new ContainerBuilder()
    const archetypesTitle = new TextDisplayBuilder().setContent("# __2. Archetypes__");
    archetypesContainer.addTextDisplayComponents(archetypesTitle);
@@ -126,7 +123,9 @@ module.exports = {
     "__Credit to Sushi for popularizing the analogy many years ago.__"
    ].join("\n"));
     archetypesContainer.addTextDisplayComponents(archetypesText4);
-    archetypesContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            archetypesContainer.addActionRowComponents(selectRow);
+        }
     const finishingPowerContainer = new ContainerBuilder()
     finishingPowerContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("# __3. Finishing Power__"));
     finishingPowerContainer.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
@@ -146,7 +145,9 @@ module.exports = {
     finishingPowerContainer.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const finishingPowerText5 = new TextDisplayBuilder().setContent("Finding this form of synergy between your win conditions is not a necessity, but is something worth keeping in mind. As long as your win conditions are consistently closing off the game, there’s no need to look for some secret sauce.");
     finishingPowerContainer.addTextDisplayComponents(finishingPowerText5);
-    finishingPowerContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            finishingPowerContainer.addActionRowComponents(selectRow);
+        }
     const removalAndAnswersContainer = new ContainerBuilder()
     removalAndAnswersContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("# __4. Removal and Answers__"));
     const removalAndAnswersText = new TextDisplayBuilder().setContent(
@@ -167,7 +168,9 @@ module.exports = {
     removalAndAnswersContainer.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const removalAndAnswersText6 = new TextDisplayBuilder().setContent("There are also some cases in which some cards can act as both removal / answers and a proactive threat. Examples would include Bungee Plumber, Berry Blast, Quazard, Sumo, and Ketchup Mechanic are all examples. Those cards are also what are often called “auto-runs”, as their utility and effectiveness means that they are run in the large majority of decks that can use them.");
     removalAndAnswersContainer.addTextDisplayComponents(removalAndAnswersText6);
-    removalAndAnswersContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            removalAndAnswersContainer.addActionRowComponents(selectRow);
+        }
     const superpowersAndClosingThoughtsContainer = new ContainerBuilder()
     superpowersAndClosingThoughtsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("# __5. Superpowers and Closing Thoughts__"));
     const superpowersAndClosingThoughtsText = new TextDisplayBuilder().setContent(
@@ -182,7 +185,9 @@ module.exports = {
     superpowersAndClosingThoughtsContainer.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const superpowersAndClosingThoughtsText4 = new TextDisplayBuilder().setContent("But play 'em if you want to. Video games are for fun, so do as you please. So get out there, crush your next opponent, and tell them Shortbow sent ya.");
     superpowersAndClosingThoughtsContainer.addTextDisplayComponents(superpowersAndClosingThoughtsText4);
-    superpowersAndClosingThoughtsContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            superpowersAndClosingThoughtsContainer.addActionRowComponents(selectRow);
+        }
     const glossaryContainer = new ContainerBuilder()
     const title = new TextDisplayBuilder().setContent([
         "# **__Glossary__**", 
@@ -199,7 +204,9 @@ module.exports = {
         "Please click on Image below to see full image of all heroes"
     ].join("\n"));
     glossaryContainer.addTextDisplayComponents(glossaryText);
-    glossaryContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            glossaryContainer.addActionRowComponents(selectRow);
+        }
     const glossaryMedia = new MediaGalleryBuilder().addItems(
         mediaGalleryItem => mediaGalleryItem
         .setDescription("Plant Heroes")
@@ -230,7 +237,44 @@ module.exports = {
     const example2Thumbnail = new ThumbnailBuilder().setURL("https://media.discordapp.net/attachments/1312037763784376370/1407866190449348728/C1B37AF1-1401-40E1-9170-4A2580A3CCF4.png?ex=68a7a910&is=68a65790&hm=f381b32730ea90c1405d31d6194992c816386c5ec17e5be665f6cbeb520d41aa&=&format=webp&quality=lossless&width=771&height=770")
     const example2Section = new SectionBuilder().addTextDisplayComponents(examplesText3).setThumbnailAccessory(example2Thumbnail);
     examplesContainer.addSectionComponents(example2Section);
-    examplesContainer.addActionRowComponents(selectRow);
+        if (includeSelect) {
+            examplesContainer.addActionRowComponents(selectRow);
+        }
+        return {
+            selectRow,
+            guideContainer,
+            curveContainer,
+            archetypesContainer,
+            finishingPowerContainer,
+            removalAndAnswersContainer,
+            superpowersAndClosingThoughtsContainer,
+            glossaryContainer,
+            glossaryMedia,
+            examplesContainer
+        };
+}
+
+module.exports = {
+        name: `guide`, 
+        aliases: [`deckbuildingguide`, `deckbuilding`, `guidelines`, `deckhelp`],
+        category: `Miscellaneous`,
+        buildGuideContainers,
+        run: async (client, message, args) => {
+        const {
+            guideContainer,
+            curveContainer,
+            archetypesContainer,
+            finishingPowerContainer,
+            removalAndAnswersContainer,
+            superpowersAndClosingThoughtsContainer,
+            glossaryContainer,
+            glossaryMedia,
+            examplesContainer
+        } = buildGuideContainers(true);
+     message.channel.send({
+        components: [guideContainer],
+        flags: MessageFlags.IsComponentsV2
+     })
     const filter = (interaction) => interaction.user.id === message.author.id;
     const collector = message.channel.createMessageComponentCollector({ filter});
     collector.on("collect", async (interaction) => {

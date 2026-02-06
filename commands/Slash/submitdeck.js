@@ -112,8 +112,8 @@ module.exports = {
       });
       const permanentUrl = replyMessage.attachments.first().url;
 
-      const forumChannel = interaction.client.channels.cache.get('1100160031128830104');
-    if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
+    const forumChannel = interaction.client.channels.cache.get('1100160031128830104');
+    if (!forumChannel || forumChannel?.type !== ChannelType.GuildForum) {
       return interaction.reply({ content: '❌ Forum channel not found or invalid.', ephemeral: true });
     }
     const fields = [

@@ -23,7 +23,7 @@ function buildDeckEmbed(row, deckColor) {
       },
       {
         name: "Deck Cost",
-        value: row.cost || "**__N/A__**",
+        value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**",
         inline: true,
       }
     )

@@ -10,7 +10,7 @@ const sendDeckNotification = require("./sendDeckNotification");
  * @param {*} row  - The database row object
  * @returns {Promise<void>} - Resolves when the command is registered or updated
  */
-async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap, dbTableColors = {}, notificationChannelId = null) {
+async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap, dbTableColors = {}, notificationChannelId = null, db = null) {
  const key = `${tableConfig.table}:${row.DeckID ?? row.deckID ?? row.id ?? row.cardid ?? row.heroID ?? 
   row.card_name ?? row.title ?? row.name ?? row.deckbuilder_name 
   ?? row.herocommand ?? row.heroname}`;
@@ -56,6 +56,7 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
   
   const isNewDeck = isDeck && !existing && isTrulyNew;
   const isUpdatedDeck = isDeck && existing && existing.hash !== hash && existing.rowData?.name === row.name;
+  const creatorChanged = isUpdatedDeck && existing?.rowData?.creator !== row.creator;
 
   // Detect which fields changed for deck updates
   let changedFields = [];
@@ -107,6 +108,15 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
   } else if (isUpdatedDeck && notificationChannelId && changedFields.length > 0) {
     await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'update', changedFields);
   }
+
+  if (isDeck && db) {
+    if (isNewDeck) {
+      await updateDeckbuilderCounts(db, row.creator, 1);
+    } else if (creatorChanged) {
+      await updateDeckbuilderCounts(db, existing.rowData?.creator, -1);
+      await updateDeckbuilderCounts(db, row.creator, 1);
+    }
+  }
   const commandsForFile = Array.from(dbCommandMap.entries()).map(([key, value]) => [
   key,
   {
@@ -119,5 +129,60 @@ fs.writeFileSync(
   path.join(__dirname, "..", "commands.json"),
   JSON.stringify(commandsForFile, null, 1)
 );
+}
+
+async function updateDeckbuilderCounts(db, creator, delta) {
+  const creatorValue = (creator || "").toString();
+  if (!creatorValue) return;
+
+  const deckbuilderNames = extractDeckbuilderNames(creatorValue);
+  if (deckbuilderNames.length === 0) return;
+
+  try {
+    for (const name of deckbuilderNames) {
+      await db.query(
+        `UPDATE deckbuilders
+         SET numb_of_decks = GREATEST(COALESCE(numb_of_decks, 0) + ?, 0)
+         WHERE deckbuilder_name = ?`,
+        [delta, name]
+      );
+    }
+  } catch (error) {
+    console.error("Error updating deckbuilder counts:", error);
+  }
+}
+
+function extractDeckbuilderNames(creator) {
+  if (!creator) return [];
+  const text = creator.toString();
+  
+  // Extract names from both "Created by" and "optimized by" lines
+  const lines = text.split('\n');
+  const names = [];
+  
+  for (const line of lines) {
+    const createdMatch = line.match(/^Created by\s+(.+?)$/i);
+    const optimizedMatch = line.match(/optimized by[:\s]+(.+?)$/i);
+    
+    if (createdMatch) {
+      const creators = createdMatch[1]
+        .replace(/\s+(and|,)\s+/gi, ',')
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
+      names.push(...creators);
+    }
+    
+    if (optimizedMatch) {
+      const optimizers = optimizedMatch[1]
+        .replace(/\s+(and|,)\s+/gi, ',')
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
+      names.push(...optimizers);
+    }
+  }
+  
+  return [...new Set(names)];
 }
 module.exports = registerOrUpdateDbCommand;

@@ -1,4 +1,3 @@
-const { MessageFlags } = require("discord.js");
 const buildCardEmbedFromRow = require("../../Utilities/buildCardEmbedFromRow.js");
 
 const tableConfig = [
@@ -47,18 +46,17 @@ const dbTableColors = {
   sneakytricks: "#000000"
 };
 
-async function handleCardInfo(interaction, db) {
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+async function startCardInfoByName(interaction, db, cardName) {
+  await interaction.deferReply();
 
-  const cardKey = interaction.customId.replace("cardinfo_", "");
-  console.log("Fetching info for card:", cardKey);
+  console.log("Fetching info for card:", cardName);
 
   try {
     for (const t of tableConfig) {
       try {
         const [rows] = await db.query(
           `SELECT * FROM \`${t.table}\` WHERE card_name = ? LIMIT 1`,
-          [cardKey]
+          [cardName]
         );
 
         const cardRow = rows[0];
@@ -73,9 +71,9 @@ async function handleCardInfo(interaction, db) {
       }
     }
 
-    console.log("No card found for:", cardKey);
+    console.log("No card found for:", cardName);
     await interaction.editReply({
-      content: `No card found with the name "${cardKey}".`
+      content: `No card found with the name "${cardName}".`
     });
   } catch (error) {
     console.error("Error in cardinfo handler:", error);
@@ -85,4 +83,9 @@ async function handleCardInfo(interaction, db) {
   }
 }
 
-module.exports = { handleCardInfo };
+async function handleCardInfo(interaction, db) {
+  const cardKey = interaction.customId.replace("cardinfo_", "");
+  return startCardInfoByName(interaction, db, cardKey);
+}
+
+module.exports = { handleCardInfo, startCardInfoByName };

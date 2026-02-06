@@ -30,7 +30,7 @@ module.exports = {
     const aboutText2 = new TextDisplayBuilder().setContent(
       [
         "# Help command",
-        "Use <@1043528908148052089> help to find all the commands for the bot.",
+        "Use /help to find all the commands for the bot.",
         "If you are looking for a specific hero or category you can pick out the hero or command category",
       ].join("\n")
     );
@@ -39,9 +39,9 @@ module.exports = {
       [
         "# Decks",
         "Tbot has plenty of decks stored in its database for viewing and playing with.",
-        "To see decks with a **specific hero** do <@1043528908148052089> [insertherohere] and then click on the decks button.",
-        "To see **every deck** in the tbot database please use the <@1043528908148052089> helpdb command.",
-        "If you would like to see your deck or a specific deck added to the database please use the <@1043528908148052089> adddeck command.",
+        "To see decks with a **specific hero** use /herodecks or /<hero>decks and select a deck.",
+        "To see **every deck** in the tbot database please use /helpdb.",
+        "If you would like to see your deck or a specific deck added to the database please use /submitdeck or /updatedeck.",
       ].join("\n")
     );
     container.addTextDisplayComponents(aboutText3);

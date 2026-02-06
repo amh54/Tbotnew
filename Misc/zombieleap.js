@@ -3,11 +3,7 @@ module.exports = {
   aliases: [`l`],
   category: `Miscellaneous`,
   run: async (client, message, args) => {
-    if (message.channel.id != "780141103558295592") {
-      message.author.send(
-        "Please use this command in Tbones server only in his bot spam channel <#780141103558295592> \n https://discord.gg/E5XzKf2PjN"
-      );
-    } else {
+    if (message.channel.id === "780141103558295592") {
       const zerocost = [
         "Goat", 
         "Swabbie",
@@ -284,6 +280,6 @@ module.exports = {
       leap.push(repeatedNineDrop);
     }
       message.channel.send(`${leap[Math.floor(Math.random() * leap.length)]}`);
-  }
+    }
   },
 };

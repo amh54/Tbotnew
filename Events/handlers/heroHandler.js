@@ -11,7 +11,7 @@ const categorizeHeroDecks = require("../../Utilities/categorizeHeroDecks.js");
 const createHeroSelectMenu = require("../../Utilities/createHeroSelectMenu.js");
 const calculateNavIndices = require("../../Utilities/calculateNavIndices.js");
 const buildNavigationRow = require("../../Utilities/buildNavigationRow.js");
-const { commandToHeroMap, heroTableMap } = require("../../Utilities/getHeroMappings.js");
+const { commandToHeroMap, heroTableMap, heroNameToTable } = require("../../Utilities/getHeroMappings.js");
 
 async function handleHeroHelp(interaction, db, client) {
   const heroCommand = interaction.customId.replace("herohelp_", "");
@@ -94,6 +94,81 @@ async function handleHeroHelp(interaction, db, client) {
   }
 }
 
+async function startHeroDecksByName(interaction, db, client, heroName) {
+  try {
+    const deckTable = heroNameToTable[heroName];
+
+    if (!deckTable) {
+      return await interaction.reply({
+        content: "Hero Data not found. Please check the hero name and try again.",
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    const [heroRows] = await db.query("SELECT * FROM herocommands WHERE heroname = ?", [heroName]);
+    if (!heroRows || heroRows.length === 0) {
+      return await interaction.reply({
+        content: "Hero Data not found in database.",
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    const heroRow = heroRows[0];
+    const [decks] = await db.query(`SELECT * FROM ${deckTable} ORDER BY name ASC`);
+
+    if (!decks || decks.length === 0) {
+      return await interaction.reply({
+        content: `No ${heroName} decks found in the database.`,
+        flags: MessageFlags.Ephemeral
+      });
+    }
+
+    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, deckTable);
+
+    if (normalized.length === 1) {
+      const embed = buildDeckEmbed(normalized[0], heroRow.deck_color || "Blue");
+      return await interaction.reply({
+        embeds: [embed]
+      });
+    }
+
+    const select = createHeroSelectMenu(heroName, heroRow, availableCategories, deckLists, normalized.length);
+
+    const initialEmbed = new EmbedBuilder()
+      .setTitle(`${heroName} Deck Categories`)
+      .setColor(heroRow.deck_color || "Blue")
+      .setDescription(`Select a category to view ${heroName} decks — ${heroName} has ${normalized.length} total decks.`)
+      .setThumbnail(heroRow.thumbnail || null)
+      .setFooter({ text: "Use the select menu to choose a category" });
+
+    const response = await interaction.reply({
+      embeds: [initialEmbed],
+      components: [new ActionRowBuilder().addComponents(select)]
+    });
+
+    const responseMessage = await response.fetch();
+
+    if (!client.heroDecksData) {
+      client.heroDecksData = new Map();
+    }
+    client.heroDecksData.set(responseMessage.id, {
+      heroName,
+      heroCommand: null,
+      deckLists,
+      availableCategories,
+      categoryColor: heroRow.deck_color || "Blue",
+      thumbnailUrl: heroRow.thumbnail || null
+    });
+    console.log(`Stored hero decks data for message ID: ${responseMessage.id}`);
+  } catch (error) {
+    console.error("Error in hero decks slash command:", error);
+    await interaction.reply({
+      content: "An error occurred while processing your request.",
+      flags: MessageFlags.Ephemeral
+    });
+  }
+}
+
 async function handleHeroDeckCategory(interaction) {
   if (!interaction.client.heroDecksData) {
     interaction.client.heroDecksData = new Map();
@@ -146,14 +221,18 @@ async function handleHeroDeckCategory(interaction) {
       .setStyle(ButtonStyle.Primary)
   );
 
-  await interaction.update({
+  await interaction.reply({
     embeds: [categoryEmbed],
-    components: [navRow]
+    components: [navRow],
+    flags: MessageFlags.Ephemeral
   });
 
-  data.currentCategory = category;
-  data.currentList = list;
-  interaction.client.heroDecksData.set(interaction.message.id, data);
+  const responseMessage = await interaction.fetchReply();
+  interaction.client.heroDecksData.set(responseMessage.id, {
+    ...data,
+    currentCategory: category,
+    currentList: list
+  });
 }
 
 async function handleHeroDeckNavigation(interaction) {
@@ -289,13 +368,13 @@ async function handleHeroCategorySelect(interaction) {
       .setStyle(ButtonStyle.Primary)
   );
 
-  const response = await interaction.reply({
+  await interaction.reply({
     embeds: [categoryEmbed],
     components: [navRow],
     flags: MessageFlags.Ephemeral
   });
 
-  const responseMessage = await response.fetch();
+  const responseMessage = await interaction.fetchReply();
 
   interaction.client.heroHelpData.set(responseMessage.id, {
     ...data,
@@ -385,6 +464,7 @@ async function handleHeroListButton(interaction, data) {
 
 module.exports = {
   handleHeroHelp,
+  startHeroDecksByName,
   handleHeroDeckCategory,
   handleHeroDeckNavigation,
   handleHeroDeckBackToList,

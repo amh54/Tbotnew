@@ -166,9 +166,7 @@ module.exports = {
     } else if (tableName) {
       // This is now the final case for a valid hero
       const query = `SELECT * FROM ${tableName} where type NOT LIKE '%budget%'`;
-      const title = `Random ${heroInput.charAt(0).toUpperCase() + heroInput.slice(1)} Deck`;
-      const description = `Here is your random ${heroInput} deck`;
-      await getAndSendRandomDeck(query, title, description);
+      await getAndSendRandomDeck(query);
     } else {
       // This handles any other invalid input
       await interaction.reply({

@@ -30,7 +30,7 @@ async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableC
         
         // Skip notifications on initial load to prevent spam
         const channelId = isInitialLoad ? null : notificationChannelId;
-        await registerOrUpdateDbCommand(t, row, client, dbCommandMap, dbTableColors, channelId);
+        await registerOrUpdateDbCommand(t, row, client, dbCommandMap, dbTableColors, channelId, db);
       }
 
       // remove DB commands for rows that no longer exist
@@ -38,7 +38,7 @@ async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableC
         if (!existingKey.startsWith(`${t.table}:`)) continue;
         if (!seenKeys.has(existingKey)) {
           const channelId = isInitialLoad ? null : notificationChannelId;
-          await unregisterDbCommandByKey(existingKey, client, dbCommandMap, t, dbTableColors, channelId, currentDeckNames);
+          await unregisterDbCommandByKey(existingKey, client, dbCommandMap, t, dbTableColors, channelId, currentDeckNames, db);
         }
       }
     }

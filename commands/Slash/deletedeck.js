@@ -148,15 +148,15 @@ module.exports = {
                 console.log('No thread channel ID found for table:', table);
             }
             
-            if (!global.manuallyDeletedDecks) {
-                global.manuallyDeletedDecks = new Set();
+            if (!globalThis.manuallyDeletedDecks) {
+                globalThis.manuallyDeletedDecks = new Set();
             }
-            global.manuallyDeletedDecks.add(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
+            globalThis.manuallyDeletedDecks.add(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
             
             await db.query(`DELETE FROM ${table} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [deckNameInput]);
             // Clean up the marker after a short delay (longer than scan interval)
             setTimeout(() => {
-                global.manuallyDeletedDecks?.delete(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
+                globalThis.manuallyDeletedDecks?.delete(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
             }, 10000);
             
             return interaction.editReply(`✅ Successfully deleted the deck "${deckData.name}" from the ${table} table.`);

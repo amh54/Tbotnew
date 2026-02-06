@@ -9,13 +9,8 @@ const {
     MessageFlags,
     SeparatorSpacingSize, 
 } = require("discord.js");
-module.exports = {
-    name: `keeporscrap`,
-    aliases: [`kos`, `plantkeep`, `plantscrap`, `plantcraft`, `plantkos`, `plantrecycle`, `pkos`, 
-        `zombiekeep`, `zombiescrap`, `zombiecraft`, `zombiekos`, `zombierecycle`, `zkos`, `zombiekeeporscrap`, 
-        `plantkeeporscrap`, `sok`, `scraporkeep`, `scrap`, `zombiescraporkeep`],
-    category: `Miscellaneous`,
-    run: async (client, message, args) => {
+
+async function buildKeepOrScrapContainers(client, includeSelect = true) {
         const container = new ContainerBuilder();
         const tierText1 = new TextDisplayBuilder().setContent([
           "# Keep or Scrap Created By <@256910306003910658>.",
@@ -50,12 +45,9 @@ module.exports = {
             .setValue('zombiekeeporscrap')
         ]);
         const row = new ActionRowBuilder().addComponents(select);
-        container.addActionRowComponents(row);
-        message.channel.send({ components: [container], 
-            flags: MessageFlags.IsComponentsV2, 
-            allowedMentions: {
-                            users: []
-                        }});
+        if (includeSelect) {
+            container.addActionRowComponents(row);
+        }
         const zombieContainer = new ContainerBuilder();
         const tierText8 = new TextDisplayBuilder().setContent([
         "# Beastly",
@@ -180,23 +172,52 @@ module.exports = {
         .addTextDisplayComponents(tierText7)
         .setThumbnailAccessory(solarImage);
       plantContainer.addSectionComponents(solarSection);
-      plantContainer.setAccentColor(65280);
+        plantContainer.setAccentColor(65280);
+
+        return {
+          introContainer: container,
+          plantContainer,
+          zombieContainer,
+          selectRow: row,
+        };
+    }
+
+    module.exports = {
+      name: `keeporscrap`,
+      aliases: [`kos`, `plantkeep`, `plantscrap`, `plantcraft`, `plantkos`, `plantrecycle`, `pkos`, 
+        `zombiekeep`, `zombiescrap`, `zombiecraft`, `zombiekos`, `zombierecycle`, `zkos`, `zombiekeeporscrap`, 
+        `plantkeeporscrap`, `sok`, `scraporkeep`, `scrap`, `zombiescraporkeep`],
+      category: `Miscellaneous`,
+      buildKeepOrScrapContainers,
+      run: async (client, message, args) => {
+        const {
+          introContainer,
+          plantContainer,
+          zombieContainer
+        } = await buildKeepOrScrapContainers(client, true);
+
+        message.channel.send({ components: [introContainer], 
+          flags: MessageFlags.IsComponentsV2, 
+          allowedMentions: {
+                  users: []
+                }});
+
         const collector = message.channel.createMessageComponentCollector({});
         collector.on('collect', async (interaction) => {
-            if (interaction.customId === 'select') {
-                if (interaction.values[0] === 'plantkeeporscrap') {
-                    await interaction.reply({
-                        components: [plantContainer],
-                        flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-                    });
-                }
-                else if (interaction.values[0] === 'zombiekeeporscrap') {
-                    await interaction.reply({
-                        components: [zombieContainer],
-                        flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-                    });
-                }
+          if (interaction.customId === 'select') {
+            if (interaction.values[0] === 'plantkeeporscrap') {
+              await interaction.reply({
+                components: [plantContainer],
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+              });
             }
+            else if (interaction.values[0] === 'zombiekeeporscrap') {
+              await interaction.reply({
+                components: [zombieContainer],
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+              });
+            }
+          }
         });
+      }
     }
-};

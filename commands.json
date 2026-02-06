@@ -90,6 +90,15 @@
   }
  ],
  [
+  "rbdecks:8",
+  {
+   "commandName": "boltofsomesize",
+   "aliases": [
+    "boss"
+   ]
+  }
+ ],
+ [
   "zmdecks:1",
   {
    "commandName": "flaggro",
@@ -164,7 +173,7 @@
  [
   "ctdecks:1",
   {
-   "commandName": "watertempo",
+   "commandName": "marines",
    "aliases": [
     "ctbudget",
     "bct",
@@ -173,7 +182,8 @@
     "citronbudget",
     "budgetelusives",
     "budgetcitron",
-    "budgetct"
+    "budgetct",
+    "watertempo"
    ]
   }
  ],
@@ -191,6 +201,15 @@
   {
    "commandName": "mud",
    "aliases": []
+  }
+ ],
+ [
+  "ctdecks:4",
+  {
+   "commandName": "startron",
+   "aliases": [
+    "kendricklimear"
+   ]
   }
  ],
  [
@@ -322,7 +341,7 @@
   }
  ],
  [
-  "bfdecks:2",
+  "bfdecks:1",
   {
    "commandName": "budgetgraveimps",
    "aliases": [
@@ -335,7 +354,7 @@
   }
  ],
  [
-  "bfdecks:3",
+  "bfdecks:2",
   {
    "commandName": "himpter",
    "aliases": [
@@ -348,7 +367,7 @@
   }
  ],
  [
-  "bfdecks:4",
+  "bfdecks:3",
   {
    "commandName": "lunchtime",
    "aliases": [
@@ -360,7 +379,7 @@
   }
  ],
  [
-  "bfdecks:5",
+  "bfdecks:4",
   {
    "commandName": "lockthebathroom",
    "aliases": [
@@ -477,31 +496,17 @@
   }
  ],
  [
-  "czdecks:3",
+  "czdecks:2",
   {
-   "commandName": "venice",
+   "commandName": "leafystrike",
    "aliases": [
-    "otktcz",
-    "czotk",
-    "otktrickstercz",
-    "czotktrickster",
-    "apotatootk",
-    "apotk"
+    "leafysmasher",
+    "leafyhc"
    ]
   }
  ],
  [
   "czdecks:4",
-  {
-   "commandName": "cyclezilla",
-   "aliases": [
-    "cyclecz",
-    "czcycle"
-   ]
-  }
- ],
- [
-  "czdecks:5",
   {
    "commandName": "cyclezilla",
    "aliases": [
@@ -606,6 +611,16 @@
   }
  ],
  [
+  "gkdecks:5",
+  {
+   "commandName": "grandiflora",
+   "aliases": [
+    "gkpotted",
+    "magpot"
+   ]
+  }
+ ],
+ [
   "hgdecks:1",
   {
    "commandName": "budgethg",
@@ -624,6 +639,17 @@
    "aliases": [
     "conjureleaphg",
     "cleap"
+   ]
+  }
+ ],
+ [
+  "hgdecks:3",
+  {
+   "commandName": "gravepiratestaches",
+   "aliases": [
+    "gps",
+    "hgaggro",
+    "aggrohg"
    ]
   }
  ],
@@ -691,7 +717,7 @@
  [
   "ifdecks:1",
   {
-   "commandName": "budgetif",
+   "commandName": "impkata",
    "aliases": [
     "ifgraveburn",
     "ifbudget",
@@ -705,7 +731,8 @@
     "ifbudgetgraveburn",
     "budgetgraveburnif",
     "budgetgraveburn",
-    "budgetimpfinity"
+    "budgetimpfinity",
+    "budgetif"
    ]
   }
  ],
@@ -772,13 +799,14 @@
  [
   "imdecks:3",
   {
-   "commandName": "budgetim",
+   "commandName": "coptercommand",
    "aliases": [
     "imbudget",
     "budgetimmortica",
     "bim",
     "imb",
-    "budgetscience"
+    "budgetscience",
+    "budgetim"
    ]
   }
  ],
@@ -843,7 +871,7 @@
    "commandName": "toyotacontrol",
    "aliases": [
     "controlcap",
-    "`toyotacap",
+    "toyotacap",
     "nccontrol",
     "controlnc",
     "toyota"
@@ -862,17 +890,7 @@
   {
    "commandName": "flagtuna",
    "aliases": [
-    "ntbudget",
-    "bnt",
-    "ntb",
-    "budgetneptuna",
-    "bneptuna",
-    "neptunabudget",
-    "neptunab",
-    "budgetntflag",
-    "budgetflagnt",
-    "ntbudgetflag",
-    "budgetnt"
+    "budgetneptuna"
    ]
   }
  ],
@@ -977,7 +995,7 @@
  [
   "pbdecks:2",
   {
-   "commandName": "floorremoval",
+   "commandName": "scistorm",
    "aliases": [
     "pbbudget",
     "budgetbrainstorm",
@@ -1161,7 +1179,10 @@
   {
    "commandName": "flashswarm",
    "aliases": [
-    "budgetsm"
+    "budgetsm",
+    "smbudget",
+    "budgetsmash",
+    "smashbudget"
    ]
   }
  ],
@@ -1176,6 +1197,13 @@
   "smdecks:3",
   {
    "commandName": "midgargs",
+   "aliases": []
+  }
+ ],
+ [
+  "smdecks:4",
+  {
+   "commandName": "stalemate",
    "aliases": []
   }
  ],
@@ -1254,7 +1282,7 @@
  [
   "wkdecks:1",
   {
-   "commandName": "healmidknight",
+   "commandName": "midroot",
    "aliases": [
     "wkbudget",
     "bwk",
@@ -7609,19 +7637,6 @@
   }
  ],
  [
-  "deckbuilders:14",
-  {
-   "commandName": "hayri",
-   "aliases": [
-    "helphayri",
-    "hayrihelp",
-    "decksmadebyhayri",
-    "hayridecks",
-    "hariyana"
-   ]
-  }
- ],
- [
   "deckbuilders:15",
   {
    "commandName": "igma",
@@ -7633,18 +7648,6 @@
     "igmarockers",
     "decksigma",
     "deckigma"
-   ]
-  }
- ],
- [
-  "deckbuilders:16",
-  {
-   "commandName": "izashi",
-   "aliases": [
-    "decksmadebyizashi",
-    "izashidecks",
-    "helpizashi",
-    "izashihelp"
    ]
   }
  ],
@@ -7791,28 +7794,6 @@
     "nonsequitur",
     "nonsequiturhelp",
     "nonsequiturdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:28",
-  {
-   "commandName": "oafish",
-   "aliases": [
-    "oafishdecks",
-    "oafishhelp"
-   ]
-  }
- ],
- [
-  "deckbuilders:29",
-  {
-   "commandName": "oceanman",
-   "aliases": [
-    "decksmadebyoceanman",
-    "helpoceanman",
-    "oceanmanhelp",
-    "oceanmandecks"
    ]
   }
  ],
@@ -8008,12 +7989,12 @@
  [
   "deckbuilders:43",
   {
-   "commandName": "yoyo",
+   "commandName": "starstormvz",
    "aliases": [
-    "yoyodecks",
-    "helpyoyo",
-    "decksmadebyyoyo",
-    "yoyodecklists"
+    "starstormvzdecks",
+    "helpstarstormvz",
+    "decksmadebystarstormvz",
+    "starstormvzdecklists"
    ]
   }
  ],
@@ -8721,34 +8702,6 @@
     "zm",
     "mech",
     "z-mech"
-   ]
-  }
- ],
- [
-  "smdecks:4",
-  {
-   "commandName": "stalemate",
-   "aliases": []
-  }
- ],
- [
-  "hgdecks:3",
-  {
-   "commandName": "gravepiratestaches",
-   "aliases": [
-    "gps",
-    "hgaggro",
-    "aggrohg"
-   ]
-  }
- ],
- [
-  "czdecks:2",
-  {
-   "commandName": "leafystrike",
-   "aliases": [
-    "leafysmasher",
-    "leafyhc"
    ]
   }
  ]

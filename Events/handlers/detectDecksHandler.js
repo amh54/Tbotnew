@@ -13,22 +13,19 @@ const createCategorySelectMenu = require("../../Utilities/createCategorySelectMe
 const calculateNavIndices = require("../../Utilities/calculateNavIndices.js");
 const buildNavigationRow = require("../../Utilities/buildNavigationRow.js");
 
-async function handleDetectDecks(interaction, db) {
-  const cardName = interaction.customId.replace("detectdecks_", "");
-
-  // Only handle initial button click
-  if (!interaction.customId.match(/^detectdecks_[^_]+$/)) return false;
-
+async function startDetectDecksByName(interaction, db, cardName) {
   console.log("Detecting decks for card:", cardName);
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  await interaction.deferReply();
 
   const allDecks = await collectDecksWithCard(db, cardName);
 
   if (allDecks.length === 0) {
-    await interaction.editReply({
+    await interaction.deleteReply();
+    await interaction.followUp({
       content: `No decks found containing "${cardName}".`,
+      flags: MessageFlags.Ephemeral,
     });
-    return true;
+    return;
   }
 
   const { availableCategories, deckLists } = categorizeDecks(allDecks);
@@ -61,7 +58,15 @@ async function handleDetectDecks(interaction, db) {
 
   console.log(`Stored detectdecks data for message ID: ${message.id}`);
   setupDetectDecksCollector(message, cardName, interaction.client);
-  return true;
+}
+
+async function handleDetectDecks(interaction, db) {
+  const cardName = interaction.customId.replace("detectdecks_", "");
+
+  // Only handle initial button click
+  if (!interaction.customId.match(/^detectdecks_[^_]+$/)) return;
+
+  await startDetectDecksByName(interaction, db, cardName);
 }
 
 function setupDetectDecksCollector(message, cardName, client) {
@@ -85,26 +90,29 @@ function setupDetectDecksCollector(message, cardName, client) {
 async function handleDetectDecksNavigation(interaction, messageId, client) {
   const data = client.detectDecksData.get(messageId);
   if (!data) {
-    return await interaction.reply({
+    await interaction.reply({
       content: "Data not found. Please try reclicking the button or resending command.",
       flags: MessageFlags.Ephemeral
     });
+    return;
   }
 
   if (interaction.isStringSelectMenu() && interaction.customId.startsWith("deckcat_")) {
-    return await handleCategorySelect(interaction, data);
+    await handleCategorySelect(interaction, data, client);
+    return;
   }
 
   if (interaction.isButton() && interaction.customId.startsWith("decknav_")) {
-    return await handleDeckNavigation(interaction, data);
+    await handleDeckNavigation(interaction, data);
+    return;
   }
 
   if (interaction.isButton() && interaction.customId.startsWith("deckback_")) {
-    return await handleBackToList(interaction, data);
+    await handleBackToList(interaction, data);
   }
 }
 
-async function handleCategorySelect(interaction, data) {
+async function handleCategorySelect(interaction, data, client) {
   const category = interaction.values[0];
   const list = data.deckLists[category] || [];
 
@@ -143,10 +151,19 @@ async function handleCategorySelect(interaction, data) {
       .setStyle(ButtonStyle.Primary)
   );
 
-  return await interaction.update({
+  const replyMessage = await interaction.reply({
     embeds: [categoryEmbed],
-    components: [navRow]
+    components: [navRow],
+    flags: MessageFlags.Ephemeral,
+    fetchReply: true,
   });
+
+  if (!client.detectDecksData) {
+    client.detectDecksData = new Map();
+  }
+  client.detectDecksData.set(replyMessage.id, data);
+  setupDetectDecksCollector(replyMessage, data.cardName, client);
+  return;
 }
 
 async function handleDeckNavigation(interaction, data) {
@@ -202,4 +219,4 @@ async function handleBackToList(interaction, data) {
   });
 }
 
-module.exports = { handleDetectDecks };
+module.exports = { handleDetectDecks, startDetectDecksByName };

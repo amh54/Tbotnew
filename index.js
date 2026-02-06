@@ -19,10 +19,6 @@ const client = new Client({
   partials: [Partials.Channel],
   intents: [
     GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages,
   ],
 });
 const db = mysql
@@ -34,8 +30,8 @@ const db = mysql
   })
   .promise();
   module.exports = db;
+client.db = db;
 client.commands = new Collection();
-client.aliases = new Collection();
 client.slashCommands = new Collection();
 const fs = require("node:fs");
 const path = require("node:path");
@@ -58,31 +54,6 @@ for (const folder of commandFolders) {
       );
     }
   }
-}
-const miscanelousFoldersPath = path.join(__dirname, "Misc");
-if (fs.existsSync(miscanelousFoldersPath)) {
-  const miscFiles = fs.readdirSync(miscanelousFoldersPath)
-    .filter((file) => file.endsWith(".js")); 
-  
-  for (const file of miscFiles) {
-    const filePath = path.join(miscanelousFoldersPath, file);
-    
-    try {
-      const command = require(filePath);
-      if (command.name) {
-        client.commands.set(command.name, command);
-      }
-      if (command.aliases) {
-        for (const alias of command.aliases) {
-          client.aliases.set(alias, command);
-        }
-      }
-    } catch (error) {
-      console.error(`Error loading misc command ${file}:`, error);
-    }
-  }
-} else {
-  console.log("ZV(Misc) directory does not exist, skipping...");
 }
 const eventsPath = path.join(__dirname, "Events"); 
 const eventFiles = fs

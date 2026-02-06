@@ -7,7 +7,7 @@ const heroDeckThreadMap = require("./heroDeckThreadMap");
  * @param {Set<string>} currentDeckNames Set of deck names from current database scan
  * @returns {Promise<void>} Resolves when the command is unregistered
  */
-async function unregisterDbCommandByKey(key, client, dbCommandMap, tableConfig, dbTableColors, notificationChannelId, currentDeckNames) {
+async function unregisterDbCommandByKey(key, client, dbCommandMap, tableConfig, dbTableColors, notificationChannelId, currentDeckNames, db = null) {
   const info = dbCommandMap.get(key);
   if (!info) return;
   
@@ -32,16 +32,75 @@ async function unregisterDbCommandByKey(key, client, dbCommandMap, tableConfig, 
   console.log(`DB command unregistered: ${info.commandName}${commandStillInUse ? ' (command still in use by another ID)' : ''}`);
   
   // Check if this was a manual deletion (to prevent duplicate notifications)
-  const isManuallyDeleted = global.manuallyDeletedDecks?.has(key);
+  const isManuallyDeleted = globalThis.manuallyDeletedDecks?.has(key);
   
   // Only send delete notification if deck was truly deleted, not just moved to new ID, and not manually deleted
   const isDeck = key.includes("decks");
-  if (isDeck && !deckMovedToNewId && !isManuallyDeleted && info.rowData && tableConfig && dbTableColors) {
+  if (isDeck && !deckMovedToNewId && info.rowData && tableConfig && dbTableColors) {
     // Use hero-specific thread channel instead of general notification channel
     const threadChannelId = heroDeckThreadMap[tableConfig.table];
     if (threadChannelId) {
       await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, 'delete');
     }
   }
+
+  if (isDeck && !deckMovedToNewId && db) {
+    await updateDeckbuilderCounts(db, info.rowData?.creator, -1);
+  }
+}
+
+async function updateDeckbuilderCounts(db, creator, delta) {
+  const creatorValue = (creator || "").toString();
+  if (!creatorValue) return;
+
+  const deckbuilderNames = extractDeckbuilderNames(creatorValue);
+  if (deckbuilderNames.length === 0) return;
+
+  try {
+    for (const name of deckbuilderNames) {
+      await db.query(
+        `UPDATE deckbuilders
+         SET numb_of_decks = GREATEST(COALESCE(numb_of_decks, 0) + ?, 0)
+         WHERE deckbuilder_name = ?`,
+        [delta, name]
+      );
+    }
+  } catch (error) {
+    console.error("Error updating deckbuilder counts:", error);
+  }
+}
+
+function extractDeckbuilderNames(creator) {
+  if (!creator) return [];
+  const text = creator.toString();
+  
+  // Extract names from both "Created by" and "optimized by" lines
+  const lines = text.split('\n');
+  const names = [];
+  
+  for (const line of lines) {
+    const createdMatch = line.match(/^Created by\s+(.+?)$/i);
+    const optimizedMatch = line.match(/optimized by[:\s]+(.+?)$/i);
+    
+    if (createdMatch) {
+      const creators = createdMatch[1]
+        .replace(/\s+(and|,)\s+/gi, ',')
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
+      names.push(...creators);
+    }
+    
+    if (optimizedMatch) {
+      const optimizers = optimizedMatch[1]
+        .replace(/\s+(and|,)\s+/gi, ',')
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
+      names.push(...optimizers);
+    }
+  }
+  
+  return [...new Set(names)];
 }
 module.exports = unregisterDbCommandByKey;

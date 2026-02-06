@@ -48,7 +48,33 @@ const heroTableMap = {
   "helpzm": "zmdecks"
 };
 
+const heroNameToTable = {
+  "Beta-Carrotina": "bcdecks",
+  "Captain Combustible": "ccdecks",
+  "Citron": "ctdecks",
+  "Chompzilla": "czdecks",
+  "Grass Knuckles": "gkdecks",
+  "Green Shadow": "gsdecks",
+  "Night Cap": "ncdecks",
+  "Rose": "rodecks",
+  "Solar Flare": "sfdecks",
+  "Spudow": "spdecks",
+  "Wall-Knight": "wkdecks",
+  "Brain Freeze": "bfdecks",
+  "Electric Boogaloo": "ebdecks",
+  "Huge-Gigantacus": "hgdecks",
+  "Super Brainz": "sbdecks",
+  "Impfinity": "ifdecks",
+  "Immorticia": "imdecks",
+  "Neptuna": "ntdecks",
+  "Professor Brainstorm": "pbdecks",
+  "Rustbolt": "rbdecks",
+  "The Smash": "smdecks",
+  "Z-Mech": "zmdecks"
+};
+
 module.exports = {
   commandToHeroMap,
-  heroTableMap
+  heroTableMap,
+  heroNameToTable
 };
