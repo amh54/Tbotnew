@@ -1,8708 +1,1368 @@
 [
- [
-  "rbdecks:1",
   {
-   "commandName": "boltbolt",
-   "aliases": [
-    "boltboltrb",
-    "rbboltbolt",
-    "bolting",
-    "bbolt"
-   ]
+    "options": [
+      {
+        "type": 3,
+        "name": "question",
+        "description": "The question you want to ask the magic 8 ball",
+        "required": true
+      }
+    ],
+    "name": "8ball",
+    "description": "Ask the magic 8 ball a question",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Beta-Carrotina",
+        "required": true
+      }
+    ],
+    "name": "bcdecks",
+    "description": "View Beta-Carrotina decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Brain Freeze",
+        "required": true
+      }
+    ],
+    "name": "bfdecks",
+    "description": "View Brain Freeze decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "command_name",
+        "description": "The name of the command where you found the bug",
+        "required": true
+      },
+      {
+        "type": 3,
+        "name": "bug_description",
+        "description": "A detailed description of the bug",
+        "required": true
+      }
+    ],
+    "name": "bugreport",
+    "description": "Report a bug in Tbot",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "card",
+        "description": "Card name",
+        "required": true
+      }
+    ],
+    "name": "cardinfo",
+    "description": "View detailed information about a card",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "card",
+        "description": "Card name",
+        "required": true
+      }
+    ],
+    "name": "cardsearch",
+    "description": "Find decks that contain a specific card",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Captain Combustible",
+        "required": true
+      }
+    ],
+    "name": "ccdecks",
+    "description": "View Captain Combustible decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Citron",
+        "required": true
+      }
+    ],
+    "name": "ctdecks",
+    "description": "View Citron decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Chompzilla",
+        "required": true
+      }
+    ],
+    "name": "czdecks",
+    "description": "View Chompzilla decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "name",
+        "description": "Deckbuilder name",
+        "required": true
+      }
+    ],
+    "name": "deckbuilders",
+    "description": "View decks made by a deckbuilder",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "name",
+        "description": "Name of the deck to update",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Super Brainz",
+            "value": "sbdecks"
+          },
+          {
+            "name": "Citron",
+            "value": "ctdecks"
+          },
+          {
+            "name": "Rose",
+            "value": "rodecks"
+          },
+          {
+            "name": "Solar Flare",
+            "value": "sfdecks"
+          },
+          {
+            "name": "Grass Knuckles",
+            "value": "gkdecks"
+          },
+          {
+            "name": "Wall-Knight",
+            "value": "wkdecks"
+          },
+          {
+            "name": "Z-Mech",
+            "value": "zmdecks"
+          },
+          {
+            "name": "Chompzilla",
+            "value": "czdecks"
+          },
+          {
+            "name": "Spudow",
+            "value": "spdecks"
+          },
+          {
+            "name": "Beta-Carrotina",
+            "value": "bcdecks"
+          },
+          {
+            "name": "Night Cap",
+            "value": "ncdecks"
+          },
+          {
+            "name": "Huge-Gigantacus",
+            "value": "hgdecks"
+          },
+          {
+            "name": "Smash",
+            "value": "smdecks"
+          },
+          {
+            "name": "Impfinity",
+            "value": "ifdecks"
+          },
+          {
+            "name": "Rustbolt",
+            "value": "rbdecks"
+          },
+          {
+            "name": "Electric Boogaloo",
+            "value": "ebdecks"
+          },
+          {
+            "name": "Brain Freeze",
+            "value": "bfdecks"
+          },
+          {
+            "name": "Professor Brainstorm",
+            "value": "pbdecks"
+          },
+          {
+            "name": "Immorticia",
+            "value": "imdecks"
+          },
+          {
+            "name": "Neptuna",
+            "value": "ntdecks"
+          },
+          {
+            "name": "Captain Combustible",
+            "value": "ccdecks"
+          },
+          {
+            "name": "Green Shadow",
+            "value": "gsdecks"
+          }
+        ],
+        "name": "hero",
+        "description": "The hero of the deck",
+        "required": false
+      }
+    ],
+    "name": "deletedeck",
+    "description": "Delete a deck from the Tbot database (Owner only)",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Electric Boogaloo",
+        "required": true
+      }
+    ],
+    "name": "ebdecks",
+    "description": "View Electric Boogaloo decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Grass Knuckles",
+        "required": true
+      }
+    ],
+    "name": "gkdecks",
+    "description": "View Grass Knuckles decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Green Shadow",
+        "required": true
+      }
+    ],
+    "name": "gsdecks",
+    "description": "View Green Shadow decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Overview",
+            "value": "overview"
+          },
+          {
+            "name": "Curve",
+            "value": "curve"
+          },
+          {
+            "name": "Archetypes",
+            "value": "archetypes"
+          },
+          {
+            "name": "Finishing Power",
+            "value": "finishing_power"
+          },
+          {
+            "name": "Removal and Answers",
+            "value": "removal_and_answers"
+          },
+          {
+            "name": "Superpowers and Closing Thoughts",
+            "value": "superpowers_and_closing_thoughts"
+          },
+          {
+            "name": "Glossary",
+            "value": "glossary"
+          },
+          {
+            "name": "Examples",
+            "value": "examples"
+          }
+        ],
+        "name": "section",
+        "description": "Guide section",
+        "required": true
+      }
+    ],
+    "name": "guide",
+    "description": "Deckbuilding guide",
+    "type": 1
+  },
+  {
+    "options": [],
+    "name": "help",
+    "description": "View help categories for Tbot",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Budget Plant Decks",
+            "value": "plant_budget"
+          },
+          {
+            "name": "Competitive Plant Decks",
+            "value": "plant_comp"
+          },
+          {
+            "name": "Ladder Plant Decks",
+            "value": "plant_ladder"
+          },
+          {
+            "name": "Meme Plant Decks",
+            "value": "plant_meme"
+          },
+          {
+            "name": "Aggro Plant Decks",
+            "value": "plant_aggro"
+          },
+          {
+            "name": "Combo Plant Decks",
+            "value": "plant_combo"
+          },
+          {
+            "name": "Control Plant Decks",
+            "value": "plant_control"
+          },
+          {
+            "name": "Midrange Plant Decks",
+            "value": "plant_midrange"
+          },
+          {
+            "name": "Tempo Plant Decks",
+            "value": "plant_tempo"
+          },
+          {
+            "name": "All Plant Decks",
+            "value": "plant_all"
+          },
+          {
+            "name": "Budget Zombie Decks",
+            "value": "zombie_budget"
+          },
+          {
+            "name": "Competitive Zombie Decks",
+            "value": "zombie_comp"
+          },
+          {
+            "name": "Ladder Zombie Decks",
+            "value": "zombie_ladder"
+          },
+          {
+            "name": "Meme Zombie Decks",
+            "value": "zombie_meme"
+          },
+          {
+            "name": "Aggro Zombie Decks",
+            "value": "zombie_aggro"
+          },
+          {
+            "name": "Combo Zombie Decks",
+            "value": "zombie_combo"
+          },
+          {
+            "name": "Control Zombie Decks",
+            "value": "zombie_control"
+          },
+          {
+            "name": "Midrange Zombie Decks",
+            "value": "zombie_midrange"
+          },
+          {
+            "name": "Tempo Zombie Decks",
+            "value": "zombie_tempo"
+          },
+          {
+            "name": "All Zombie Decks",
+            "value": "zombie_all"
+          }
+        ],
+        "name": "type",
+        "description": "Select a deck category",
+        "required": true
+      }
+    ],
+    "name": "helpdb",
+    "description": "Browse all decks in the database",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "hero",
+        "description": "Hero name",
+        "required": true
+      }
+    ],
+    "name": "herodecks",
+    "description": "Browse decks for a hero",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "hero",
+        "description": "Hero name",
+        "required": true
+      }
+    ],
+    "name": "heroinfo",
+    "description": "View hero information",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Huge-Gigantacus",
+        "required": true
+      }
+    ],
+    "name": "hgdecks",
+    "description": "View Huge-Gigantacus decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Impfinity",
+        "required": true
+      }
+    ],
+    "name": "ifdecks",
+    "description": "View Impfinity decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Immorticia",
+        "required": true
+      }
+    ],
+    "name": "imdecks",
+    "description": "View Immorticia decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Plants",
+            "value": "plants"
+          },
+          {
+            "name": "Zombies",
+            "value": "zombies"
+          }
+        ],
+        "name": "side",
+        "description": "Choose plants or zombies",
+        "required": true
+      }
+    ],
+    "name": "keeporscrap",
+    "description": "View Keep or Scrap tiers",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "About Tbot",
+            "value": "aboutme"
+          },
+          {
+            "name": "Deck submission guidelines",
+            "value": "adddeck"
+          },
+          {
+            "name": "Tbot Discord invite",
+            "value": "discord"
+          },
+          {
+            "name": "Support Tbot",
+            "value": "donate"
+          },
+          {
+            "name": "Flip a coin",
+            "value": "flip"
+          },
+          {
+            "name": "Play hangman",
+            "value": "hang"
+          },
+          {
+            "name": "Random hero wheel",
+            "value": "herowheel"
+          },
+          {
+            "name": "PVZH tournament servers",
+            "value": "tourneys"
+          },
+          {
+            "name": "Vote for Tbot",
+            "value": "vote"
+          },
+          {
+            "name": "Zombie leap list",
+            "value": "zombieleap"
+          }
+        ],
+        "name": "command",
+        "description": "Select a misc command",
+        "required": true
+      }
+    ],
+    "name": "miscellaneous",
+    "description": "Miscellaneous Tbot commands",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Night Cap",
+        "required": true
+      }
+    ],
+    "name": "ncdecks",
+    "description": "View Night Cap decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Neptuna",
+        "required": true
+      }
+    ],
+    "name": "ntdecks",
+    "description": "View Neptuna decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Professor Brainstorm",
+        "required": true
+      }
+    ],
+    "name": "pbdecks",
+    "description": "View Professor Brainstorm decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Beta Carrotina",
+            "value": "Beta Carrotina"
+          },
+          {
+            "name": "Captain Combustible",
+            "value": "Captain Combustible"
+          },
+          {
+            "name": "Chompzilla",
+            "value": "Chompzilla"
+          },
+          {
+            "name": "Citron",
+            "value": "Citron"
+          },
+          {
+            "name": "Grass Knuckles",
+            "value": "Grass Knuckles"
+          },
+          {
+            "name": "Green Shadow",
+            "value": "Green Shadow"
+          },
+          {
+            "name": "Night Cap",
+            "value": "Night Cap"
+          },
+          {
+            "name": "Rose",
+            "value": "Rose"
+          },
+          {
+            "name": "Solar Flare",
+            "value": "Solar Flare"
+          },
+          {
+            "name": "Spudow",
+            "value": "Spudow"
+          },
+          {
+            "name": "Wall Knight",
+            "value": "Wall Knight"
+          },
+          {
+            "name": "Brain Freeze",
+            "value": "Brain Freeze"
+          },
+          {
+            "name": "Electric Boogaloo",
+            "value": "Electric Boogaloo"
+          },
+          {
+            "name": "Huge Giganticus",
+            "value": "Huge Giganticus"
+          },
+          {
+            "name": "Super Brainz",
+            "value": "Super Brainz"
+          },
+          {
+            "name": "Impfinity",
+            "value": "Impfinity"
+          },
+          {
+            "name": "Immorticia",
+            "value": "Immorticia"
+          },
+          {
+            "name": "Neptuna",
+            "value": "Neptuna"
+          },
+          {
+            "name": "Rustbolt",
+            "value": "Rustbolt"
+          },
+          {
+            "name": "Professor Brainstorm",
+            "value": "Professor Brainstorm"
+          },
+          {
+            "name": "Smash",
+            "value": "Smash"
+          },
+          {
+            "name": "Zmech",
+            "value": "Zmech"
+          },
+          {
+            "name": "Plants",
+            "value": "Plants"
+          },
+          {
+            "name": "Zombies",
+            "value": "Zombies"
+          },
+          {
+            "name": "na",
+            "value": "na"
+          }
+        ],
+        "name": "hero",
+        "description": "The hero of the wheel deck",
+        "required": true
+      }
+    ],
+    "name": "randomdeck",
+    "description": "Get a random deck from the Tbot database",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Rustbolt",
+        "required": true
+      }
+    ],
+    "name": "rbdecks",
+    "description": "View Rustbolt decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Rose",
+        "required": true
+      }
+    ],
+    "name": "rodecks",
+    "description": "View Rose decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Super Brainz",
+        "required": true
+      }
+    ],
+    "name": "sbdecks",
+    "description": "View Super Brainz decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Solar Flare",
+        "required": true
+      }
+    ],
+    "name": "sfdecks",
+    "description": "View Solar Flare decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for The Smash",
+        "required": true
+      }
+    ],
+    "name": "smdecks",
+    "description": "View The Smash decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Spudow",
+        "required": true
+      }
+    ],
+    "name": "spdecks",
+    "description": "View Spudow decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "type": 3,
+        "name": "name",
+        "description": "Name of the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "name": "description",
+        "description": "Short description of the deck",
+        "required": true
+      },
+      {
+        "type": 4,
+        "name": "deck_cost",
+        "description": "The cost of the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Aggro",
+            "value": "Aggro"
+          },
+          {
+            "name": "Control",
+            "value": "Control"
+          },
+          {
+            "name": "Combo",
+            "value": "Combo"
+          },
+          {
+            "name": "Midrange",
+            "value": "Midrange"
+          },
+          {
+            "name": "Tempo",
+            "value": "Tempo"
+          },
+          {
+            "name": "Aggro Combo",
+            "value": "Aggro Combo"
+          },
+          {
+            "name": "Combo Midrange",
+            "value": "Combo Midrange"
+          },
+          {
+            "name": "Control Combo",
+            "value": "Control Combo"
+          },
+          {
+            "name": "Combo Tempo",
+            "value": "Combo Tempo"
+          },
+          {
+            "name": "Midrange Tempo",
+            "value": "Midrange Tempo"
+          }
+        ],
+        "name": "deck_archetype",
+        "description": "The archetype for the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Budget",
+            "value": "Budget"
+          },
+          {
+            "name": "Competitive",
+            "value": "Competitive"
+          },
+          {
+            "name": "Ladder",
+            "value": "Ladder"
+          },
+          {
+            "name": "Meme",
+            "value": "Meme"
+          }
+        ],
+        "name": "deck_type",
+        "description": "The type of deck it is",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Captain Combustible",
+            "value": "1100172143603482786"
+          },
+          {
+            "name": "Chompzilla",
+            "value": "1100171601045106819"
+          },
+          {
+            "name": "Citron/BC",
+            "value": "1100171558263193700"
+          },
+          {
+            "name": "Grass Knuckles",
+            "value": "1100171819148906628"
+          },
+          {
+            "name": "Green Shadow",
+            "value": "1100172254983241820"
+          },
+          {
+            "name": "Night Cap",
+            "value": "1100171997167747172"
+          },
+          {
+            "name": "Rose",
+            "value": "1100171855316406343"
+          },
+          {
+            "name": "Solar Flare",
+            "value": "1100171646557491220"
+          },
+          {
+            "name": "Spudow",
+            "value": "1100171758256013412"
+          },
+          {
+            "name": "Wall Knight",
+            "value": "1100171712391295006"
+          },
+          {
+            "name": "Brain Freeze",
+            "value": "1100170721994477668"
+          },
+          {
+            "name": "Electric Boogaloo",
+            "value": "1100171042380578857"
+          },
+          {
+            "name": "Huge Giganticus/SB",
+            "value": "1100170925208502282"
+          },
+          {
+            "name": "Impfinity",
+            "value": "1100170791594762260"
+          },
+          {
+            "name": "Immorticia",
+            "value": "1100171253790285904"
+          },
+          {
+            "name": "Neptuna",
+            "value": "1100170647050649620"
+          },
+          {
+            "name": "Rustbolt",
+            "value": "1100171459785150585"
+          },
+          {
+            "name": "Professor Brainstorm",
+            "value": "1100171115504078901"
+          },
+          {
+            "name": "Smash",
+            "value": "1100171177529446492"
+          },
+          {
+            "name": "Zmech",
+            "value": "1100170981013729410"
+          }
+        ],
+        "name": "hero",
+        "description": "The hero of the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "name": "deck_creator",
+        "description": "The creator of the deck",
+        "required": true
+      },
+      {
+        "name": "image",
+        "description": "image of the decklist",
+        "required": true,
+        "type": 11
+      },
+      {
+        "type": 3,
+        "name": "aliases",
+        "description": "Comma-separated list of additional names for the deck (optional)",
+        "required": false
+      }
+    ],
+    "name": "submitdeck",
+    "description": "Submit a PvZ Heroes decklist to Tbot",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "name",
+        "description": "Name of the deck to update",
+        "required": true
+      },
+      {
+        "type": 4,
+        "name": "deck_cost",
+        "description": "The cost of the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Captain Combustible",
+            "value": "1100172143603482786"
+          },
+          {
+            "name": "Chompzilla",
+            "value": "1100171601045106819"
+          },
+          {
+            "name": "Citron/BC",
+            "value": "1100171558263193700"
+          },
+          {
+            "name": "Grass Knuckles",
+            "value": "1100171819148906628"
+          },
+          {
+            "name": "Green Shadow",
+            "value": "1100172254983241820"
+          },
+          {
+            "name": "Night Cap",
+            "value": "1100171997167747172"
+          },
+          {
+            "name": "Rose",
+            "value": "1100171855316406343"
+          },
+          {
+            "name": "Solar Flare",
+            "value": "1100171646557491220"
+          },
+          {
+            "name": "Spudow",
+            "value": "1100171758256013412"
+          },
+          {
+            "name": "Wall Knight",
+            "value": "1100171712391295006"
+          },
+          {
+            "name": "Brain Freeze",
+            "value": "1100170721994477668"
+          },
+          {
+            "name": "Electric Boogaloo",
+            "value": "1100171042380578857"
+          },
+          {
+            "name": "Huge Gigantacus/SB",
+            "value": "1100170925208502282"
+          },
+          {
+            "name": "Impfinity",
+            "value": "1100170791594762260"
+          },
+          {
+            "name": "Immorticia",
+            "value": "1100171253790285904"
+          },
+          {
+            "name": "Neptuna",
+            "value": "1100170647050649620"
+          },
+          {
+            "name": "Rustbolt",
+            "value": "1100171459785150585"
+          },
+          {
+            "name": "Professor Brainstorm",
+            "value": "1100171115504078901"
+          },
+          {
+            "name": "Smash",
+            "value": "1100171177529446492"
+          },
+          {
+            "name": "Zmech",
+            "value": "1100170981013729410"
+          }
+        ],
+        "name": "hero",
+        "description": "The hero of the deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "name": "deck_creator",
+        "description": "Put creators name. feel free to add optimized by: your name if you want credits",
+        "required": true
+      },
+      {
+        "name": "image",
+        "description": "image of the decklist",
+        "required": true,
+        "type": 11
+      },
+      {
+        "type": 3,
+        "name": "description",
+        "description": "Short description of the deck (optional)",
+        "required": false
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Aggro",
+            "value": "Aggro"
+          },
+          {
+            "name": "Control",
+            "value": "Control"
+          },
+          {
+            "name": "Combo",
+            "value": "Combo"
+          },
+          {
+            "name": "Midrange",
+            "value": "Midrange"
+          },
+          {
+            "name": "Tempo",
+            "value": "Tempo"
+          },
+          {
+            "name": "Aggro Combo",
+            "value": "Aggro Combo"
+          },
+          {
+            "name": "Combo Midrange",
+            "value": "Combo Midrange"
+          },
+          {
+            "name": "Control Combo",
+            "value": "Control Combo"
+          },
+          {
+            "name": "Combo Tempo",
+            "value": "Combo Tempo"
+          },
+          {
+            "name": "Midrange Tempo",
+            "value": "Midrange Tempo"
+          }
+        ],
+        "name": "deck_archetype",
+        "description": "The archetype for the deck (optional)",
+        "required": false
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Budget",
+            "value": "Budget"
+          },
+          {
+            "name": "Competitive",
+            "value": "Competitive"
+          },
+          {
+            "name": "Ladder",
+            "value": "Ladder"
+          },
+          {
+            "name": "Meme",
+            "value": "Meme"
+          }
+        ],
+        "name": "deck_type",
+        "description": "The type of deck it is (optional)",
+        "required": false
+      }
+    ],
+    "name": "updatedeck",
+    "description": "Submit an update to a PvZ Heroes decklist in Tbot",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "max_value": 40,
+        "min_value": 1,
+        "type": 4,
+        "name": "number",
+        "description": "Number of cards to put in deck",
+        "required": true
+      },
+      {
+        "type": 3,
+        "choices": [
+          {
+            "name": "Captain Combustible",
+            "value": "Captain Combustible"
+          },
+          {
+            "name": "Chompzilla",
+            "value": "Chompzilla"
+          },
+          {
+            "name": "Citron/BC",
+            "value": "Citron/BC"
+          },
+          {
+            "name": "Grass Knuckles",
+            "value": "Grass Knuckles"
+          },
+          {
+            "name": "Green Shadow",
+            "value": "Green Shadow"
+          },
+          {
+            "name": "Night Cap",
+            "value": "Night Cap"
+          },
+          {
+            "name": "Rose",
+            "value": "Rose"
+          },
+          {
+            "name": "Solar Flare",
+            "value": "Solar Flare"
+          },
+          {
+            "name": "Spudow",
+            "value": "Spudow"
+          },
+          {
+            "name": "Wall Knight",
+            "value": "Wall Knight"
+          },
+          {
+            "name": "Brain Freeze",
+            "value": "Brain Freeze"
+          },
+          {
+            "name": "Electric Boogaloo",
+            "value": "Electric Boogaloo"
+          },
+          {
+            "name": "Huge Gigantacus/SB",
+            "value": "Huge Gigantacus/SB"
+          },
+          {
+            "name": "Impfinity",
+            "value": "Impfinity"
+          },
+          {
+            "name": "Immorticia",
+            "value": "Immorticia"
+          },
+          {
+            "name": "Neptuna",
+            "value": "Neptuna"
+          },
+          {
+            "name": "Rustbolt",
+            "value": "Rustbolt"
+          },
+          {
+            "name": "Professor Brainstorm",
+            "value": "Professor Brainstorm"
+          },
+          {
+            "name": "Smash",
+            "value": "Smash"
+          },
+          {
+            "name": "Zmech",
+            "value": "Zmech"
+          }
+        ],
+        "name": "hero",
+        "description": "The hero of the wheel deck",
+        "required": true
+      }
+    ],
+    "name": "wheel",
+    "description": "Spin the wheel to get a random plant or zombie deck",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for Wall-Knight",
+        "required": true
+      }
+    ],
+    "name": "wkdecks",
+    "description": "View Wall-Knight decks",
+    "type": 1
+  },
+  {
+    "options": [
+      {
+        "autocomplete": true,
+        "type": 3,
+        "name": "deck",
+        "description": "Deck name for ZMech",
+        "required": true
+      }
+    ],
+    "name": "zmdecks",
+    "description": "View ZMech decks",
+    "type": 1
   }
- ],
- [
-  "rbdecks:2",
-  {
-   "commandName": "flobswarm",
-   "aliases": [
-    "rbbudget",
-    "budgetrustbolt",
-    "rustboltbudget",
-    "budgetswarmrb",
-    "swarmbudgetrb",
-    "rbbudgetswarm",
-    "budgetbolt",
-    "pennyflag",
-    "budgetrb"
-   ]
-  }
- ],
- [
-  "rbdecks:3",
-  {
-   "commandName": "poggerazzi",
-   "aliases": [
-    "poggerrazzirb",
-    "pogrb",
-    "rbpog",
-    "poggerazi",
-    "poggers",
-    "poggerrazi",
-    "pogger",
-    "poggerrazzi"
-   ]
-  }
- ],
- [
-  "rbdecks:4",
-  {
-   "commandName": "gamblebolt",
-   "aliases": []
-  }
- ],
- [
-  "rbdecks:5",
-  {
-   "commandName": "igmablobchum",
-   "aliases": [
-    "blobchumigma",
-    "igmablobchumrb",
-    "igbc",
-    "ibc",
-    "blobchum",
-    "chumblob",
-    "igmachum"
-   ]
-  }
- ],
- [
-  "rbdecks:6",
-  {
-   "commandName": "scimania",
-   "aliases": [
-    "sciencerb",
-    "rbscience"
-   ]
-  }
- ],
- [
-  "rbdecks:7",
-  {
-   "commandName": "sunbandits",
-   "aliases": [
-    "sushibandits",
-    "sunb",
-    "sunbandit",
-    "bandits",
-    "sunthieves"
-   ]
-  }
- ],
- [
-  "rbdecks:8",
-  {
-   "commandName": "boltofsomesize",
-   "aliases": [
-    "boss"
-   ]
-  }
- ],
- [
-  "zmdecks:1",
-  {
-   "commandName": "flaggro",
-   "aliases": [
-    "zmbudget",
-    "bzm",
-    "zmb",
-    "budgetzmech",
-    "budgetmech",
-    "budgetzm"
-   ]
-  }
- ],
- [
-  "zmdecks:2",
-  {
-   "commandName": "lawnmower2",
-   "aliases": [
-    "gargmech",
-    "lawnmowerzm"
-   ]
-  }
- ],
- [
-  "zmdecks:3",
-  {
-   "commandName": "pyromania",
-   "aliases": [
-    "pyromech",
-    "pyro"
-   ]
-  }
- ],
- [
-  "zmdecks:4",
-  {
-   "commandName": "trickmech",
-   "aliases": [
-    "trickzmech",
-    "trm"
-   ]
-  }
- ],
- [
-  "zmdecks:5",
-  {
-   "commandName": "uncrackamech",
-   "aliases": [
-    "mechfeast",
-    "zmfeast",
-    "binaryfeast",
-    "zmfeastcontrol",
-    "feastcontrolzm",
-    "mechfeastcontrol",
-    "feastcontrolmech",
-    "feastyoureyes",
-    "feastmech"
-   ]
-  }
- ],
- [
-  "zmdecks:6",
-  {
-   "commandName": "zmoss",
-   "aliases": [
-    "stompamech",
-    "zmechofsomesize",
-    "nonbinary"
-   ]
-  }
- ],
- [
-  "ctdecks:1",
-  {
-   "commandName": "marines",
-   "aliases": [
-    "ctbudget",
-    "bct",
-    "budgettempoct",
-    "ctbudgettempo",
-    "citronbudget",
-    "budgetelusives",
-    "budgetcitron",
-    "budgetct",
-    "watertempo"
-   ]
-  }
- ],
- [
-  "ctdecks:2",
-  {
-   "commandName": "goingnuts",
-   "aliases": [
-    "ctteamup"
-   ]
-  }
- ],
- [
-  "ctdecks:3",
-  {
-   "commandName": "mud",
-   "aliases": []
-  }
- ],
- [
-  "ctdecks:4",
-  {
-   "commandName": "startron",
-   "aliases": [
-    "kendricklimear"
-   ]
-  }
- ],
- [
-  "gsdecks:1",
-  {
-   "commandName": "shadowfather",
-   "aliases": [
-    "budgetgs",
-    "gsbudget",
-    "budgetgreenshadow",
-    "greenshadowbudget",
-    "budgetmopgs",
-    "gsbudgetmop",
-    "bgsmop",
-    "mopshadow"
-   ]
-  }
- ],
- [
-  "gsdecks:2",
-  {
-   "commandName": "cartasbuenas",
-   "aliases": [
-    "gsabeans",
-    "abeansgs",
-    "aggrobeans",
-    "abean",
-    "abeans",
-    "cartas"
-   ]
-  }
- ],
- [
-  "gsdecks:3",
-  {
-   "commandName": "leafstars",
-   "aliases": [
-    "patchmade",
-    "cybele"
-   ]
-  }
- ],
- [
-  "gsdecks:4",
-  {
-   "commandName": "nuthouse",
-   "aliases": []
-  }
- ],
- [
-  "gsdecks:5",
-  {
-   "commandName": "pbeans",
-   "aliases": [
-    "peabeans",
-    "pbean",
-    "peabound"
-   ]
-  }
- ],
- [
-  "gsdecks:6",
-  {
-   "commandName": "savagemayflower",
-   "aliases": [
-    "savagemay",
-    "savageflower",
-    "mayflowersavage",
-    "smf"
-   ]
-  }
- ],
- [
-  "gsdecks:7",
-  {
-   "commandName": "100winrate",
-   "aliases": [
-    "162%winrate",
-    "100winrate",
-    "100%winrate"
-   ]
-  }
- ],
- [
-  "gsdecks:8",
-  {
-   "commandName": "otkcryoyeti",
-   "aliases": [
-    "freezegs",
-    "gsfreeze"
-   ]
-  }
- ],
- [
-  "bcdecks:1",
-  {
-   "commandName": "carroot",
-   "aliases": [
-    "bctempo",
-    "bcroots",
-    "caroot"
-   ]
-  }
- ],
- [
-  "bcdecks:2",
-  {
-   "commandName": "dinocounter",
-   "aliases": []
-  }
- ],
- [
-  "bcdecks:3",
-  {
-   "commandName": "neurotherapy",
-   "aliases": [
-    "bccontrol",
-    "cbc",
-    "controlbc",
-    "shamcontrolbc",
-    "bcwnbcontrol",
-    "controltina",
-    "bcshamcontrol",
-    "shamcontrol",
-    "shamctrl",
-    "techcontrol",
-    "neuro"
-   ]
-  }
- ],
- [
-  "bfdecks:1",
-  {
-   "commandName": "budgetgraveimps",
-   "aliases": [
-    "bfbudget",
-    "bbf",
-    "bfb",
-    "budgetbrainfreeze",
-    "budgetbf"
-   ]
-  }
- ],
- [
-  "bfdecks:2",
-  {
-   "commandName": "himpter",
-   "aliases": [
-    "huntinggroundimps",
-    "huntingimps",
-    "huntimps",
-    "himps",
-    "imphunt"
-   ]
-  }
- ],
- [
-  "bfdecks:3",
-  {
-   "commandName": "lunchtime",
-   "aliases": [
-    "petsmid",
-    "mid-pets",
-    "pets-mid",
-    "midpets"
-   ]
-  }
- ],
- [
-  "bfdecks:4",
-  {
-   "commandName": "lockthebathroom",
-   "aliases": [
-    "lockinbf",
-    "loi",
-    "lockedin",
-    "loin",
-    "lockin",
-    "ltb",
-    "ltbath",
-    "ltbr",
-    "lthbroom",
-    "neogenesis"
-   ]
-  }
- ],
- [
-  "ccdecks:1",
-  {
-   "commandName": "bayonet",
-   "aliases": [
-    "crosprout",
-    "burstsprout"
-   ]
-  }
- ],
- [
-  "ccdecks:2",
-  {
-   "commandName": "budgetcomboss",
-   "aliases": [
-    "ccbudget",
-    "bcc",
-    "budgetcc"
-   ]
-  }
- ],
- [
-  "ccdecks:3",
-  {
-   "commandName": "lifecouldbeadream",
-   "aliases": [
-    "lcbd",
-    "imipotted",
-    "imimuscle",
-    "imimusclepotted",
-    "imitatermusclepotted",
-    "imitatermuscle",
-    "imitatermusclesprout",
-    "bottedpowerhouse",
-    "bottedbowerhouse"
-   ]
-  }
- ],
- [
-  "ccdecks:4",
-  {
-   "commandName": "logbait",
-   "aliases": [
-    "ccaggro",
-    "aggrocc",
-    "speed"
-   ]
-  }
- ],
- [
-  "ccdecks:5",
-  {
-   "commandName": "mspotk",
-   "aliases": [
-    "podtk",
-    "borotk",
-    "bortk",
-    "spinachpodotk"
-   ]
-  }
- ],
- [
-  "ccdecks:6",
-  {
-   "commandName": "plantmop",
-   "aliases": [
-    "plantmopisreal",
-    "sjutuxoilve",
-    "pm"
-   ]
-  }
- ],
- [
-  "ccdecks:7",
-  {
-   "commandName": "reflourished",
-   "aliases": [
-    "figlourished",
-    "rfl"
-   ]
-  }
- ],
- [
-  "czdecks:1",
-  {
-   "commandName": "mopzilla",
-   "aliases": [
-    "czbudget",
-    "bcz",
-    "budgetcz",
-    "budgetzilla",
-    "budgetmopcz",
-    "czbudgetmop",
-    "bmz",
-    "budgetchompzilla",
-    "chompzillabudget"
-   ]
-  }
- ],
- [
-  "czdecks:2",
-  {
-   "commandName": "leafystrike",
-   "aliases": [
-    "leafysmasher",
-    "leafyhc"
-   ]
-  }
- ],
- [
-  "czdecks:4",
-  {
-   "commandName": "cyclezilla",
-   "aliases": [
-    "cyclecz",
-    "czcycle"
-   ]
-  }
- ],
- [
-  "ebdecks:1",
-  {
-   "commandName": "budgetburn",
-   "aliases": [
-    "ebbudgetburn",
-    "burnbudget",
-    "budgetburneb",
-    "beb",
-    "budgeteb",
-    "ebbudget",
-    "budgetboogalo"
-   ]
-  }
- ],
- [
-  "ebdecks:2",
-  {
-   "commandName": "huntgargs",
-   "aliases": [
-    "hunter'snet",
-    "hunternet"
-   ]
-  }
- ],
- [
-  "ebdecks:3",
-  {
-   "commandName": "pianoman",
-   "aliases": []
-  }
- ],
- [
-  "ebdecks:4",
-  {
-   "commandName": "seacret",
-   "aliases": [
-    "secretswimmer",
-    "secret",
-    "ebsecret",
-    "secreteb",
-    "ss",
-    "sss",
-    "boogsecret",
-    "secretboog",
-    "secret22",
-    "ingea",
-    "ignea"
-   ]
-  }
- ],
- [
-  "ebdecks:5",
-  {
-   "commandName": "flummox",
-   "aliases": [
-    "splashgargs"
-   ]
-  }
- ],
- [
-  "gkdecks:1",
-  {
-   "commandName": "fertfather",
-   "aliases": [
-    "gkbudget",
-    "bgk",
-    "budgetgk"
-   ]
-  }
- ],
- [
-  "gkdecks:2",
-  {
-   "commandName": "healthotk",
-   "aliases": []
-  }
- ],
- [
-  "gkdecks:3",
-  {
-   "commandName": "pawntrickstab",
-   "aliases": [
-    "ptstab",
-    "pawn"
-   ]
-  }
- ],
- [
-  "gkdecks:4",
-  {
-   "commandName": "kusarigama",
-   "aliases": []
-  }
- ],
- [
-  "gkdecks:5",
-  {
-   "commandName": "grandiflora",
-   "aliases": [
-    "gkpotted",
-    "magpot"
-   ]
-  }
- ],
- [
-  "hgdecks:1",
-  {
-   "commandName": "budgethg",
-   "aliases": [
-    "ykmbudget",
-    "budgethg",
-    "hgbudget",
-    "hgbudgetykm"
-   ]
-  }
- ],
- [
-  "hgdecks:2",
-  {
-   "commandName": "conjureleap",
-   "aliases": [
-    "conjureleaphg",
-    "cleap"
-   ]
-  }
- ],
- [
-  "hgdecks:3",
-  {
-   "commandName": "gravepiratestaches",
-   "aliases": [
-    "gps",
-    "hgaggro",
-    "aggrohg"
-   ]
-  }
- ],
- [
-  "hgdecks:4",
-  {
-   "commandName": "telimps",
-   "aliases": [
-    "teleimps",
-    "teleportimps",
-    "hgtelimps",
-    "telimpshg",
-    "hgteleimps",
-    "teleimpshg",
-    "telimp",
-    "alttelimps"
-   ]
-  }
- ],
- [
-  "hgdecks:5",
-  {
-   "commandName": "youngkenmartin",
-   "aliases": [
-    "ykmhg",
-    "hgykm",
-    "ykmartin",
-    "ykmv2",
-    "ykm2",
-    "ykm"
-   ]
-  }
- ],
- [
-  "sbdecks:1",
-  {
-   "commandName": "budgetsb",
-   "aliases": [
-    "sbbudget",
-    "budgetsuperbrains",
-    "superbrainsbudget",
-    "bsb",
-    "budgetscisctaches",
-    "sciencestachesbudget",
-    "budgetscistaches",
-    "scistachesbudget",
-    "scistaches",
-    "scistache"
-   ]
-  }
- ],
- [
-  "sbdecks:2",
-  {
-   "commandName": "limerence",
-   "aliases": [
-    "mustachemid",
-    "azucar",
-    "midmustache",
-    "sbmid",
-    "midsb"
-   ]
-  }
- ],
- [
-  "ifdecks:1",
-  {
-   "commandName": "impkata",
-   "aliases": [
-    "ifgraveburn",
-    "ifbudget",
-    "ifgb",
-    "bif",
-    "ifb",
-    "impfinitybudget",
-    "impfinitygraveburn",
-    "impfinitygb",
-    "impfinityb",
-    "ifbudgetgraveburn",
-    "budgetgraveburnif",
-    "budgetgraveburn",
-    "budgetimpfinity",
-    "budgetif"
-   ]
-  }
- ],
- [
-  "ifdecks:2",
-  {
-   "commandName": "clocksup",
-   "aliases": []
-  }
- ],
- [
-  "ifdecks:4",
-  {
-   "commandName": "tangen",
-   "aliases": [
-    "otkshark",
-    "splashshark",
-    "ifdeadly",
-    "deadlyif",
-    "ifsplash",
-    "deadlysharkcontrol",
-    "dsc"
-   ]
-  }
- ],
- [
-  "ifdecks:5",
-  {
-   "commandName": "uno",
-   "aliases": []
-  }
- ],
- [
-  "ifdecks:6",
-  {
-   "commandName": "crimps",
-   "aliases": [
-    "ifimps"
-   ]
-  }
- ],
- [
-  "imdecks:1",
-  {
-   "commandName": "22savage",
-   "aliases": [
-    "savage22",
-    "frenzyrange",
-    "imavimp"
-   ]
-  }
- ],
- [
-  "imdecks:2",
-  {
-   "commandName": "bastet",
-   "aliases": [
-    "catster",
-    "trickcatche",
-    "otkcatlady"
-   ]
-  }
- ],
- [
-  "imdecks:3",
-  {
-   "commandName": "coptercommand",
-   "aliases": [
-    "imbudget",
-    "budgetimmortica",
-    "bim",
-    "imb",
-    "budgetscience",
-    "budgetim"
-   ]
-  }
- ],
- [
-  "imdecks:4",
-  {
-   "commandName": "mechascope",
-   "aliases": [
-    "otkmecha",
-    "otkmechasaur",
-    "mechascope"
-   ]
-  }
- ],
- [
-  "imdecks:5",
-  {
-   "commandName": "portalgun",
-   "aliases": []
-  }
- ],
- [
-  "imdecks:6",
-  {
-   "commandName": "bestached",
-   "aliases": [
-    "imtrickstache",
-    "otkt",
-    "waxster"
-   ]
-  }
- ],
- [
-  "ncdecks:1",
-  {
-   "commandName": "hypernavy",
-   "aliases": [
-    "ncbudget",
-    "budgetswarmnc",
-    "bnc",
-    "budgetnc",
-    "budgetnightcap"
-   ]
-  }
- ],
- [
-  "ncdecks:2",
-  {
-   "commandName": "cyburn",
-   "aliases": [
-    "nccyburn",
-    "cyburnnc",
-    "cycleburn",
-    "cyclecap",
-    "cburn"
-   ]
-  }
- ],
- [
-  "ncdecks:3",
-  {
-   "commandName": "toyotacontrol",
-   "aliases": [
-    "controlcap",
-    "toyotacap",
-    "nccontrol",
-    "controlnc",
-    "toyota"
-   ]
-  }
- ],
- [
-  "ncdecks:4",
-  {
-   "commandName": "turles",
-   "aliases": []
-  }
- ],
- [
-  "ntdecks:1",
-  {
-   "commandName": "flagtuna",
-   "aliases": [
-    "budgetneptuna"
-   ]
-  }
- ],
- [
-  "ntdecks:2",
-  {
-   "commandName": "floss",
-   "aliases": [
-    "fishladyofsomesize"
-   ]
-  }
- ],
- [
-  "ntdecks:3",
-  {
-   "commandName": "gomorrah",
-   "aliases": [
-    "ntgomorrah",
-    "gomorrahnt",
-    "gravegargs",
-    "garggraves",
-    "doublegg",
-    "gargtuna",
-    "ntgargs",
-    "gargsnt"
-   ]
-  }
- ],
- [
-  "ntdecks:4",
-  {
-   "commandName": "ladytuna",
-   "aliases": [
-    "kimps",
-    "kingtuna",
-    "kingimps"
-   ]
-  }
- ],
- [
-  "ntdecks:5",
-  {
-   "commandName": "muglord",
-   "aliases": [
-    "warlordmug",
-    "mugwarlord"
-   ]
-  }
- ],
- [
-  "ntdecks:6",
-  {
-   "commandName": "schoolyard",
-   "aliases": [
-    "ntschoolyard",
-    "sy",
-    "syard"
-   ]
-  }
- ],
- [
-  "ntdecks:7",
-  {
-   "commandName": "slugged",
-   "aliases": [
-    "midtuna"
-   ]
-  }
- ],
- [
-  "ntdecks:8",
-  {
-   "commandName": "sunlord",
-   "aliases": [
-    "warlordimps",
-    "wimp",
-    "slord",
-    "wimps",
-    "quirkimps"
-   ]
-  }
- ],
- [
-  "ntdecks:9",
-  {
-   "commandName": "tanktuna",
-   "aliases": []
-  }
- ],
- [
-  "pbdecks:1",
-  {
-   "commandName": "bonusducks",
-   "aliases": [
-    "bducks",
-    "combostorm",
-    "mimester",
-    "bd"
-   ]
-  }
- ],
- [
-  "pbdecks:2",
-  {
-   "commandName": "scistorm",
-   "aliases": [
-    "pbbudget",
-    "budgetbrainstorm",
-    "bpb",
-    "pbb",
-    "floorremoval",
-    "budgetbs",
-    "budgetpb"
-   ]
-  }
- ],
- [
-  "pbdecks:3",
-  {
-   "commandName": "mechagold",
-   "aliases": [
-    "potcontrol",
-    "mechapot",
-    "pbscope"
-   ]
-  }
- ],
- [
-  "pbdecks:4",
-  {
-   "commandName": "quartsterstache",
-   "aliases": [
-    "qss"
-   ]
-  }
- ],
- [
-  "pbdecks:5",
-  {
-   "commandName": "reversecatster",
-   "aliases": [
-    "otkvalk",
-    "valkstorm",
-    "valkstache",
-    "dogvalk"
-   ]
-  }
- ],
- [
-  "pbdecks:6",
-  {
-   "commandName": "youngeggmartin",
-   "aliases": [
-    "yem",
-    "youngeggm",
-    "yemartin",
-    "eggmartin"
-   ]
-  }
- ],
- [
-  "pbdecks:7",
-  {
-   "commandName": "astronomy",
-   "aliases": []
-  }
- ],
- [
-  "pbdecks:8",
-  {
-   "commandName": "trickstache",
-   "aliases": [
-    "mustachetricks",
-    "pbtrickstache",
-    "trs",
-    "trickstash",
-    "trickstache"
-   ]
-  }
- ],
- [
-  "rodecks:1",
-  {
-   "commandName": "younghmr",
-   "aliases": [
-    "robudget",
-    "budgethmr",
-    "budgethealmidrose",
-    "bro",
-    "budgetrose",
-    "rosebudget",
-    "budgetro"
-   ]
-  }
- ],
- [
-  "rodecks:2",
-  {
-   "commandName": "healmidrose",
-   "aliases": [
-    "hmr",
-    "roheal",
-    "midhealrose",
-    "healmidro",
-    "hmrose",
-    "healrose"
-   ]
-  }
- ],
- [
-  "rodecks:3",
-  {
-   "commandName": "hiiiggro",
-   "aliases": [
-    "anti-aggro",
-    "antiaggro",
-    "higgro",
-    "hiiggro"
-   ]
-  }
- ],
- [
-  "rodecks:4",
-  {
-   "commandName": "mayf",
-   "aliases": []
-  }
- ],
- [
-  "sfdecks:1",
-  {
-   "commandName": "burstflare",
-   "aliases": [
-    "sfbudgetswarm",
-    "bsfswarm",
-    "budgetswarmflare",
-    "flareswarmbudget",
-    "budgetsfswarm",
-    "solarflarebudgetswarm",
-    "budgetsf",
-    "sfbudget",
-    "budgetsolarflare",
-    "solarflarebudget",
-    "budgetflare",
-    "burstflare"
-   ]
-  }
- ],
- [
-  "sfdecks:2",
-  {
-   "commandName": "funnyflare",
-   "aliases": [
-    "solarflaretroll",
-    "trf",
-    "trollflare",
-    "funnyflare",
-    "trollarflare",
-    "trollerflare",
-    "funnierflare"
-   ]
-  }
- ],
- [
-  "sfdecks:3",
-  {
-   "commandName": "gobeyond",
-   "aliases": []
-  }
- ],
- [
-  "sfdecks:4",
-  {
-   "commandName": "healburn",
-   "aliases": [
-    "burnheal",
-    "hburn",
-    "comboflare",
-    "xpcomboflare",
-    "xphealburn"
-   ]
-  }
- ],
- [
-  "smdecks:1",
-  {
-   "commandName": "flashswarm",
-   "aliases": [
-    "budgetsm",
-    "smbudget",
-    "budgetsmash",
-    "smashbudget"
-   ]
-  }
- ],
- [
-  "smdecks:2",
-  {
-   "commandName": "luminous",
-   "aliases": []
-  }
- ],
- [
-  "smdecks:3",
-  {
-   "commandName": "midgargs",
-   "aliases": []
-  }
- ],
- [
-  "smdecks:4",
-  {
-   "commandName": "stalemate",
-   "aliases": []
-  }
- ],
- [
-  "smdecks:5",
-  {
-   "commandName": "whalepharaoh",
-   "aliases": [
-    "whaleorah",
-    "whaleroah"
-   ]
-  }
- ],
- [
-  "spdecks:1",
-  {
-   "commandName": "burstroots",
-   "aliases": [
-    "spbudget",
-    "bsp",
-    "budgetsp",
-    "budgetsd",
-    "burstroots",
-    "budgetspudow"
-   ]
-  }
- ],
- [
-  "spdecks:2",
-  {
-   "commandName": "dinoroots",
-   "aliases": [
-    "bartin",
-    "bartinroots",
-    "sproots",
-    "rootdow",
-    "rootssp",
-    "dinoroot"
-   ]
-  }
- ],
- [
-  "spdecks:3",
-  {
-   "commandName": "nutcracker",
-   "aliases": [
-    "spnuts",
-    "nutssp",
-    "splashnuts",
-    "nutssplash",
-    "nutting",
-    "nuttin"
-   ]
-  }
- ],
- [
-  "spdecks:4",
-  {
-   "commandName": "radiotherapy",
-   "aliases": [
-    "gourdcontrol",
-    "techdow",
-    "radio"
-   ]
-  }
- ],
- [
-  "spdecks:5",
-  {
-   "commandName": "recycling",
-   "aliases": [
-    "relikale"
-   ]
-  }
- ],
- [
-  "wkdecks:1",
-  {
-   "commandName": "midroot",
-   "aliases": [
-    "wkbudget",
-    "bwk",
-    "budgetwallknight",
-    "budgethealmidwk",
-    "budgetmidwk",
-    "budgetmidrandgewk",
-    "budgetmidrangewallknight",
-    "wkbudgethealmid",
-    "bomid",
-    "wkbudgetmidheal",
-    "budgetwk",
-    "budgetmidknight"
-   ]
-  }
- ],
- [
-  "wkdecks:2",
-  {
-   "commandName": "chemotherapy",
-   "aliases": [
-    "chemo",
-    "wkchemo"
-   ]
-  }
- ],
- [
-  "wkdecks:3",
-  {
-   "commandName": "ginseng",
-   "aliases": [
-    "flowercontrol",
-    "controlflowers"
-   ]
-  }
- ],
- [
-  "guardiancards:1",
-  {
-   "commandName": "forgetmenuts",
-   "aliases": [
-    "fmn",
-    "forgor",
-    "forgorme",
-    "forgormenuts",
-    "forgetme",
-    "forget"
-   ]
-  }
- ],
- [
-  "guardiancards:2",
-  {
-   "commandName": "galactacactus",
-   "aliases": [
-    "galacta",
-    "gaca",
-    "gc"
-   ]
-  }
- ],
- [
-  "guardiancards:3",
-  {
-   "commandName": "garlic",
-   "aliases": [
-    "vimpdestroyer",
-    "vimptech",
-    "vimpiredestroyer",
-    "vimpiretech"
-   ]
-  }
- ],
- [
-  "guardiancards:4",
-  {
-   "commandName": "potatomine",
-   "aliases": [
-    "regularmine",
-    "potato1",
-    "mine",
-    "pm1"
-   ]
-  }
- ],
- [
-  "guardiancards:5",
-  {
-   "commandName": "primalpotatomine",
-   "aliases": [
-    "primalpotato",
-    "ppm",
-    "primalmine"
-   ]
-  }
- ],
- [
-  "guardiancards:6",
-  {
-   "commandName": "seashroom",
-   "aliases": [
-    "sea",
-    "ss3"
-   ]
-  }
- ],
- [
-  "guardiancards:7",
-  {
-   "commandName": "smallnut",
-   "aliases": [
-    "small",
-    "sn1"
-   ]
-  }
- ],
- [
-  "guardiancards:8",
-  {
-   "commandName": "stingbean",
-   "aliases": [
-    "sting",
-    "sb1",
-    "gatlingfodde"
-   ]
-  }
- ],
- [
-  "guardiancards:9",
-  {
-   "commandName": "wallnut",
-   "aliases": [
-    "walnut",
-    "nut",
-    "wn1",
-    "lgcard",
-    "lgtyqzcard"
-   ]
-  }
- ],
- [
-  "guardiancards:10",
-  {
-   "commandName": "corndog",
-   "aliases": [
-    "corg",
-    "dog1",
-    "cd2"
-   ]
-  }
- ],
- [
-  "guardiancards:11",
-  {
-   "commandName": "hotdate",
-   "aliases": [
-    "hot1",
-    "thatch",
-    "date",
-    "egardening",
-    "oktulip",
-    "tulip",
-    "hd"
-   ]
-  }
- ],
- [
-  "guardiancards:12",
-  {
-   "commandName": "pismashio",
-   "aliases": [
-    "pismash",
-    "pis"
-   ]
-  }
- ],
- [
-  "guardiancards:13",
-  {
-   "commandName": "tricarrotops",
-   "aliases": [
-    "trica",
-    "tri",
-    "tric"
-   ]
-  }
- ],
- [
-  "guardiancards:14",
-  {
-   "commandName": "waterchestnut",
-   "aliases": [
-    "chestnut",
-    "wc"
-   ]
-  }
- ],
- [
-  "guardiancards:15",
-  {
-   "commandName": "cactus",
-   "aliases": []
-  }
- ],
- [
-  "guardiancards:16",
-  {
-   "commandName": "healthnut",
-   "aliases": [
-    "hn",
-    "health"
-   ]
-  }
- ],
- [
-  "guardiancards:17",
-  {
-   "commandName": "hibernatingbeary",
-   "aliases": [
-    "beary",
-    "hb1",
-    "hibernating"
-   ]
-  }
- ],
- [
-  "guardiancards:18",
-  {
-   "commandName": "juggernut",
-   "aliases": [
-    "jugger",
-    "jn",
-    "jugger-nut"
-   ]
-  }
- ],
- [
-  "guardiancards:19",
-  {
-   "commandName": "marinebean",
-   "aliases": [
-    "marine",
-    "mb2"
-   ]
-  }
- ],
- [
-  "guardiancards:20",
-  {
-   "commandName": "peanut",
-   "aliases": [
-    "pn",
-    "pea-nut"
-   ]
-  }
- ],
- [
-  "guardiancards:21",
-  {
-   "commandName": "pearcub",
-   "aliases": [
-    "pear",
-    "cub",
-    "pc1"
-   ]
-  }
- ],
- [
-  "guardiancards:22",
-  {
-   "commandName": "plantern",
-   "aliases": [
-    "latern"
-   ]
-  }
- ],
- [
-  "guardiancards:23",
-  {
-   "commandName": "primalwallnut",
-   "aliases": [
-    "pwn",
-    "primalwall",
-    "primalnut",
-    "chunkofcoal"
-   ]
-  }
- ],
- [
-  "guardiancards:24",
-  {
-   "commandName": "pumpkinshell",
-   "aliases": [
-    "pumpkin1",
-    "shell",
-    "ps2"
-   ]
-  }
- ],
- [
-  "guardiancards:25",
-  {
-   "commandName": "spineapple",
-   "aliases": [
-    "spine"
-   ]
-  }
- ],
- [
-  "guardiancards:26",
-  {
-   "commandName": "steelmagnolia",
-   "aliases": [
-    "steel",
-    "magnolia",
-    "sm2",
-    "steelmag"
-   ]
-  }
- ],
- [
-  "guardiancards:27",
-  {
-   "commandName": "threenut",
-   "aliases": [
-    "3nut",
-    "3",
-    "three",
-    "tn",
-    "3n"
-   ]
-  }
- ],
- [
-  "guardiancards:28",
-  {
-   "commandName": "blockbuster",
-   "aliases": [
-    "block",
-    "buster2"
-   ]
-  }
- ],
- [
-  "guardiancards:29",
-  {
-   "commandName": "cosmicnut",
-   "aliases": [
-    "cnut",
-    "cn"
-   ]
-  }
- ],
- [
-  "guardiancards:30",
-  {
-   "commandName": "guacodile",
-   "aliases": [
-    "guac",
-    "croc",
-    "crocodile"
-   ]
-  }
- ],
- [
-  "guardiancards:31",
-  {
-   "commandName": "mirrornut",
-   "aliases": [
-    "mirror",
-    "mn1"
-   ]
-  }
- ],
- [
-  "guardiancards:32",
-  {
-   "commandName": "redstinger",
-   "aliases": [
-    "stinger",
-    "rs1"
-   ]
-  }
- ],
- [
-  "guardiancards:33",
-  {
-   "commandName": "starchlord",
-   "aliases": [
-    "starch",
-    "lord",
-    "simplord",
-    "sl"
-   ]
-  }
- ],
- [
-  "guardiancards:34",
-  {
-   "commandName": "bodygourd",
-   "aliases": [
-    "body",
-    "gourd",
-    "bg1"
-   ]
-  }
- ],
- [
-  "guardiancards:35",
-  {
-   "commandName": "grizzlypear",
-   "aliases": [
-    "grizzly",
-    "gp1"
-   ]
-  }
- ],
- [
-  "guardiancards:36",
-  {
-   "commandName": "pecanolith",
-   "aliases": [
-    "pecan"
-   ]
-  }
- ],
- [
-  "guardiancards:37",
-  {
-   "commandName": "pricklypear",
-   "aliases": [
-    "prickly",
-    "pp2"
-   ]
-  }
- ],
- [
-  "guardiancards:38",
-  {
-   "commandName": "smackadamia",
-   "aliases": [
-    "smack"
-   ]
-  }
- ],
- [
-  "guardiancards:39",
-  {
-   "commandName": "toughbeets",
-   "aliases": [
-    "tough",
-    "tb1"
-   ]
-  }
- ],
- [
-  "guardiancards:40",
-  {
-   "commandName": "gravitree",
-   "aliases": [
-    "gravit"
-   ]
-  }
- ],
- [
-  "guardiancards:41",
-  {
-   "commandName": "locococo",
-   "aliases": [
-    "loco",
-    "coco",
-    "lc2"
-   ]
-  }
- ],
- [
-  "guardiancards:42",
-  {
-   "commandName": "poppinpoppies",
-   "aliases": [
-    "poppin",
-    "poppies",
-    "poppingpoppies",
-    "pp3"
-   ]
-  }
- ],
- [
-  "guardiancards:43",
-  {
-   "commandName": "soulpatch",
-   "aliases": [
-    "soul",
-    "patch",
-    "sp1"
-   ]
-  }
- ],
- [
-  "guardiancards:44",
-  {
-   "commandName": "ensignuproot",
-   "aliases": [
-    "ensign",
-    "uproot",
-    "tractor",
-    "eu"
-   ]
-  }
- ],
- [
-  "guardiantricks:1",
-  {
-   "commandName": "graperesponsibility",
-   "aliases": [
-    "gr1",
-    "grape1",
-    "responsibility"
-   ]
-  }
- ],
- [
-  "guardiantricks:2",
-  {
-   "commandName": "gardeninggloves",
-   "aliases": [
-    "gloves",
-    "gardening",
-    "gg1"
-   ]
-  }
- ],
- [
-  "guardiantricks:3",
-  {
-   "commandName": "gravebuster",
-   "aliases": [
-    "grave",
-    "buster1",
-    "gb"
-   ]
-  }
- ],
- [
-  "guardiantricks:4",
-  {
-   "commandName": "shamrocket",
-   "aliases": [
-    "sham",
-    "shamerocket",
-    "shame"
-   ]
-  }
- ],
- [
-  "guardiantricks:5",
-  {
-   "commandName": "spikeweedsector",
-   "aliases": [
-    "dickweed",
-    "pokey",
-    "pokeyprovince",
-    "ss4",
-    "spikeweed"
-   ]
-  }
- ],
- [
-  "guardiantricks:6",
-  {
-   "commandName": "forcefield",
-   "aliases": [
-    "force",
-    "field",
-    "ff"
-   ]
-  }
- ],
- [
-  "guardiantricks:7",
-  {
-   "commandName": "doomshroom",
-   "aliases": [
-    "doom",
-    "thanosshroom",
-    "thanos",
-    "ds1"
-   ]
-  }
- ],
- [
-  "guardiantricks:8",
-  {
-   "commandName": "wallnutbowling",
-   "aliases": [
-    "wnb",
-    "bowling",
-    "walnutbowling",
-    "bowl",
-    "wallnut-bowling"
-   ]
-  }
- ],
- [
-  "guardiantricks:9",
-  {
-   "commandName": "nutsignal",
-   "aliases": [
-    "signal",
-    "nutsig",
-    "ns"
-   ]
-  }
- ],
- [
-  "guardiantricks:10",
-  {
-   "commandName": "bubbleup",
-   "aliases": [
-    "bubble",
-    "bu"
-   ]
-  }
- ],
- [
-  "guardiantricks:11",
-  {
-   "commandName": "uncrackable",
-   "aliases": [
-    "uncrack",
-    "wksig"
-   ]
-  }
- ],
- [
-  "guardiantricks:12",
-  {
-   "commandName": "rootwall",
-   "aliases": [
-    "root",
-    "wall1",
-    "rw1"
-   ]
-  }
- ],
- [
-  "guardiantricks:13",
-  {
-   "commandName": "peelshield",
-   "aliases": [
-    "peel",
-    "shield",
-    "ctsig",
-    "ps1"
-   ]
-  }
- ],
- [
-  "guardiantricks:14",
-  {
-   "commandName": "geneticamplification",
-   "aliases": [
-    "genetic1",
-    "amplification",
-    "ga",
-    "bcsig"
-   ]
-  }
- ],
- [
-  "guardiantricks:15",
-  {
-   "commandName": "photosynthesizer",
-   "aliases": [
-    "photo",
-    "photosynthesize"
-   ]
-  }
- ],
- [
-  "kabloomcards:1",
-  {
-   "commandName": "puffshroom",
-   "aliases": [
-    "puff",
-    "ps3",
-    "puff-shroom"
-   ]
-  }
- ],
- [
-  "kabloomcards:2",
-  {
-   "commandName": "astroshroom",
-   "aliases": [
-    "astro1",
-    "as1"
-   ]
-  }
- ],
- [
-  "kabloomcards:3",
-  {
-   "commandName": "bloomingheart",
-   "aliases": [
-    "blooming",
-    "heart",
-    "bh1"
-   ]
-  }
- ],
- [
-  "kabloomcards:4",
-  {
-   "commandName": "buttonmushroom",
-   "aliases": [
-    "button",
-    "buttonshroom",
-    "bm"
-   ]
-  }
- ],
- [
-  "kabloomcards:5",
-  {
-   "commandName": "highvoltagecurrant",
-   "aliases": [
-    "highvoltage",
-    "high",
-    "voltage",
-    "currant",
-    "hvc",
-    "oafishcard",
-    "oafish1"
-   ]
-  }
- ],
- [
-  "kabloomcards:6",
-  {
-   "commandName": "poisonmushroom",
-   "aliases": [
-    "poisonshroom",
-    "poison1",
-    "pm2"
-   ]
-  }
- ],
- [
-  "kabloomcards:7",
-  {
-   "commandName": "reincarnation",
-   "aliases": [
-    "carnation"
-   ]
-  }
- ],
- [
-  "kabloomcards:8",
-  {
-   "commandName": "shroomfortwo",
-   "aliases": [
-    "s42",
-    "sf2",
-    "sft",
-    "shroomfor2"
-   ]
-  }
- ],
- [
-  "kabloomcards:9",
-  {
-   "commandName": "velociradishhatchling",
-   "aliases": [
-    "hatchling",
-    "radishhatchling",
-    "hatch",
-    "vrh1",
-    "veloci-radish",
-    "velociradish"
-   ]
-  }
- ],
- [
-  "kabloomcards:10",
-  {
-   "commandName": "bananalauncher",
-   "aliases": [
-    "blauncher",
-    "launcher",
-    "bl"
-   ]
-  }
- ],
- [
-  "kabloomcards:11",
-  {
-   "commandName": "buffshroom",
-   "aliases": [
-    "buff",
-    "bs2"
-   ]
-  }
- ],
- [
-  "kabloomcards:12",
-  {
-   "commandName": "fireweed",
-   "aliases": [
-    "fire2"
-   ]
-  }
- ],
- [
-  "kabloomcards:13",
-  {
-   "commandName": "invasivespecies",
-   "aliases": [
-    "invasive",
-    "is",
-    "species",
-    "weed2"
-   ]
-  }
- ],
- [
-  "kabloomcards:14",
-  {
-   "commandName": "seedling",
-   "aliases": [
-    "seed"
-   ]
-  }
- ],
- [
-  "kabloomcards:15",
-  {
-   "commandName": "shelfmushroom",
-   "aliases": [
-    "shelf",
-    "shelfshrooms",
-    "sm2"
-   ]
-  }
- ],
- [
-  "kabloomcards:16",
-  {
-   "commandName": "wildberry",
-   "aliases": [
-    "wild",
-    "wb1"
-   ]
-  }
- ],
- [
-  "kabloomcards:17",
-  {
-   "commandName": "cosmicmushroom",
-   "aliases": [
-    "cm1"
-   ]
-  }
- ],
- [
-  "kabloomcards:18",
-  {
-   "commandName": "cromagnolia",
-   "aliases": [
-    "cromag",
-    "cm2"
-   ]
-  }
- ],
- [
-  "kabloomcards:19",
-  {
-   "commandName": "imitater",
-   "aliases": [
-    "imi",
-    "tater2"
-   ]
-  }
- ],
- [
-  "kabloomcards:20",
-  {
-   "commandName": "mushroomringleader",
-   "aliases": [
-    "ringleader",
-    "leader",
-    "mr",
-    "mrl"
-   ]
-  }
- ],
- [
-  "kabloomcards:21",
-  {
-   "commandName": "poisonivy",
-   "aliases": [
-    "poison2",
-    "ivy",
-    "pi"
-   ]
-  }
- ],
- [
-  "kabloomcards:22",
-  {
-   "commandName": "punishshroom",
-   "aliases": [
-    "punish",
-    "ps4"
-   ]
-  }
- ],
- [
-  "kabloomcards:23",
-  {
-   "commandName": "strawberrian",
-   "aliases": [
-    "strawb",
-    "berrian"
-   ]
-  }
- ],
- [
-  "kabloomcards:24",
-  {
-   "commandName": "velociradishpackmate",
-   "aliases": [
-    "vrh",
-    "raptors",
-    "hunter",
-    "hunters",
-    "vrh2",
-    "velociradishhunter",
-    "packmate",
-    "vrp",
-    "velociradishs"
-   ]
-  }
- ],
- [
-  "kabloomcards:25",
-  {
-   "commandName": "zapricot",
-   "aliases": [
-    "zap"
-   ]
-  }
- ],
- [
-  "kabloomcards:26",
-  {
-   "commandName": "molekale",
-   "aliases": [
-    "mole",
-    "kale",
-    "mokale",
-    "molkale"
-   ]
-  }
- ],
- [
-  "kabloomcards:27",
-  {
-   "commandName": "pairofpears",
-   "aliases": [
-    "pair",
-    "pop"
-   ]
-  }
- ],
- [
-  "kabloomcards:28",
-  {
-   "commandName": "pineclone",
-   "aliases": [
-    "pineclones",
-    "pclones",
-    "pclone",
-    "clones2",
-    "clone2"
-   ]
-  }
- ],
- [
-  "kabloomcards:29",
-  {
-   "commandName": "sergeantstrongberry",
-   "aliases": [
-    "sergeant",
-    "strongberry",
-    "ss5"
-   ]
-  }
- ],
- [
-  "kabloomcards:30",
-  {
-   "commandName": "sonicbloom",
-   "aliases": [
-    "sonic",
-    "bloom",
-    "sb2"
-   ]
-  }
- ],
- [
-  "kabloomcards:31",
-  {
-   "commandName": "sourgrapes",
-   "aliases": [
-    "sour",
-    "grapes1",
-    "sg1"
-   ]
-  }
- ],
- [
-  "kabloomcards:32",
-  {
-   "commandName": "atomicbombegranate",
-   "aliases": [
-    "atomic",
-    "bombegranate",
-    "bomb2",
-    "ab"
-   ]
-  }
- ],
- [
-  "kabloomcards:33",
-  {
-   "commandName": "transfiguration",
-   "aliases": [
-    "fig",
-    "transfig"
-   ]
-  }
- ],
- [
-  "kabloomcards:34",
-  {
-   "commandName": "bluesberry",
-   "aliases": [
-    "blues"
-   ]
-  }
- ],
- [
-  "kabloomcards:35",
-  {
-   "commandName": "electricblueberry",
-   "aliases": [
-    "electric",
-    "blueberry",
-    "eb1"
-   ]
-  }
- ],
- [
-  "kabloomcards:36",
-  {
-   "commandName": "gloomshroom",
-   "aliases": [
-    "gloom",
-    "gs1"
-   ]
-  }
- ],
- [
-  "kabloomcards:37",
-  {
-   "commandName": "dandylionking",
-   "aliases": [
-    "dandy",
-    "lion",
-    "dandylion",
-    "lionking",
-    "dlk"
-   ]
-  }
- ],
- [
-  "kabloomcards:38",
-  {
-   "commandName": "poisonoak",
-   "aliases": [
-    "poison3",
-    "oak",
-    "po"
-   ]
-  }
- ],
- [
-  "kabloomcards:39",
-  {
-   "commandName": "grapesofwrath",
-   "aliases": [
-    "grapes2",
-    "wrath2",
-    "gow",
-    "gw"
-   ]
-  }
- ],
- [
-  "kabloomcards:40",
-  {
-   "commandName": "kernelcorn",
-   "aliases": [
-    "kernel1",
-    "corn",
-    "kc"
-   ]
-  }
- ],
- [
-  "kabloomcards:41",
-  {
-   "commandName": "hothead",
-   "aliases": []
-  }
- ],
- [
-  "kabloomtricks:1",
-  {
-   "commandName": "morespore",
-   "aliases": [
-    "more",
-    "spore",
-    "ms2"
-   ]
-  }
- ],
- [
-  "kabloomtricks:2",
-  {
-   "commandName": "stormfront",
-   "aliases": [
-    "storm",
-    "front",
-    "sf1"
-   ]
-  }
- ],
- [
-  "kabloomtricks:3",
-  {
-   "commandName": "meteorstrike",
-   "aliases": [
-    "meteor",
-    "ms1"
-   ]
-  }
- ],
- [
-  "kabloomtricks:4",
-  {
-   "commandName": "tatertoss",
-   "aliases": [
-    "tater1",
-    "toss",
-    "tt1",
-    "spsig"
-   ]
-  }
- ],
- [
-  "kabloomtricks:5",
-  {
-   "commandName": "mushboom",
-   "aliases": [
-    "boom",
-    "ncsig",
-    "mb1"
-   ]
-  }
- ],
- [
-  "kabloomtricks:6",
-  {
-   "commandName": "blazingbark",
-   "aliases": [
-    "blazing",
-    "bark",
-    "bb1",
-    "ccsig"
-   ]
-  }
- ],
- [
-  "kabloomtricks:7",
-  {
-   "commandName": "hotlava",
-   "aliases": [
-    "hot2",
-    "lava1",
-    "hl"
-   ]
-  }
- ],
- [
-  "kabloomtricks:8",
-  {
-   "commandName": "bananabomb",
-   "aliases": [
-    "bbomb",
-    "bomb1",
-    "bb2"
-   ]
-  }
- ],
- [
-  "kabloomtricks:9",
-  {
-   "commandName": "berryblast",
-   "aliases": [
-    "blast",
-    "bb3"
-   ]
-  }
- ],
- [
-  "kabloomtricks:10",
-  {
-   "commandName": "berryangry",
-   "aliases": [
-    "angry",
-    "ba"
-   ]
-  }
- ],
- [
-  "kabloomtricks:11",
-  {
-   "commandName": "mushroomgrotto",
-   "aliases": [
-    "grotto",
-    "mg1"
-   ]
-  }
- ],
- [
-  "kabloomtricks:12",
-  {
-   "commandName": "sizzle",
-   "aliases": []
-  }
- ],
- [
-  "kabloomtricks:13",
-  {
-   "commandName": "lavaguava",
-   "aliases": [
-    "lava2",
-    "guava",
-    "lg"
-   ]
-  }
- ],
- [
-  "kabloomtricks:14",
-  {
-   "commandName": "pairpearadise",
-   "aliases": [
-    "pearadise",
-    "pairadise",
-    "pp4",
-    "pairpeardise"
-   ]
-  }
- ],
- [
-  "kabloomtricks:15",
-  {
-   "commandName": "petalmorphosis",
-   "aliases": [
-    "petal",
-    "morph",
-    "morphosis",
-    "petalmorph",
-    "hailmary",
-    "pm3"
-   ]
-  }
- ],
- [
-  "kabloomtricks:16",
-  {
-   "commandName": "cherrybomb",
-   "aliases": [
-    "cherry",
-    "bomb3",
-    "cb1"
-   ]
-  }
- ],
- [
-  "kabloomtricks:32",
-  {
-   "commandName": "sunburn",
-   "aliases": [
-    "burn",
-    "sfsig"
-   ]
-  }
- ],
- [
-  "megagrowcards:1",
-  {
-   "commandName": "bonkchoy",
-   "aliases": [
-    "bonk",
-    "choy",
-    "bc2",
-    "bchoy"
-   ]
-  }
- ],
- [
-  "megagrowcards:2",
-  {
-   "commandName": "cliquepeas",
-   "aliases": [
-    "clique",
-    "cp1",
-    "cpeas",
-    "cliquepea"
-   ]
-  }
- ],
- [
-  "megagrowcards:3",
-  {
-   "commandName": "partythyme",
-   "aliases": [
-    "party",
-    "thyme",
-    "pt1"
-   ]
-  }
- ],
- [
-  "megagrowcards:4",
-  {
-   "commandName": "peapod",
-   "aliases": [
-    "pod1",
-    "pp5"
-   ]
-  }
- ],
- [
-  "megagrowcards:5",
-  {
-   "commandName": "peashooter",
-   "aliases": [
-    "pea",
-    "regularpea"
-   ]
-  }
- ],
- [
-  "megagrowcards:6",
-  {
-   "commandName": "sweetpotato",
-   "aliases": [
-    "sweet1",
-    "potato2",
-    "sp2",
-    "yoyocard",
-    "yoyo1"
-   ]
-  }
- ],
- [
-  "megagrowcards:7",
-  {
-   "commandName": "torchwood",
-   "aliases": [
-    "torch"
-   ]
-  }
- ],
- [
-  "megagrowcards:8",
-  {
-   "commandName": "umbrellaleaf",
-   "aliases": [
-    "umbrella",
-    "leaf",
-    "ul"
-   ]
-  }
- ],
- [
-  "megagrowcards:9",
-  {
-   "commandName": "blackeyedpea",
-   "aliases": [
-    "bep",
-    "blackeyed"
-   ]
-  }
- ],
- [
-  "megagrowcards:10",
-  {
-   "commandName": "cabbagepult",
-   "aliases": [
-    "cabbage",
-    "cp2"
-   ]
-  }
- ],
- [
-  "megagrowcards:11",
-  {
-   "commandName": "doubledmint",
-   "aliases": [
-    "dobuled",
-    "mint",
-    "dm1",
-    "doublemint"
-   ]
-  }
- ],
- [
-  "megagrowcards:12",
-  {
-   "commandName": "firepeashooter",
-   "aliases": [
-    "fire3",
-    "firepea",
-    "flame",
-    "flamepea",
-    "fp",
-    "fps"
-   ]
-  }
- ],
- [
-  "megagrowcards:13",
-  {
-   "commandName": "halfbanana",
-   "aliases": [
-    "half",
-    "hb2"
-   ]
-  }
- ],
- [
-  "megagrowcards:14",
-  {
-   "commandName": "lilyofthevalley",
-   "aliases": [
-    "lily1",
-    "valley",
-    "lotv",
-    "lv",
-    "lilyof",
-    "lilyofthe"
-   ]
-  }
- ],
- [
-  "megagrowcards:15",
-  {
-   "commandName": "peapatch",
-   "aliases": [
-    "patch2",
-    "pp6"
-   ]
-  }
- ],
- [
-  "megagrowcards:16",
-  {
-   "commandName": "splitpea",
-   "aliases": [
-    "split",
-    "sp3"
-   ]
-  }
- ],
- [
-  "megagrowcards:17",
-  {
-   "commandName": "sweetpea",
-   "aliases": [
-    "sweet2",
-    "sp4"
-   ]
-  }
- ],
- [
-  "megagrowcards:18",
-  {
-   "commandName": "captaincucumber",
-   "aliases": [
-    "cucc",
-    "ccuc",
-    "cucumber",
-    "cc1",
-    "captaincucc"
-   ]
-  }
- ],
- [
-  "megagrowcards:19",
-  {
-   "commandName": "growshroom",
-   "aliases": [
-    "grow",
-    "gs2"
-   ]
-  }
- ],
- [
-  "megagrowcards:20",
-  {
-   "commandName": "moonbean",
-   "aliases": [
-    "moon"
-   ]
-  }
- ],
- [
-  "megagrowcards:21",
-  {
-   "commandName": "musclesprout",
-   "aliases": [
-    "muscle",
-    "sprout",
-    "ms3"
-   ]
-  }
- ],
- [
-  "megagrowcards:22",
-  {
-   "commandName": "repeater",
-   "aliases": []
-  }
- ],
- [
-  "megagrowcards:23",
-  {
-   "commandName": "thepodfather",
-   "aliases": [
-    "podfather",
-    "father",
-    "fatherofpods"
-   ]
-  }
- ],
- [
-  "megagrowcards:24",
-  {
-   "commandName": "typicalbeanstalk",
-   "aliases": [
-    "typical",
-    "beanstalk2",
-    "tb2"
-   ]
-  }
- ],
- [
-  "megagrowcards:25",
-  {
-   "commandName": "bananasplit",
-   "aliases": [
-    "bsplit",
-    "bs3",
-    "split2"
-   ]
-  }
- ],
- [
-  "megagrowcards:26",
-  {
-   "commandName": "bananasaurusrex",
-   "aliases": [
-    "brex",
-    "bananasaurus",
-    "rex",
-    "br1"
-   ]
-  }
- ],
- [
-  "megagrowcards:27",
-  {
-   "commandName": "cosmicpea",
-   "aliases": [
-    "cp3",
-    "cpea"
-   ]
-  }
- ],
- [
-  "megagrowcards:28",
-  {
-   "commandName": "repeatmoss",
-   "aliases": [
-    "repeat",
-    "moss",
-    "rm",
-    "rmoss",
-    "re-peatmoss"
-   ]
-  }
- ],
- [
-  "megagrowcards:29",
-  {
-   "commandName": "savagespinach",
-   "aliases": [
-    "savage",
-    "spinach",
-    "ss6"
-   ]
-  }
- ],
- [
-  "megagrowcards:30",
-  {
-   "commandName": "skyshooter",
-   "aliases": [
-    "sky"
-   ]
-  }
- ],
- [
-  "megagrowcards:31",
-  {
-   "commandName": "gatlingpea",
-   "aliases": [
-    "gatling",
-    "gpea",
-    "gp3"
-   ]
-  }
- ],
- [
-  "megagrowcards:32",
-  {
-   "commandName": "onionrings",
-   "aliases": [
-    "onion",
-    "ring",
-    "or",
-    "orings",
-    "rings"
-   ]
-  }
- ],
- [
-  "megagrowcards:33",
-  {
-   "commandName": "pluckyclover",
-   "aliases": [
-    "plucky",
-    "clover",
-    "pc2"
-   ]
-  }
- ],
- [
-  "megagrowcards:34",
-  {
-   "commandName": "podfighter",
-   "aliases": [
-    "pfighter",
-    "pod2",
-    "pf2"
-   ]
-  }
- ],
- [
-  "megagrowcards:35",
-  {
-   "commandName": "pottedpowerhouse",
-   "aliases": [
-    "potted",
-    "powerhosue",
-    "pp7"
-   ]
-  }
- ],
- [
-  "megagrowcards:36",
-  {
-   "commandName": "whipvine",
-   "aliases": [
-    "whip",
-    "vine"
-   ]
-  }
- ],
- [
-  "megagrowcards:37",
-  {
-   "commandName": "apotatosaurus",
-   "aliases": [
-    "apotato",
-    "asurus",
-    "apo",
-    "bowlingcard",
-    "bowlingbulbcard",
-    "bowlingbulbenjoyercard"
-   ]
-  }
- ],
- [
-  "megagrowcards:38",
-  {
-   "commandName": "bamboozle",
-   "aliases": [
-    "bamboo"
-   ]
-  }
- ],
- [
-  "megagrowcards:39",
-  {
-   "commandName": "superphatbeets",
-   "aliases": [
-    "superphat",
-    "phatbeets",
-    "spb"
-   ]
-  }
- ],
- [
-  "megagrowtricks:1",
-  {
-   "commandName": "bananapeel",
-   "aliases": [
-    "peel",
-    "bpeel",
-    "bp1",
-    "banpeel"
-   ]
-  }
- ],
- [
-  "megagrowtricks:2",
-  {
-   "commandName": "coffeegrounds",
-   "aliases": [
-    "coffee1",
-    "cg1"
-   ]
-  }
- ],
- [
-  "megagrowtricks:3",
-  {
-   "commandName": "fertilize",
-   "aliases": []
-  }
- ],
- [
-  "megagrowtricks:4",
-  {
-   "commandName": "flourish",
-   "aliases": []
-  }
- ],
- [
-  "megagrowtricks:5",
-  {
-   "commandName": "grapepower",
-   "aliases": [
-    "gp2",
-    "grape2",
-    "power"
-   ]
-  }
- ],
- [
-  "megagrowtricks:6",
-  {
-   "commandName": "plantfood",
-   "aliases": [
-    "food",
-    "pf1",
-    "pfood"
-   ]
-  }
- ],
- [
-  "megagrowtricks:7",
-  {
-   "commandName": "theredplantit",
-   "aliases": [
-    "red",
-    "plantit",
-    "rp",
-    "rpi",
-    "trpi"
-   ]
-  }
- ],
- [
-  "megagrowtricks:8",
-  {
-   "commandName": "espressofiesta",
-   "aliases": [
-    "espressoespresso",
-    "fiesta",
-    "ef1"
-   ]
-  }
- ],
- [
-  "megagrowtricks:9",
-  {
-   "commandName": "precisionblast",
-   "aliases": [
-    "precision",
-    "gssig",
-    "pb1"
-   ]
-  }
- ],
- [
-  "megagrowtricks:10",
-  {
-   "commandName": "devour",
-   "aliases": [
-    "chomp",
-    "czsig"
-   ]
-  }
- ],
- [
-  "megagrowtricks:11",
-  {
-   "commandName": "powerpummel",
-   "aliases": [
-    "rumble",
-    "pummel",
-    "gksig",
-    "pp1"
-   ]
-  }
- ],
- [
-  "megagrowtricks:12",
-  {
-   "commandName": "embiggen",
-   "aliases": []
-  }
- ],
- [
-  "megagrowtricks:13",
-  {
-   "commandName": "holoflora",
-   "aliases": [
-    "holo",
-    "flora",
-    "hf"
-   ]
-  }
- ],
- [
-  "megagrowtricks:14",
-  {
-   "commandName": "timetoshine",
-   "aliases": [
-    "tts",
-    "shine"
-   ]
-  }
- ],
- [
-  "megagrowtricks:32",
-  {
-   "commandName": "vegetationmutation",
-   "aliases": [
-    "veggie",
-    "vegetation",
-    "mutation",
-    "vm",
-    "vegmut"
-   ]
-  }
- ],
- [
-  "smartycards:1",
-  {
-   "commandName": "admiralnavybean",
-   "aliases": [
-    "anb",
-    "broth",
-    "admiral",
-    "admiralnavy",
-    "admiralbean"
-   ]
-  }
- ],
- [
-  "smartycards:2",
-  {
-   "commandName": "lilypad",
-   "aliases": [
-    "lily2",
-    "pad",
-    "lp1"
-   ]
-  }
- ],
- [
-  "smartycards:3",
-  {
-   "commandName": "limapleurodon",
-   "aliases": [
-    "lima",
-    "ligma",
-    "pleurodon",
-    "lp2"
-   ]
-  }
- ],
- [
-  "smartycards:4",
-  {
-   "commandName": "marsflytrap",
-   "aliases": [
-    "mars",
-    "flytrap1",
-    "mf",
-    "mft"
-   ]
-  }
- ],
- [
-  "smartycards:5",
-  {
-   "commandName": "primalpeashooter",
-   "aliases": [
-    "primalpea",
-    "pps",
-    "pp8"
-   ]
-  }
- ],
- [
-  "smartycards:6",
-  {
-   "commandName": "shellery",
-   "aliases": []
-  }
- ],
- [
-  "smartycards:7",
-  {
-   "commandName": "snowdrop",
-   "aliases": [
-    "iceagebaby",
-    "snow"
-   ]
-  }
- ],
- [
-  "smartycards:8",
-  {
-   "commandName": "spyris",
-   "aliases": [
-    "spy"
-   ]
-  }
- ],
- [
-  "smartycards:9",
-  {
-   "commandName": "weeniebeanie",
-   "aliases": [
-    "weenie",
-    "beanie",
-    "wb2",
-    "verticallychallenged beanie."
-   ]
-  }
- ],
- [
-  "smartycards:10",
-  {
-   "commandName": "cosmicbean",
-   "aliases": [
-    "cb2",
-    "cbean"
-   ]
-  }
- ],
- [
-  "smartycards:11",
-  {
-   "commandName": "lasercattail",
-   "aliases": [
-    "laser",
-    "lasercat",
-    "lc3"
-   ]
-  }
- ],
- [
-  "smartycards:12",
-  {
-   "commandName": "lightningreed",
-   "aliases": [
-    "lightning",
-    "reed",
-    "lr"
-   ]
-  }
- ],
- [
-  "smartycards:13",
-  {
-   "commandName": "pearpal",
-   "aliases": [
-    "pal",
-    "pp9"
-   ]
-  }
- ],
- [
-  "smartycards:14",
-  {
-   "commandName": "rotobaga",
-   "aliases": [
-    "roto",
-    "baga",
-    "happyshroom1",
-    "skytree",
-    "happycard",
-    "happshroomcard"
-   ]
-  }
- ],
- [
-  "smartycards:15",
-  {
-   "commandName": "snowpea",
-   "aliases": [
-    "sp5",
-    "spea"
-   ]
-  }
- ],
- [
-  "smartycards:16",
-  {
-   "commandName": "cattail",
-   "aliases": [
-    "cat"
-   ]
-  }
- ],
- [
-  "smartycards:17",
-  {
-   "commandName": "chillypepper",
-   "aliases": [
-    "chilly",
-    "cp4",
-    "cpepper"
-   ]
-  }
- ],
- [
-  "smartycards:18",
-  {
-   "commandName": "coolbean",
-   "aliases": [
-    "cool",
-    "cb3",
-    "cbean"
-   ]
-  }
- ],
- [
-  "smartycards:19",
-  {
-   "commandName": "gonuts",
-   "aliases": [
-    "go",
-    "gn",
-    "gnuts"
-   ]
-  }
- ],
- [
-  "smartycards:20",
-  {
-   "commandName": "mayflower",
-   "aliases": [
-    "may",
-    "rcch",
-    "rcchcard"
-   ]
-  }
- ],
- [
-  "smartycards:21",
-  {
-   "commandName": "rescueradish",
-   "aliases": [
-    "rescue",
-    "radish",
-    "rr1"
-   ]
-  }
- ],
- [
-  "smartycards:22",
-  {
-   "commandName": "sportacus",
-   "aliases": []
-  }
- ],
- [
-  "smartycards:23",
-  {
-   "commandName": "vanilla",
-   "aliases": []
-  }
- ],
- [
-  "smartycards:24",
-  {
-   "commandName": "beancounter",
-   "aliases": [
-    "counter",
-    "bc3",
-    "bcounter"
-   ]
-  }
- ],
- [
-  "smartycards:25",
-  {
-   "commandName": "carrotillery",
-   "aliases": [
-    "carrot2"
-   ]
-  }
- ],
- [
-  "smartycards:26",
-  {
-   "commandName": "jellybean",
-   "aliases": [
-    "jelly",
-    "jb1"
-   ]
-  }
- ],
- [
-  "smartycards:27",
-  {
-   "commandName": "leafblower",
-   "aliases": [
-    "blower",
-    "blover",
-    "lb1"
-   ]
-  }
- ],
- [
-  "smartycards:28",
-  {
-   "commandName": "navybean",
-   "aliases": [
-    "navy",
-    "nb"
-   ]
-  }
- ],
- [
-  "smartycards:29",
-  {
-   "commandName": "snakegrass",
-   "aliases": [
-    "snake",
-    "grass",
-    "sneec",
-    "sg2"
-   ]
-  }
- ],
- [
-  "smartycards:30",
-  {
-   "commandName": "snapdragon",
-   "aliases": [
-    "snap"
-   ]
-  }
- ],
- [
-  "smartycards:31",
-  {
-   "commandName": "wintersquash",
-   "aliases": [
-    "winter1",
-    "ws1"
-   ]
-  }
- ],
- [
-  "smartycards:32",
-  {
-   "commandName": "witchhazel",
-   "aliases": [
-    "witch",
-    "hazel"
-   ]
-  }
- ],
- [
-  "smartycards:33",
-  {
-   "commandName": "birdofparadise",
-   "aliases": [
-    "bird",
-    "birb",
-    "paradise",
-    "bop"
-   ]
-  }
- ],
- [
-  "smartycards:34",
-  {
-   "commandName": "jollyholly",
-   "aliases": [
-    "jolly",
-    "holly",
-    "jh"
-   ]
-  }
- ],
- [
-  "smartycards:35",
-  {
-   "commandName": "jumpingbean",
-   "aliases": [
-    "jumping",
-    "jb2"
-   ]
-  }
- ],
- [
-  "smartycards:36",
-  {
-   "commandName": "melonpult",
-   "aliases": [
-    "melon1",
-    "mp"
-   ]
-  }
- ],
- [
-  "smartycards:37",
-  {
-   "commandName": "shootingstarfruit",
-   "aliases": [
-    "shooting",
-    "starfruit",
-    "ss7",
-    "ssf"
-   ]
-  }
- ],
- [
-  "smartycards:38",
-  {
-   "commandName": "smooshshroom",
-   "aliases": [
-    "smoosh",
-    "ss8"
-   ]
-  }
- ],
- [
-  "smartycards:39",
-  {
-   "commandName": "threepeater",
-   "aliases": [
-    "threepea1",
-    "3peater"
-   ]
-  }
- ],
- [
-  "smartycards:40",
-  {
-   "commandName": "brainana",
-   "aliases": [
-    "brainna",
-    "braindamage"
-   ]
-  }
- ],
- [
-  "smartycards:41",
-  {
-   "commandName": "sapfling",
-   "aliases": [
-    "sap",
-    "fling",
-    "sf2"
-   ]
-  }
- ],
- [
-  "smartycards:42",
-  {
-   "commandName": "tricorn",
-   "aliases": [
-    "trinut"
-   ]
-  }
- ],
- [
-  "smartycards:43",
-  {
-   "commandName": "wintermelon",
-   "aliases": [
-    "winter2",
-    "melon2",
-    "wm"
-   ]
-  }
- ],
- [
-  "smartycards:44",
-  {
-   "commandName": "darkmatterdragonfruit",
-   "aliases": [
-    "dmd",
-    "darkmattter",
-    "dragonfruit"
-   ]
-  }
- ],
- [
-  "smartycards:45",
-  {
-   "commandName": "thegreatzucchini",
-   "aliases": [
-    "zucc",
-    "jewcchini",
-    "tgz"
-   ]
-  }
- ],
- [
-  "smartycards:46",
-  {
-   "commandName": "magicbeanstalk",
-   "aliases": [
-    "magic",
-    "magicbean",
-    "beanstalk1",
-    "mb3"
-   ]
-  }
- ],
- [
-  "smartycards:47",
-  {
-   "commandName": "lieutenantcarrotron",
-   "aliases": [
-    "lieutenant",
-    "carrotron",
-    "lc1"
-   ]
-  }
- ],
- [
-  "smartytricks:1",
-  {
-   "commandName": "iceberglettuce",
-   "aliases": [
-    "iceberg",
-    "lettuce",
-    "il"
-   ]
-  }
- ],
- [
-  "smartytricks:2",
-  {
-   "commandName": "bogofenlightenment",
-   "aliases": [
-    "bog",
-    "enlightenment",
-    "boe"
-   ]
-  }
- ],
- [
-  "smartytricks:3",
-  {
-   "commandName": "gravemistake",
-   "aliases": [
-    "graveflick",
-    "mistake",
-    "gflick"
-   ]
-  }
- ],
- [
-  "smartytricks:4",
-  {
-   "commandName": "springbean",
-   "aliases": [
-    "spring",
-    "sb3"
-   ]
-  }
- ],
- [
-  "smartytricks:5",
-  {
-   "commandName": "sowmagicbeans",
-   "aliases": [
-    "sow",
-    "smb",
-    "magicbeans"
-   ]
-  }
- ],
- [
-  "smartytricks:6",
-  {
-   "commandName": "planetofthegrapes",
-   "aliases": [
-    "potg",
-    "planet"
-   ]
-  }
- ],
- [
-  "smartytricks:7",
-  {
-   "commandName": "shrinkingviolet",
-   "aliases": [
-    "shrinking",
-    "violet",
-    "sv1"
-   ]
-  }
- ],
- [
-  "smartytricks:8",
-  {
-   "commandName": "sappyplace",
-   "aliases": [
-    "sappy",
-    "place",
-    "sp6"
-   ]
-  }
- ],
- [
-  "smartytricks:9",
-  {
-   "commandName": "bigchill",
-   "aliases": [
-    "chill",
-    "bc1"
-   ]
-  }
- ],
- [
-  "smartytricks:10",
-  {
-   "commandName": "whirlwind",
-   "aliases": [
-    "whirl",
-    "wind",
-    "blow1"
-   ]
-  }
- ],
- [
-  "smartytricks:11",
-  {
-   "commandName": "transmogrify",
-   "aliases": [
-    "mog",
-    "transmog"
-   ]
-  }
- ],
- [
-  "smartytricks:12",
-  {
-   "commandName": "goatify",
-   "aliases": [
-    "rosig"
-   ]
-  }
- ],
- [
-  "smartytricks:32",
-  {
-   "commandName": "lightspeedseed",
-   "aliases": [
-    "lightspeed",
-    "lightseed",
-    "ls1"
-   ]
-  }
- ],
- [
-  "solarcards:1",
-  {
-   "commandName": "lilbuddy",
-   "aliases": [
-    "lil",
-    "buddy",
-    "lb2",
-    "lil'buddy"
-   ]
-  }
- ],
- [
-  "solarcards:2",
-  {
-   "commandName": "bellflower",
-   "aliases": [
-    "bell"
-   ]
-  }
- ],
- [
-  "solarcards:3",
-  {
-   "commandName": "cosmoss",
-   "aliases": []
-  }
- ],
- [
-  "solarcards:4",
-  {
-   "commandName": "hauntedpumpking",
-   "aliases": [
-    "haunted",
-    "pumpkin",
-    "hp"
-   ]
-  }
- ],
- [
-  "solarcards:5",
-  {
-   "commandName": "kernelpult",
-   "aliases": [
-    "kernel2",
-    "kp"
-   ]
-  }
- ],
- [
-  "solarcards:6",
-  {
-   "commandName": "morningglory",
-   "aliases": [
-    "morning",
-    "glory",
-    "mg2"
-   ]
-  }
- ],
- [
-  "solarcards:7",
-  {
-   "commandName": "primalsunflower",
-   "aliases": [
-    "psf",
-    "primalsun"
-   ]
-  }
- ],
- [
-  "solarcards:8",
-  {
-   "commandName": "sunflower",
-   "aliases": [
-    "regularsunflower",
-    "regularsun"
-   ]
-  }
- ],
- [
-  "solarcards:9",
-  {
-   "commandName": "sunshroom",
-   "aliases": [
-    "ss10"
-   ]
-  }
- ],
- [
-  "solarcards:10",
-  {
-   "commandName": "applesaucer",
-   "aliases": [
-    "apple",
-    "saucer",
-    "as2"
-   ]
-  }
- ],
- [
-  "solarcards:11",
-  {
-   "commandName": "eyespore",
-   "aliases": [
-    "eye"
-   ]
-  }
- ],
- [
-  "solarcards:12",
-  {
-   "commandName": "fumeshroom",
-   "aliases": [
-    "fume",
-    "fs"
-   ]
-  }
- ],
- [
-  "solarcards:13",
-  {
-   "commandName": "mixednuts",
-   "aliases": [
-    "mixed",
-    "mn2"
-   ]
-  }
- ],
- [
-  "solarcards:14",
-  {
-   "commandName": "peppermd",
-   "aliases": [
-    "pepper",
-    "pmd"
-   ]
-  }
- ],
- [
-  "solarcards:15",
-  {
-   "commandName": "sagesage",
-   "aliases": [
-    "sage",
-    "ss9"
-   ]
-  }
- ],
- [
-  "solarcards:16",
-  {
-   "commandName": "sunflowerseed",
-   "aliases": [
-    "sunseed. ss11"
-   ]
-  }
- ],
- [
-  "solarcards:17",
-  {
-   "commandName": "twinsunflower",
-   "aliases": [
-    "twin",
-    "twinsun",
-    "tsf",
-    "ts3"
-   ]
-  }
- ],
- [
-  "solarcards:18",
-  {
-   "commandName": "cosmicflower",
-   "aliases": [
-    "cf",
-    "cosmicsunflower"
-   ]
-  }
- ],
- [
-  "solarcards:19",
-  {
-   "commandName": "jackolantern",
-   "aliases": [
-    "jack",
-    "jacko",
-    "lantern",
-    "jol",
-    "jl"
-   ]
-  }
- ],
- [
-  "solarcards:20",
-  {
-   "commandName": "ketchupmechanic",
-   "aliases": [
-    "ketchup",
-    "mechanic",
-    "km"
-   ]
-  }
- ],
- [
-  "solarcards:21",
-  {
-   "commandName": "magnifyinggrass",
-   "aliases": [
-    "mag",
-    "magnifying",
-    "mg3"
-   ]
-  }
- ],
- [
-  "solarcards:22",
-  {
-   "commandName": "sunniershroom",
-   "aliases": [
-    "sunnier",
-    "ss12"
-   ]
-  }
- ],
- [
-  "solarcards:23",
-  {
-   "commandName": "venusflytrap",
-   "aliases": [
-    "venus",
-    "flytrap2",
-    "vf1"
-   ]
-  }
- ],
- [
-  "solarcards:24",
-  {
-   "commandName": "bloomerang",
-   "aliases": [
-    "bloom",
-    "bloomer",
-    "boomerang"
-   ]
-  }
- ],
- [
-  "solarcards:25",
-  {
-   "commandName": "chomper",
-   "aliases": []
-  }
- ],
- [
-  "solarcards:26",
-  {
-   "commandName": "elderberry",
-   "aliases": [
-    "elder"
-   ]
-  }
- ],
- [
-  "solarcards:27",
-  {
-   "commandName": "heartichoke",
-   "aliases": [
-    "hearti",
-    "choke"
-   ]
-  }
- ],
- [
-  "solarcards:28",
-  {
-   "commandName": "metalpetalsunflower",
-   "aliases": [
-    "metal",
-    "petal",
-    "metalpetal",
-    "metalpetalsun",
-    "mps"
-   ]
-  }
- ],
- [
-  "solarcards:29",
-  {
-   "commandName": "powerflower",
-   "aliases": [
-    "power",
-    "pf3"
-   ]
-  }
- ],
- [
-  "solarcards:30",
-  {
-   "commandName": "wingnut",
-   "aliases": [
-    "wing",
-    "wn2"
-   ]
-  }
- ],
- [
-  "solarcards:31",
-  {
-   "commandName": "aloesaurus",
-   "aliases": [
-    "aloe"
-   ]
-  }
- ],
- [
-  "solarcards:32",
-  {
-   "commandName": "astrocado",
-   "aliases": [
-    "cado",
-    "astro2"
-   ]
-  }
- ],
- [
-  "solarcards:33",
-  {
-   "commandName": "briarrose",
-   "aliases": [
-    "briar",
-    "br2"
-   ]
-  }
- ],
- [
-  "solarcards:34",
-  {
-   "commandName": "cobcannon",
-   "aliases": [
-    "cob",
-    "cannon1",
-    "cc2"
-   ]
-  }
- ],
- [
-  "solarcards:35",
-  {
-   "commandName": "laserbean",
-   "aliases": [
-    "laser",
-    "lb3"
-   ]
-  }
- ],
- [
-  "solarcards:36",
-  {
-   "commandName": "smashingpumpkin",
-   "aliases": [
-    "smashing2",
-    "pumpkun2",
-    "sp7"
-   ]
-  }
- ],
- [
-  "solarcards:37",
-  {
-   "commandName": "threeheadedchomper",
-   "aliases": [
-    "threeheaded",
-    "3headed",
-    "3headedchomper",
-    "thc",
-    "3hc"
-   ]
-  }
- ],
- [
-  "solarcards:38",
-  {
-   "commandName": "toadstool",
-   "aliases": [
-    "toad",
-    "stool"
-   ]
-  }
- ],
- [
-  "solarcards:39",
-  {
-   "commandName": "astrovera",
-   "aliases": [
-    "astro3",
-    "vera",
-    "av1"
-   ]
-  }
- ],
- [
-  "solarcards:40",
-  {
-   "commandName": "cornucopia",
-   "aliases": [
-    "cornucopium",
-    "copium"
-   ]
-  }
- ],
- [
-  "solarcards:41",
-  {
-   "commandName": "astrocadopit",
-   "aliases": [
-    "pit",
-    "ap"
-   ]
-  }
- ],
- [
-  "solartricks:1",
-  {
-   "commandName": "waterballoons",
-   "aliases": [
-    "water",
-    "balloons",
-    "balloon",
-    "wb3"
-   ]
-  }
- ],
- [
-  "solartricks:2",
-  {
-   "commandName": "2ndbesttacoofalltime",
-   "aliases": [
-    "taco",
-    "2ndbest",
-    "secondbest",
-    "secondbesttaco",
-    "besttaco",
-    "tacoofalltime",
-    "secondbesttacoofalltime",
-    "2btoat",
-    "sbtoat",
-    "2nd-besttaco"
-   ]
-  }
- ],
- [
-  "solartricks:3",
-  {
-   "commandName": "crosspollination",
-   "aliases": [
-    "strike1",
-    "ss13",
-    "sunstrike",
-    "xpollination",
-    "xpol",
-    "crosspoll",
-    "cross-pollination",
-    "xp",
-    "cp5"
-   ]
-  }
- ],
- [
-  "solartricks:4",
-  {
-   "commandName": "solarwinds",
-   "aliases": [
-    "solar",
-    "winds",
-    "sw1"
-   ]
-  }
- ],
- [
-  "solartricks:5",
-  {
-   "commandName": "whackazombie",
-   "aliases": [
-    "hammer",
-    "whack",
-    "waz",
-    "wz"
-   ]
-  }
- ],
- [
-  "solartricks:6",
-  {
-   "commandName": "lawnmower",
-   "aliases": [
-    "lawn",
-    "mower"
-   ]
-  }
- ],
- [
-  "solartricks:7",
-  {
-   "commandName": "venusflytraplanet",
-   "aliases": [
-    "flytraplanet",
-    "vfp",
-    "vf2"
-   ]
-  }
- ],
- [
-  "solartricks:8",
-  {
-   "commandName": "squash",
-   "aliases": []
-  }
- ],
- [
-  "solartricks:9",
-  {
-   "commandName": "tacticalcuke",
-   "aliases": [
-    "tactical",
-    "cuke",
-    "tc1"
-   ]
-  }
- ],
- [
-  "solartricks:10",
-  {
-   "commandName": "weedwhack",
-   "aliases": [
-    "weed1",
-    "whack",
-    "ww",
-    "weed",
-    "whackweed"
-   ]
-  }
- ],
- [
-  "solartricks:11",
-  {
-   "commandName": "scorchedearth",
-   "aliases": [
-    "scorch",
-    "scorched",
-    "se"
-   ]
-  }
- ],
- [
-  "solartricks:12",
-  {
-   "commandName": "geyser",
-   "aliases": [
-    "heal1"
-   ]
-  }
- ],
- [
-  "beastlycards:1",
-  {
-   "commandName": "goat",
-   "aliases": [
-    "greatestofalltime"
-   ]
-  }
- ],
- [
-  "beastlycards:2",
-  {
-   "commandName": "catlady",
-   "aliases": [
-    "cat",
-    "lady"
-   ]
-  }
- ],
- [
-  "beastlycards:3",
-  {
-   "commandName": "cheesecutter",
-   "aliases": [
-    "cheese",
-    "cutter"
-   ]
-  }
- ],
- [
-  "beastlycards:4",
-  {
-   "commandName": "dogwalker",
-   "aliases": [
-    "dog",
-    "walker"
-   ]
-  }
- ],
- [
-  "beastlycards:5",
-  {
-   "commandName": "fraidycat",
-   "aliases": [
-    "fraidy"
-   ]
-  }
- ],
- [
-  "beastlycards:8",
-  {
-   "commandName": "skunkpunk",
-   "aliases": [
-    "skunk",
-    "punk"
-   ]
-  }
- ],
- [
-  "beastlycards:9",
-  {
-   "commandName": "snorkelzombie",
-   "aliases": [
-    "snorkel"
-   ]
-  }
- ],
- [
-  "beastlycards:11",
-  {
-   "commandName": "biodomebotanist",
-   "aliases": [
-    "botanist",
-    "biodome"
-   ]
-  }
- ],
- [
-  "beastlycards:12",
-  {
-   "commandName": "cyborgzombie",
-   "aliases": [
-    "cyborg",
-    "smallborg"
-   ]
-  }
- ],
- [
-  "beastlycards:13",
-  {
-   "commandName": "energydrinkzombie",
-   "aliases": [
-    "energydrink",
-    "energy",
-    "drinkzombie",
-    "drink",
-    "edz"
-   ]
-  }
- ],
- [
-  "beastlycards:15",
-  {
-   "commandName": "hauntingghost",
-   "aliases": [
-    "ghost",
-    "deadghost"
-   ]
-  }
- ],
- [
-  "beastlycards:16",
-  {
-   "commandName": "hauntingzombie",
-   "aliases": [
-    "haunting"
-   ]
-  }
- ],
- [
-  "beastlycards:18",
-  {
-   "commandName": "killerwhale",
-   "aliases": [
-    "whale",
-    "killer",
-    "orca"
-   ]
-  }
- ],
- [
-  "beastlycards:19",
-  {
-   "commandName": "piedpiper",
-   "aliases": [
-    "pied",
-    "piper",
-    "rats"
-   ]
-  }
- ],
- [
-  "beastlycards:20",
-  {
-   "commandName": "squirrelherder",
-   "aliases": [
-    "squirrel",
-    "herder",
-    "nutsorberries"
-   ]
-  }
- ],
- [
-  "beastlycards:21",
-  {
-   "commandName": "synchronizedswimmer",
-   "aliases": [
-    "sync",
-    "syncswimmer",
-    "swimmer"
-   ]
-  }
- ],
- [
-  "beastlycards:23",
-  {
-   "commandName": "zookeeper",
-   "aliases": [
-    "zk1",
-    "zoo"
-   ]
-  }
- ],
- [
-  "beastlycards:27",
-  {
-   "commandName": "dolphinrider",
-   "aliases": [
-    "dolphin"
-   ]
-  }
- ],
- [
-  "beastlycards:28",
-  {
-   "commandName": "hovergoat3000",
-   "aliases": [
-    "hover",
-    "hovergoat",
-    "hg3"
-   ]
-  }
- ],
- [
-  "beastlycards:29",
-  {
-   "commandName": "loudmouth",
-   "aliases": [
-    "lm",
-    "loud"
-   ]
-  }
- ],
- [
-  "beastlycards:30",
-  {
-   "commandName": "vimpire",
-   "aliases": [
-    "vimp"
-   ]
-  }
- ],
- [
-  "beastlycards:32",
-  {
-   "commandName": "zombieyeti",
-   "aliases": [
-    "zy",
-    "yeti",
-    "boomeryeti"
-   ]
-  }
- ],
- [
-  "beastlycards:33",
-  {
-   "commandName": "ancientvimpire",
-   "aliases": [
-    "ancient",
-    "ancientvimp"
-   ]
-  }
- ],
- [
-  "beastlycards:34",
-  {
-   "commandName": "cosmicyeti",
-   "aliases": [
-    "cy",
-    "thanosyeti"
-   ]
-  }
- ],
- [
-  "beastlycards:35",
-  {
-   "commandName": "interstellarbountyhunter",
-   "aliases": [
-    "bountyhunter",
-    "ibh",
-    "bounty",
-    "hunter",
-    "interstellar"
-   ]
-  }
- ],
- [
-  "beastlycards:36",
-  {
-   "commandName": "kangaroorider",
-   "aliases": [
-    "kangaroo",
-    "kr"
-   ]
-  }
- ],
- [
-  "beastlycards:37",
-  {
-   "commandName": "overstuffedzombie",
-   "aliases": [
-    "overstuffed",
-    "stuffedzombie",
-    "bigchungus",
-    "caseoh"
-   ]
-  }
- ],
- [
-  "beastlycards:38",
-  {
-   "commandName": "primordialcheeseshover",
-   "aliases": [
-    "pcs",
-    "cheeseshover",
-    "primordcheese",
-    "shover"
-   ]
-  }
- ],
- [
-  "beastlycards:39",
-  {
-   "commandName": "sneezingzombie",
-   "aliases": [
-    "sneezing",
-    "sneze"
-   ]
-  }
- ],
- [
-  "beastlycards:40",
-  {
-   "commandName": "surferzombie",
-   "aliases": [
-    "surfer"
-   ]
-  }
- ],
- [
-  "beastlycards:42",
-  {
-   "commandName": "mondobronto",
-   "aliases": [
-    "mondo",
-    "bronto",
-    "mb"
-   ]
-  }
- ],
- [
-  "beastlycards:43",
-  {
-   "commandName": "smashinggargantuar",
-   "aliases": [
-    "smashing",
-    "smashinggargantuar",
-    "sg"
-   ]
-  }
- ],
- [
-  "beastlycards:44",
-  {
-   "commandName": "supernovagargantuar",
-   "aliases": [
-    "supernova",
-    "supernovagargantuar",
-    "nova",
-    "novagarg"
-   ]
-  }
- ],
- [
-  "beastlycards:45",
-  {
-   "commandName": "vengefulcyborg",
-   "aliases": [
-    "vengeful",
-    "vc",
-    "bigborg"
-   ]
-  }
- ],
- [
-  "beastlycards:46",
-  {
-   "commandName": "deepseagargantuar",
-   "aliases": [
-    "deepseagargantuar",
-    "dsg",
-    "seagarg",
-    "deepsea",
-    "deepseagarg"
-   ]
-  }
- ],
- [
-  "beastlycards:47",
-  {
-   "commandName": "kingofthegrill",
-   "aliases": [
-    "kinggrill",
-    "grillking",
-    "kotg",
-    "kingof",
-    "grill"
-   ]
-  }
- ],
- [
-  "beastlycards:49",
-  {
-   "commandName": "gargantuarthrowinggargantuar",
-   "aliases": [
-    "gargthrowing",
-    "gargthrower",
-    "gtg",
-    "gargantuar-throwinggargantuar",
-    "gargantuarthrowinggargantuar"
-   ]
-  }
- ],
- [
-  "beastlycards:50",
-  {
-   "commandName": "nursegargantuar",
-   "aliases": [
-    "nurse",
-    "gargnurse",
-    "nursegargantuar",
-    "ng"
-   ]
-  }
- ],
- [
-  "beastlycards:51",
-  {
-   "commandName": "octozombie",
-   "aliases": [
-    "octo",
-    "zombieocto",
-    "octopussy"
-   ]
-  }
- ],
- [
-  "beastlycards:52",
-  {
-   "commandName": "zombot1000",
-   "aliases": [
-    "zombot",
-    "1000zombot"
-   ]
-  }
- ],
- [
-  "beastlytricks:1",
-  {
-   "commandName": "nibble",
-   "aliases": [
-    "nibb"
-   ]
-  }
- ],
- [
-  "beastlytricks:2",
-  {
-   "commandName": "secretagent",
-   "aliases": [
-    "sa",
-    "secret",
-    "agent"
-   ]
-  }
- ],
- [
-  "beastlytricks:3",
-  {
-   "commandName": "yetilunchbox",
-   "aliases": [
-    "yetilunch",
-    "yl",
-    "lunchbox"
-   ]
-  }
- ],
- [
-  "beastlytricks:4",
-  {
-   "commandName": "extinctionevent",
-   "aliases": [
-    "extinction",
-    "ee"
-   ]
-  }
- ],
- [
-  "beastlytricks:5",
-  {
-   "commandName": "huntinggrounds",
-   "aliases": [
-    "hunting"
-   ]
-  }
- ],
- [
-  "beastlytricks:6",
-  {
-   "commandName": "totaleclipse",
-   "aliases": [
-    "total",
-    "eclipse",
-    "te"
-   ]
-  }
- ],
- [
-  "beastlytricks:7",
-  {
-   "commandName": "alienooze",
-   "aliases": [
-    "alien",
-    "ooze",
-    "ao"
-   ]
-  }
- ],
- [
-  "beastlytricks:8",
-  {
-   "commandName": "area22",
-   "aliases": [
-    "a22",
-    "area"
-   ]
-  }
- ],
- [
-  "beastlytricks:9",
-  {
-   "commandName": "bflat",
-   "aliases": [
-    "flatb",
-    "piano",
-    "csharp"
-   ]
-  }
- ],
- [
-  "beastlytricks:10",
-  {
-   "commandName": "vitaminz",
-   "aliases": [
-    "vitamin",
-    "vz"
-   ]
-  }
- ],
- [
-  "beastlytricks:11",
-  {
-   "commandName": "locustswarm",
-   "aliases": [
-    "locust",
-    "ls",
-    "swarm"
-   ]
-  }
- ],
- [
-  "beastlytricks:12",
-  {
-   "commandName": "maniacallaugh",
-   "aliases": [
-    "maniacal",
-    "ml",
-    "manicallaugh",
-    "laugh",
-    "mwahahaha"
-   ]
-  }
- ],
- [
-  "beastlytricks:13",
-  {
-   "commandName": "acidrain",
-   "aliases": [
-    "acid"
-   ]
-  }
- ],
- [
-  "beastlytricks:14",
-  {
-   "commandName": "evaporate",
-   "aliases": [
-    "evap"
-   ]
-  }
- ],
- [
-  "beastlytricks:15",
-  {
-   "commandName": "stayinalive",
-   "aliases": [
-    "stayingalive",
-    "ebbolt",
-    "ebsig",
-    "sa1"
-   ]
-  }
- ],
- [
-  "beastlytricks:16",
-  {
-   "commandName": "galvanize",
-   "aliases": [
-    "galv"
-   ]
-  }
- ],
- [
-  "brainycards:1",
-  {
-   "commandName": "cardboardrobotzombie",
-   "aliases": [
-    "cardbot",
-    "cardboard",
-    "cardboardrobot",
-    "cardboardzombie"
-   ]
-  }
- ],
- [
-  "brainycards:2",
-  {
-   "commandName": "chimneysweep",
-   "aliases": [
-    "chimney",
-    "sweep"
-   ]
-  }
- ],
- [
-  "brainycards:3",
-  {
-   "commandName": "interdimensionalzombie",
-   "aliases": [
-    "idz",
-    "interdimensional",
-    "overallbetter"
-   ]
-  }
- ],
- [
-  "brainycards:4",
-  {
-   "commandName": "leprechaunimp",
-   "aliases": [
-    "leprechaun"
-   ]
-  }
- ],
- [
-  "brainycards:5",
-  {
-   "commandName": "mustachewaxer",
-   "aliases": [
-    "waxer"
-   ]
-  }
- ],
- [
-  "brainycards:6",
-  {
-   "commandName": "neutronimp",
-   "aliases": [
-    "neutron",
-    "jimmyneutron"
-   ]
-  }
- ],
- [
-  "brainycards:7",
-  {
-   "commandName": "paparazzizombie",
-   "aliases": [
-    "paparazzi"
-   ]
-  }
- ],
- [
-  "brainycards:10",
-  {
-   "commandName": "cellphonezombie",
-   "aliases": [
-    "cellphone",
-    "call",
-    "youliketocallmeonyourcellphone",
-    "youusedtocallmeonmycellphone"
-   ]
-  }
- ],
- [
-  "brainycards:11",
-  {
-   "commandName": "cosmicscientist",
-   "aliases": [
-    "cos"
-   ]
-  }
- ],
- [
-  "brainycards:15",
-  {
-   "commandName": "poolshark",
-   "aliases": [
-    "pool"
-   ]
-  }
- ],
- [
-  "brainycards:16",
-  {
-   "commandName": "teleportationzombie",
-   "aliases": [
-    "tpz",
-    "teleportzombie"
-   ]
-  }
- ],
- [
-  "brainycards:18",
-  {
-   "commandName": "zombotdroneengineer",
-   "aliases": [
-    "drone",
-    "droneengineer",
-    "zde",
-    "engineer"
-   ]
-  }
- ],
- [
-  "brainycards:19",
-  {
-   "commandName": "brainvendor",
-   "aliases": [
-    "vendor",
-    "bv"
-   ]
-  }
- ],
- [
-  "brainycards:20",
-  {
-   "commandName": "duckstache",
-   "aliases": [
-    "ds",
-    "duck"
-   ]
-  }
- ],
- [
-  "brainycards:21",
-  {
-   "commandName": "electrician",
-   "aliases": [
-    "trybot"
-   ]
-  }
- ],
- [
-  "brainycards:23",
-  {
-   "commandName": "gentlemanzombie",
-   "aliases": [
-    "gentleman",
-    "gz"
-   ]
-  }
- ],
- [
-  "brainycards:24",
-  {
-   "commandName": "kiteflyer",
-   "aliases": [
-    "kite",
-    "kf"
-   ]
-  }
- ],
- [
-  "brainycards:26",
-  {
-   "commandName": "moonwalker",
-   "aliases": [
-    "mw",
-    "moon1"
-   ]
-  }
- ],
- [
-  "brainycards:27",
-  {
-   "commandName": "mustachemonument",
-   "aliases": [
-    "monument",
-    "mm"
-   ]
-  }
- ],
- [
-  "brainycards:28",
-  {
-   "commandName": "regiftingzombie",
-   "aliases": [
-    "regifting",
-    "rz",
-    "regifter"
-   ]
-  }
- ],
- [
-  "brainycards:30",
-  {
-   "commandName": "wormholegatekeeper",
-   "aliases": [
-    "wormhole",
-    "gatekeeper",
-    "wgk"
-   ]
-  }
- ],
- [
-  "brainycards:31",
-  {
-   "commandName": "zomblob",
-   "aliases": [
-    "blob",
-    "zom-blob"
-   ]
-  }
- ],
- [
-  "brainycards:32",
-  {
-   "commandName": "drummajor",
-   "aliases": [
-    "drum",
-    "major",
-    "drumminor"
-   ]
-  }
- ],
- [
-  "brainycards:33",
-  {
-   "commandName": "madchemist",
-   "aliases": [
-    "mad",
-    "chemist"
-   ]
-  }
- ],
- [
-  "brainycards:34",
-  {
-   "commandName": "mountainclimber",
-   "aliases": [
-    "climber"
-   ]
-  }
- ],
- [
-  "brainycards:35",
-  {
-   "commandName": "parasolzombie",
-   "aliases": [
-    "parasol"
-   ]
-  }
- ],
- [
-  "brainycards:39",
-  {
-   "commandName": "coptercommando",
-   "aliases": [
-    "copter",
-    "commando"
-   ]
-  }
- ],
- [
-  "brainycards:40",
-  {
-   "commandName": "gadgetscientist",
-   "aliases": [
-    "gadget",
-    "gadetsci",
-    "scientist"
-   ]
-  }
- ],
- [
-  "brainycards:41",
-  {
-   "commandName": "gargantuarmime",
-   "aliases": [
-    "gargmime",
-    "mimegargantuar",
-    "gargantuarmime",
-    "mime"
-   ]
-  }
- ],
- [
-  "brainycards:42",
-  {
-   "commandName": "portaltechnician",
-   "aliases": [
-    "portal",
-    "portaltech",
-    "tech"
-   ]
-  }
- ],
- [
-  "brainycards:43",
-  {
-   "commandName": "shieldcrusherviking",
-   "aliases": [
-    "shieldcrusher",
-    "viking"
-   ]
-  }
- ],
- [
-  "brainycards:45",
-  {
-   "commandName": "kitchensinkzombie",
-   "aliases": [
-    "kitchen",
-    "sink",
-    "ksz",
-    "kitchensinkzombie"
-   ]
-  }
- ],
- [
-  "brainycards:46",
-  {
-   "commandName": "wizardgargantuar",
-   "aliases": [
-    "wizardgarg",
-    "wizard"
-   ]
-  }
- ],
- [
-  "brainycards:48",
-  {
-   "commandName": "zombotdinotronicmechasaur",
-   "aliases": [
-    "mecha",
-    "mechasaur",
-    "zdm"
-   ]
-  }
- ],
- [
-  "brainycards:49",
-  {
-   "commandName": "trickster",
-   "aliases": [
-    "ster"
-   ]
-  }
- ],
- [
-  "brainycards:50",
-  {
-   "commandName": "ironboarder",
-   "aliases": [
-    "guy",
-    "iron",
-    "boarder",
-    "ib"
-   ]
-  }
- ],
- [
-  "brainycards:51",
-  {
-   "commandName": "spacecadet",
-   "aliases": [
-    "sc1",
-    "cadet"
-   ]
-  }
- ],
- [
-  "brainycards:52",
-  {
-   "commandName": "zombats",
-   "aliases": [
-    "bats"
-   ]
-  }
- ],
- [
-  "brainycards:53",
-  {
-   "commandName": "trickortreater",
-   "aliases": [
-    "tot",
-    "treater",
-    "treatingzombie"
-   ]
-  }
- ],
- [
-  "brainytricks:1",
-  {
-   "commandName": "teleport",
-   "aliases": [
-    "tp"
-   ]
-  }
- ],
- [
-  "brainytricks:2",
-  {
-   "commandName": "beammeup",
-   "aliases": [
-    "bmu",
-    "scotty"
-   ]
-  }
- ],
- [
-  "brainytricks:3",
-  {
-   "commandName": "cryobrain",
-   "aliases": [
-    "cb"
-   ]
-  }
- ],
- [
-  "brainytricks:4",
-  {
-   "commandName": "evolutionaryleap",
-   "aliases": [
-    "leap"
-   ]
-  }
- ],
- [
-  "brainytricks:5",
-  {
-   "commandName": "lurchforlunch",
-   "aliases": [
-    "lurch",
-    "bonus",
-    "bonusattack"
-   ]
-  }
- ],
- [
-  "brainytricks:6",
-  {
-   "commandName": "transformationstation",
-   "aliases": [
-    "ts1",
-    "leapstation",
-    "transformation",
-    "station"
-   ]
-  }
- ],
- [
-  "brainytricks:7",
-  {
-   "commandName": "fundeadraiser",
-   "aliases": [
-    "fundead",
-    "fdr"
-   ]
-  }
- ],
- [
-  "brainytricks:8",
-  {
-   "commandName": "medullanebula",
-   "aliases": [
-    "nebula",
-    "medulla",
-    "mn"
-   ]
-  }
- ],
- [
-  "brainytricks:9",
-  {
-   "commandName": "rocketscience",
-   "aliases": [
-    "rocketsci",
-    "rocket"
-   ]
-  }
- ],
- [
-  "brainytricks:10",
-  {
-   "commandName": "quarterlybonus",
-   "aliases": [
-    "booty",
-    "potofsilver",
-    "piratesbooty",
-    "quarterly",
-    "qb"
-   ]
-  }
- ],
- [
-  "brainytricks:11",
-  {
-   "commandName": "thinkingcap",
-   "aliases": [
-    "cap",
-    "thinking",
-    "tc"
-   ]
-  }
- ],
- [
-  "brainytricks:12",
-  {
-   "commandName": "triplication",
-   "aliases": [
-    "brick",
-    "trip",
-    "lication"
-   ]
-  }
- ],
- [
-  "brainytricks:13",
-  {
-   "commandName": "hailacopter",
-   "aliases": [
-    "helicopter",
-    "hac"
-   ]
-  }
- ],
- [
-  "brainytricks:14",
-  {
-   "commandName": "badmoonrising",
-   "aliases": [
-    "bmr",
-    "badmoon",
-    "badrising",
-    "moonrising"
-   ]
-  }
- ],
- [
-  "brainytricks:15",
-  {
-   "commandName": "carriedaway",
-   "aliases": [
-    "sbbonus",
-    "sbsig",
-    "ca"
-   ]
-  }
- ],
- [
-  "brainytricks:16",
-  {
-   "commandName": "cutdowntosize",
-   "aliases": [
-    "chop",
-    "cutdown",
-    "cdts"
-   ]
-  }
- ],
- [
-  "brainytricks:17",
-  {
-   "commandName": "eureka",
-   "aliases": [
-    "mustachesuper",
-    "pbsig"
-   ]
-  }
- ],
- [
-  "brainytricks:18",
-  {
-   "commandName": "potofgold",
-   "aliases": [
-    "pot",
-    "pog",
-    "gold"
-   ]
-  }
- ],
- [
-  "brainytricks:19",
-  {
-   "commandName": "shrinkray",
-   "aliases": [
-    "nerf",
-    "shrink",
-    "ray",
-    "rbsig",
-    "sr"
-   ]
-  }
- ],
- [
-  "brainytricks:20",
-  {
-   "commandName": "summoning",
-   "aliases": [
-    "summon"
-   ]
-  }
- ],
- [
-  "brainytricks:21",
-  {
-   "commandName": "telepathy",
-   "aliases": [
-    "telepath"
-   ]
-  }
- ],
- [
-  "brainytricks:22",
-  {
-   "commandName": "teleportationstation",
-   "aliases": [
-    "tpstation",
-    "tps",
-    "ts1"
-   ]
-  }
- ],
- [
-  "brainytricks:23",
-  {
-   "commandName": "terrorformer10000",
-   "aliases": [
-    "hgsig",
-    "terror",
-    "terrorformer",
-    "former",
-    "tf1",
-    "tf",
-    "terror-former10",
-    "000"
-   ]
-  }
- ],
- [
-  "brainytricks:24",
-  {
-   "commandName": "witchsfamiliar",
-   "aliases": [
-    "witchsfamiliar",
-    "imsig",
-    "wf"
-   ]
-  }
- ],
- [
-  "crazycards:1",
-  {
-   "commandName": "backupdancer",
-   "aliases": [
-    "backup"
-   ]
-  }
- ],
- [
-  "crazycards:3",
-  {
-   "commandName": "disconaut",
-   "aliases": [
-    "dn",
-    "naut",
-    "disco-naut"
-   ]
-  }
- ],
- [
-  "crazycards:4",
-  {
-   "commandName": "graverobber",
-   "aliases": [
-    "grobber",
-    "robber"
-   ]
-  }
- ],
- [
-  "crazycards:5",
-  {
-   "commandName": "loosecannon",
-   "aliases": [
-    "cannon2",
-    "cannonball",
-    "loose",
-    "lc"
-   ]
-  }
- ],
- [
-  "crazycards:6",
-  {
-   "commandName": "mysteryegg",
-   "aliases": [
-    "egg",
-    "me"
-   ]
-  }
- ],
- [
-  "crazycards:7",
-  {
-   "commandName": "quickdrawconman",
-   "aliases": [
-    "conman",
-    "qdc",
-    "qcm",
-    "quickdraw",
-    "con-man",
-    "con"
-   ]
-  }
- ],
- [
-  "crazycards:8",
-  {
-   "commandName": "tennischamp",
-   "aliases": [
-    "tennis",
-    "tc3"
-   ]
-  }
- ],
- [
-  "crazycards:10",
-  {
-   "commandName": "unlifeoftheparty",
-   "aliases": [
-    "unlife",
-    "uotp",
-    "up1"
-   ]
-  }
- ],
- [
-  "crazycards:11",
-  {
-   "commandName": "aerobicsinstructor",
-   "aliases": [
-    "aerobics",
-    "instructor",
-    "ai",
-    "richardsimmons"
-   ]
-  }
- ],
- [
-  "crazycards:12",
-  {
-   "commandName": "barrelofdeadbeards",
-   "aliases": [
-    "bod",
-    "barrel"
-   ]
-  }
- ],
- [
-  "crazycards:13",
-  {
-   "commandName": "congazombie",
-   "aliases": [
-    "conga",
-    "cz2"
-   ]
-  }
- ],
- [
-  "crazycards:14",
-  {
-   "commandName": "cuckoozombie",
-   "aliases": [
-    "cz3",
-    "cuckoo",
-    "clock"
-   ]
-  }
- ],
- [
-  "crazycards:15",
-  {
-   "commandName": "discodancefloor",
-   "aliases": [
-    "ddf",
-    "discofloor"
-   ]
-  }
- ],
- [
-  "crazycards:19",
-  {
-   "commandName": "newspaperzombie",
-   "aliases": [
-    "newspaper"
-   ]
-  }
- ],
- [
-  "crazycards:20",
-  {
-   "commandName": "quasarwizard",
-   "aliases": [
-    "quazard",
-    "quasar",
-    "quazar"
-   ]
-  }
- ],
- [
-  "crazycards:21",
-  {
-   "commandName": "spaceninja",
-   "aliases": [
-    "sn2"
-   ]
-  }
- ],
- [
-  "crazycards:23",
-  {
-   "commandName": "zombiesbestfriend",
-   "aliases": [
-    "zbf",
-    "bestfriend",
-    "zombie'sbestfriend"
-   ]
-  }
- ],
- [
-  "crazycards:25",
-  {
-   "commandName": "abracadaver",
-   "aliases": [
-    "abra",
-    "dab"
-   ]
-  }
- ],
- [
-  "crazycards:26",
-  {
-   "commandName": "discozombie",
-   "aliases": [
-    "disco"
-   ]
-  }
- ],
- [
-  "crazycards:27",
-  {
-   "commandName": "explodingimp",
-   "aliases": [
-    "bomb",
-    "bombimp",
-    "exploding"
-   ]
-  }
- ],
- [
-  "crazycards:28",
-  {
-   "commandName": "fireworkszombie",
-   "aliases": [
-    "fireworks",
-    "july4thzombie"
-   ]
-  }
- ],
- [
-  "crazycards:29",
-  {
-   "commandName": "gizzardlizard",
-   "aliases": [
-    "gizzard",
-    "lizard",
-    "giz",
-    "gizzardlizzard"
-   ]
-  }
- ],
- [
-  "crazycards:30",
-  {
-   "commandName": "jester",
-   "aliases": [
-    "jes"
-   ]
-  }
- ],
- [
-  "crazycards:33",
-  {
-   "commandName": "bobblehead",
-   "aliases": [
-    "lefiizz",
-    "headhunter"
-   ]
-  }
- ],
- [
-  "crazycards:35",
-  {
-   "commandName": "cosmicdancer",
-   "aliases": [
-    "cd3",
-    "cosmicdance"
-   ]
-  }
- ],
- [
-  "crazycards:36",
-  {
-   "commandName": "gargantuarthrowingimp",
-   "aliases": [
-    "gti",
-    "gargthrowingimp",
-    "garg-throwing-imp",
-    "gargantuar-throwingimp"
-   ]
-  }
- ],
- [
-  "crazycards:37",
-  {
-   "commandName": "orchestraconductor",
-   "aliases": [
-    "orchestra",
-    "conductor",
-    "alsoaerobics",
-    "aerobicsconductor",
-    "fryaerobics"
-   ]
-  }
- ],
- [
-  "crazycards:38",
-  {
-   "commandName": "stupidcupid",
-   "aliases": [
-    "stupid",
-    "cupid"
-   ]
-  }
- ],
- [
-  "crazycards:39",
-  {
-   "commandName": "tankylosaurus",
-   "aliases": [
-    "tanky"
-   ]
-  }
- ],
- [
-  "crazycards:41",
-  {
-   "commandName": "valkyrie",
-   "aliases": [
-    "valk"
-   ]
-  }
- ],
- [
-  "crazycards:42",
-  {
-   "commandName": "binarystars",
-   "aliases": [
-    "binary"
-   ]
-  }
- ],
- [
-  "crazycards:43",
-  {
-   "commandName": "flamencozombie",
-   "aliases": [
-    "flamenco"
-   ]
-  }
- ],
- [
-  "crazycards:44",
-  {
-   "commandName": "footsoldierzombie",
-   "aliases": [
-    "souljaboi",
-    "footsoldier",
-    "foot",
-    "soldier",
-    "fsz"
-   ]
-  }
- ],
- [
-  "crazycards:45",
-  {
-   "commandName": "frankentuar",
-   "aliases": [
-    "frank"
-   ]
-  }
- ],
- [
-  "crazycards:46",
-  {
-   "commandName": "hippityhopgargantuar",
-   "aliases": [
-    "hippityhopgargantuar",
-    "bunnygarg",
-    "bunny",
-    "hhg",
-    "bg2",
-    "hippityhop",
-    "hippityhopgarg"
-   ]
-  }
- ],
- [
-  "crazycards:47",
-  {
-   "commandName": "impthrowinggargantuar",
-   "aliases": [
-    "impthrowinggargantuar",
-    "itg"
-   ]
-  }
- ],
- [
-  "crazycards:48",
-  {
-   "commandName": "discotron3000",
-   "aliases": [
-    "discotron",
-    "dt"
-   ]
-  }
- ],
- [
-  "crazycards:49",
-  {
-   "commandName": "gasgiant",
-   "aliases": [
-    "gg2",
-    "gas",
-    "giant",
-    "fart",
-    "fartgarg"
-   ]
-  }
- ],
- [
-  "crazycards:51",
-  {
-   "commandName": "captaindeadbeard",
-   "aliases": [
-    "dead",
-    "deadbeard",
-    "beard",
-    "cd1"
-   ]
-  }
- ],
- [
-  "crazycards:52",
-  {
-   "commandName": "impfinityclone",
-   "aliases": [
-    "clone1",
-    "ifclone",
-    "ic1"
-   ]
-  }
- ],
- [
-  "crazytricks:1",
-  {
-   "commandName": "bungeeplumber",
-   "aliases": [
-    "bungee",
-    "plumber"
-   ]
-  }
- ],
- [
-  "crazytricks:2",
-  {
-   "commandName": "trapperterritory",
-   "aliases": [
-    "tt2",
-    "territory",
-    "trapper"
-   ]
-  }
- ],
- [
-  "crazytricks:3",
-  {
-   "commandName": "explodingfruitcake",
-   "aliases": [
-    "fruitcake",
-    "ef"
-   ]
-  }
- ],
- [
-  "crazytricks:4",
-  {
-   "commandName": "finalmission",
-   "aliases": [
-    "fm1"
-   ]
-  }
- ],
- [
-  "crazytricks:5",
-  {
-   "commandName": "sugarytreat",
-   "aliases": [
-    "sugary",
-    "st"
-   ]
-  }
- ],
- [
-  "crazytricks:6",
-  {
-   "commandName": "zombotswrath",
-   "aliases": [
-    "wrath",
-    "zw",
-    "zombot'swrath"
-   ]
-  }
- ],
- [
-  "crazytricks:7",
-  {
-   "commandName": "moonbasez",
-   "aliases": [
-    "mbz",
-    "moonbase"
-   ]
-  }
- ],
- [
-  "crazytricks:8",
-  {
-   "commandName": "unexpectedgifts",
-   "aliases": [
-    "gifts",
-    "unexpected"
-   ]
-  }
- ],
- [
-  "crazytricks:9",
-  {
-   "commandName": "cakesplosion",
-   "aliases": [
-    "cake",
-    "cakeplosion"
-   ]
-  }
- ],
- [
-  "crazytricks:10",
-  {
-   "commandName": "thechickening",
-   "aliases": [
-    "chickening",
-    "tc4"
-   ]
-  }
- ],
- [
-  "crazytricks:11",
-  {
-   "commandName": "gargantuarsfeast",
-   "aliases": [
-    "gargfeast",
-    "feast",
-    "gf",
-    "gargantuars'feast"
-   ]
-  }
- ],
- [
-  "crazytricks:12",
-  {
-   "commandName": "brutestrength",
-   "aliases": [
-    "brute",
-    "strength",
-    "bs1"
-   ]
-  }
- ],
- [
-  "crazytricks:13",
-  {
-   "commandName": "danceoff",
-   "aliases": [
-    "do"
-   ]
-  }
- ],
- [
-  "crazytricks:14",
-  {
-   "commandName": "electrobolt",
-   "aliases": [
-    "bolt"
-   ]
-  }
- ],
- [
-  "crazytricks:16",
-  {
-   "commandName": "meteorz",
-   "aliases": [
-    "mz"
-   ]
-  }
- ],
- [
-  "heartycards:1",
-  {
-   "commandName": "armwrestler",
-   "aliases": [
-    "arm",
-    "wrestler",
-    "aw"
-   ]
-  }
- ],
- [
-  "heartycards:2",
-  {
-   "commandName": "baseballzombie",
-   "aliases": [
-    "baseball",
-    "bz"
-   ]
-  }
- ],
- [
-  "heartycards:5",
-  {
-   "commandName": "geneticexperiment",
-   "aliases": [
-    "ge",
-    "genetic",
-    "experiment",
-    "genexperiment"
-   ]
-  }
- ],
- [
-  "heartycards:8",
-  {
-   "commandName": "planetarygladiator",
-   "aliases": [
-    "gladiator",
-    "gladdydaddy",
-    "pg",
-    "glad",
-    "gladdy"
-   ]
-  }
- ],
- [
-  "heartycards:10",
-  {
-   "commandName": "zombiemiddlemanager",
-   "aliases": [
-    "zmm",
-    "middlemanager",
-    "middle",
-    "manager"
-   ]
-  }
- ],
- [
-  "heartycards:11",
-  {
-   "commandName": "zombologyteacher",
-   "aliases": [
-    "zt",
-    "teacher",
-    "zombology"
-   ]
-  }
- ],
- [
-  "heartycards:13",
-  {
-   "commandName": "conehead",
-   "aliases": [
-    "cone",
-    "ch"
-   ]
-  }
- ],
- [
-  "heartycards:15",
-  {
-   "commandName": "flagzombie",
-   "aliases": [
-    "flag",
-    "fz2"
-   ]
-  }
- ],
- [
-  "heartycards:16",
-  {
-   "commandName": "gargologist",
-   "aliases": [
-    "gargolog"
-   ]
-  }
- ],
- [
-  "heartycards:17",
-  {
-   "commandName": "jurassicfossilhead",
-   "aliases": [
-    "jf",
-    "fossil",
-    "jurassic",
-    "fossilhead"
-   ]
-  }
- ],
- [
-  "heartycards:18",
-  {
-   "commandName": "lostcolosseum",
-   "aliases": [
-    "lost",
-    "colosseum",
-    "lc5"
-   ]
-  }
- ],
- [
-  "heartycards:19",
-  {
-   "commandName": "sumowrestler",
-   "aliases": [
-    "sumo",
-    "sw2"
-   ]
-  }
- ],
- [
-  "heartycards:21",
-  {
-   "commandName": "turkeyrider",
-   "aliases": [
-    "tr1",
-    "turkey"
-   ]
-  }
- ],
- [
-  "heartycards:22",
-  {
-   "commandName": "cosmicsportsstar",
-   "aliases": [
-    "css",
-    "sportsstar"
-   ]
-  }
- ],
- [
-  "heartycards:25",
-  {
-   "commandName": "landscaper",
-   "aliases": [
-    "scaper"
-   ]
-  }
- ],
- [
-  "heartycards:26",
-  {
-   "commandName": "teammascot",
-   "aliases": [
-    "tm",
-    "mascot"
-   ]
-  }
- ],
- [
-  "heartycards:27",
-  {
-   "commandName": "trashcanzombie",
-   "aliases": [
-    "tcz",
-    "trash",
-    "trashcan",
-    "trash-canzombie"
-   ]
-  }
- ],
- [
-  "heartycards:29",
-  {
-   "commandName": "bonustrackbuckethead",
-   "aliases": [
-    "btb",
-    "bonustrack",
-    "bonustrackbucketboi"
-   ]
-  }
- ],
- [
-  "heartycards:30",
-  {
-   "commandName": "buckethead",
-   "aliases": [
-    "bucketboi",
-    "bh3"
-   ]
-  }
- ],
- [
-  "heartycards:31",
-  {
-   "commandName": "celestialcustodian",
-   "aliases": [
-    "cc6",
-    "jaintor",
-    "spacejanitor",
-    "mop",
-    "custodian",
-    "celestial",
-    "janitor"
-   ]
-  }
- ],
- [
-  "heartycards:32",
-  {
-   "commandName": "medic",
-   "aliases": [
-    "med"
-   ]
-  }
- ],
- [
-  "heartycards:33",
-  {
-   "commandName": "stompadon",
-   "aliases": [
-    "don"
-   ]
-  }
- ],
- [
-  "heartycards:34",
-  {
-   "commandName": "turquoiseskullzombie",
-   "aliases": [
-    "tsz",
-    "turquoise",
-    "turquoiseskull",
-    "turq"
-   ]
-  }
- ],
- [
-  "heartycards:35",
-  {
-   "commandName": "zombiecoach",
-   "aliases": [
-    "zc1",
-    "coach"
-   ]
-  }
- ],
- [
-  "heartycards:36",
-  {
-   "commandName": "zombieking",
-   "aliases": [
-    "zk",
-    "king"
-   ]
-  }
- ],
- [
-  "heartycards:37",
-  {
-   "commandName": "allstarzombie",
-   "aliases": [
-    "asz",
-    "allstar",
-    "football",
-    "footballzombie",
-    "az"
-   ]
-  }
- ],
- [
-  "heartycards:38",
-  {
-   "commandName": "chumchampion",
-   "aliases": [
-    "cc7",
-    "chum",
-    "champion",
-    "chumpion"
-   ]
-  }
- ],
- [
-  "heartycards:39",
-  {
-   "commandName": "intergalacticwarlord",
-   "aliases": [
-    "iw",
-    "warlord",
-    "intergalactic"
-   ]
-  }
- ],
- [
-  "heartycards:41",
-  {
-   "commandName": "primevalyeti",
-   "aliases": [
-    "py",
-    "chungusyeti",
-    "primeval",
-    "pyeti",
-    "primalyeti",
-    "primal-yeti"
-   ]
-  }
- ],
- [
-  "heartycards:42",
-  {
-   "commandName": "razombie",
-   "aliases": [
-    "ra",
-    "rz2"
-   ]
-  }
- ],
- [
-  "heartycards:43",
-  {
-   "commandName": "screendoorzombie",
-   "aliases": [
-    "sdz",
-    "screendoor",
-    "screen"
-   ]
-  }
- ],
- [
-  "heartycards:44",
-  {
-   "commandName": "coffeezombie",
-   "aliases": [
-    "coffee2",
-    "cz5"
-   ]
-  }
- ],
- [
-  "heartycards:45",
-  {
-   "commandName": "defensiveend",
-   "aliases": [
-    "defensive",
-    "end",
-    "de"
-   ]
-  }
- ],
- [
-  "heartycards:46",
-  {
-   "commandName": "undyingpharaoh",
-   "aliases": [
-    "up2",
-    "undying",
-    "pharaoh",
-    "pharoah",
-    "undyingfairy",
-    "fairy"
-   ]
-  }
- ],
- [
-  "heartycards:47",
-  {
-   "commandName": "zombotbattlecruiser5000",
-   "aliases": [
-    "zbc",
-    "battlecruiser",
-    "cruiser",
-    "barrelboi",
-    "zb3",
-    "zombot5",
-    "zb5"
-   ]
-  }
- ],
- [
-  "heartycards:48",
-  {
-   "commandName": "knightofthelivingdead",
-   "aliases": [
-    "kotld",
-    "kld",
-    "knight"
-   ]
-  }
- ],
- [
-  "heartycards:49",
-  {
-   "commandName": "rodeogargantuar",
-   "aliases": [
-    "rodeo",
-    "rg",
-    "rodeogargantuar"
-   ]
-  }
- ],
- [
-  "heartycards:50",
-  {
-   "commandName": "wannabehero",
-   "aliases": [
-    "wbh",
-    "wannabe",
-    "wannabegarg",
-    "worstlegendary"
-   ]
-  }
- ],
- [
-  "heartycards:51",
-  {
-   "commandName": "octopet",
-   "aliases": [
-    "op2",
-    "octopus"
-   ]
-  }
- ],
- [
-  "heartycards:52",
-  {
-   "commandName": "zombie",
-   "aliases": [
-    "browncoat",
-    "regular",
-    "regularzombie"
-   ]
-  }
- ],
- [
-  "heartytricks:1",
-  {
-   "commandName": "blackhole",
-   "aliases": [
-    "bh",
-    "hole"
-   ]
-  }
- ],
- [
-  "heartytricks:2",
-  {
-   "commandName": "camelcrossing",
-   "aliases": [
-    "camel",
-    "crossing",
-    "camelcross",
-    "animalcrossing",
-    "cc5"
-   ]
-  }
- ],
- [
-  "heartytricks:3",
-  {
-   "commandName": "healthytreat",
-   "aliases": [
-    "hearty",
-    "healthy",
-    "ht",
-    "heartytreat"
-   ]
-  }
- ],
- [
-  "heartytricks:4",
-  {
-   "commandName": "leftovers",
-   "aliases": [
-    "lo"
-   ]
-  }
- ],
- [
-  "heartytricks:5",
-  {
-   "commandName": "rollingstone",
-   "aliases": [
-    "rs",
-    "rolling",
-    "stone",
-    "trollingstone",
-    "trolling"
-   ]
-  }
- ],
- [
-  "heartytricks:6",
-  {
-   "commandName": "conezone",
-   "aliases": [
-    "cz4",
-    "bucketbay"
-   ]
-  }
- ],
- [
-  "heartytricks:7",
-  {
-   "commandName": "escapethroughtime",
-   "aliases": [
-    "ett",
-    "escape"
-   ]
-  }
- ],
- [
-  "heartytricks:8",
-  {
-   "commandName": "terrify",
-   "aliases": [
-    "terr"
-   ]
-  }
- ],
- [
-  "heartytricks:9",
-  {
-   "commandName": "goingviral",
-   "aliases": [
-    "gv",
-    "viral"
-   ]
-  }
- ],
- [
-  "heartytricks:10",
-  {
-   "commandName": "knockout",
-   "aliases": [
-    "flick",
-    "ko"
-   ]
-  }
- ],
- [
-  "heartytricks:11",
-  {
-   "commandName": "weedspray",
-   "aliases": [
-    "spray",
-    "ws2"
-   ]
-  }
- ],
- [
-  "heartytricks:12",
-  {
-   "commandName": "monstermash",
-   "aliases": [
-    "mm3",
-    "mash"
-   ]
-  }
- ],
- [
-  "heartytricks:13",
-  {
-   "commandName": "heroichealth",
-   "aliases": [
-    "heal2",
-    "hh"
-   ]
-  }
- ],
- [
-  "heartytricks:14",
-  {
-   "commandName": "missilemadness",
-   "aliases": [
-    "mm1",
-    "zmsig",
-    "missle",
-    "madness"
-   ]
-  }
- ],
- [
-  "heartytricks:15",
-  {
-   "commandName": "octopult",
-   "aliases": [
-    "ntsig",
-    "op1"
-   ]
-  }
- ],
- [
-  "heartytricks:16",
-  {
-   "commandName": "possessed",
-   "aliases": [
-    "frenzy",
-    "possess"
-   ]
-  }
- ],
- [
-  "heartytricks:17",
-  {
-   "commandName": "rockwall",
-   "aliases": [
-    "rock",
-    "wall2",
-    "rw2"
-   ]
-  }
- ],
- [
-  "heartytricks:18",
-  {
-   "commandName": "slamminsmackdown",
-   "aliases": [
-    "smashsig",
-    "smsig",
-    "slam",
-    "slammin",
-    "slamming",
-    "smack",
-    "smackdown",
-    "slammingsmackdown",
-    "slamdunk",
-    "ss1"
-   ]
-  }
- ],
- [
-  "sneakycards:1",
-  {
-   "commandName": "swabbie",
-   "aliases": [
-    "swab",
-    "tbonecard",
-    "tbone1",
-    "tbonegamingcard",
-    "tbonegaming344card"
-   ]
-  }
- ],
- [
-  "sneakycards:2",
-  {
-   "commandName": "buriedtreasure",
-   "aliases": [
-    "bt",
-    "buried",
-    "teasure",
-    "treasure"
-   ]
-  }
- ],
- [
-  "sneakycards:3",
-  {
-   "commandName": "duckytubezombie",
-   "aliases": [
-    "dtz",
-    "ducky",
-    "tube",
-    "duckytube",
-    "zombieducky"
-   ]
-  }
- ],
- [
-  "sneakycards:5",
-  {
-   "commandName": "headstonecarver",
-   "aliases": [
-    "headstone",
-    "carver",
-    "hc"
-   ]
-  }
- ],
- [
-  "sneakycards:6",
-  {
-   "commandName": "imp",
-   "aliases": [
-    "regularimp"
-   ]
-  }
- ],
- [
-  "sneakycards:7",
-  {
-   "commandName": "imposter",
-   "aliases": [
-    "sus",
-    "amongus",
-    "amogus"
-   ]
-  }
- ],
- [
-  "sneakycards:8",
-  {
-   "commandName": "minininja",
-   "aliases": [
-    "mini",
-    "ninja",
-    "mn4"
-   ]
-  }
- ],
- [
-  "sneakycards:10",
-  {
-   "commandName": "zombiechicken",
-   "aliases": [
-    "chicken",
-    "zc2"
-   ]
-  }
- ],
- [
-  "sneakycards:12",
-  {
-   "commandName": "drspacetime",
-   "aliases": [
-    "drspacetime",
-    "spacetime",
-    "drwho",
-    "space",
-    "ds2",
-    "st2"
-   ]
-  }
- ],
- [
-  "sneakycards:13",
-  {
-   "commandName": "firerooster",
-   "aliases": [
-    "fr",
-    "frooster",
-    "rooster"
-   ]
-  }
- ],
- [
-  "sneakycards:14",
-  {
-   "commandName": "fishyimp",
-   "aliases": [
-    "fishy",
-    "fi"
-   ]
-  }
- ],
- [
-  "sneakycards:16",
-  {
-   "commandName": "hotdogimp",
-   "aliases": [
-    "hotdog",
-    "korv",
-    "hdi"
-   ]
-  }
- ],
- [
-  "sneakycards:17",
-  {
-   "commandName": "icepirate",
-   "aliases": [
-    "ip",
-    "ice"
-   ]
-  }
- ],
- [
-  "sneakycards:18",
-  {
-   "commandName": "impthrowingimp",
-   "aliases": [
-    "iti"
-   ]
-  }
- ],
- [
-  "sneakycards:19",
-  {
-   "commandName": "monkeysmuggler",
-   "aliases": [
-    "ms4",
-    "monkey",
-    "smuggler"
-   ]
-  }
- ],
- [
-  "sneakycards:20",
-  {
-   "commandName": "swashbucklerzombie",
-   "aliases": [
-    "swash",
-    "buckler",
-    "swashbuckler",
-    "main",
-    "mainpirate",
-    "sz3"
-   ]
-  }
- ],
- [
-  "sneakycards:21",
-  {
-   "commandName": "toxicwasteimp",
-   "aliases": [
-    "twi",
-    "toxic",
-    "toxicwaste",
-    "waste"
-   ]
-  }
- ],
- [
-  "sneakycards:23",
-  {
-   "commandName": "captainflameface",
-   "aliases": [
-    "cf",
-    "flame",
-    "flameface"
-   ]
-  }
- ],
- [
-  "sneakycards:24",
-  {
-   "commandName": "cosmicimp",
-   "aliases": [
-    "ci"
-   ]
-  }
- ],
- [
-  "sneakycards:25",
-  {
-   "commandName": "excavatorzombie",
-   "aliases": [
-    "ez",
-    "exca",
-    "excavator"
-   ]
-  }
- ],
- [
-  "sneakycards:26",
-  {
-   "commandName": "impcommander",
-   "aliases": [
-    "ic3",
-    "commander"
-   ]
-  }
- ],
- [
-  "sneakycards:28",
-  {
-   "commandName": "linedancingzombie",
-   "aliases": [
-    "ldz",
-    "line",
-    "linedancing"
-   ]
-  }
- ],
- [
-  "sneakycards:29",
-  {
-   "commandName": "raidingraptor",
-   "aliases": [
-    "raiding",
-    "raptor",
-    "rr2"
-   ]
-  }
- ],
- [
-  "sneakycards:30",
-  {
-   "commandName": "smellyzombie",
-   "aliases": [
-    "smelly",
-    "sz4"
-   ]
-  }
- ],
- [
-  "sneakycards:31",
-  {
-   "commandName": "spacepirate",
-   "aliases": [
-    "sp9"
-   ]
-  }
- ],
- [
-  "sneakycards:32",
-  {
-   "commandName": "stealthyimp",
-   "aliases": [
-    "stealthy",
-    "si"
-   ]
-  }
- ],
- [
-  "sneakycards:33",
-  {
-   "commandName": "zombiehighdiver",
-   "aliases": [
-    "highdiver",
-    "diver",
-    "zhd"
-   ]
-  }
- ],
- [
-  "sneakycards:34",
-  {
-   "commandName": "barrelrollerzombie",
-   "aliases": [
-    "barrelroller",
-    "roller",
-    "brz"
-   ]
-  }
- ],
- [
-  "sneakycards:35",
-  {
-   "commandName": "firefighter",
-   "aliases": [
-    "fire1",
-    "fighter"
-   ]
-  }
- ],
- [
-  "sneakycards:36",
-  {
-   "commandName": "pogobouncer",
-   "aliases": [
-    "pogo",
-    "bouncer",
-    "pb3"
-   ]
-  }
- ],
- [
-  "sneakycards:37",
-  {
-   "commandName": "spacecowboy",
-   "aliases": [
-    "cowboy",
-    "sc3"
-   ]
-  }
- ],
- [
-  "sneakycards:38",
-  {
-   "commandName": "tombraiser",
-   "aliases": [
-    "tomb",
-    "raiser",
-    "tr2"
-   ]
-  }
- ],
- [
-  "sneakycards:39",
-  {
-   "commandName": "trapperzombie",
-   "aliases": [
-    "trapper2",
-    "tz2"
-   ]
-  }
- ],
- [
-  "sneakycards:40",
-  {
-   "commandName": "unthawedviking",
-   "aliases": [
-    "unthawed",
-    "instead",
-    "uv"
-   ]
-  }
- ],
- [
-  "sneakycards:41",
-  {
-   "commandName": "blowgunimp",
-   "aliases": [
-    "blowgun",
-    "invisible",
-    "camouflage",
-    "nothing",
-    "johncena",
-    "youcantseeme",
-    "bi"
-   ]
-  }
- ],
- [
-  "sneakycards:42",
-  {
-   "commandName": "cryoyeti",
-   "aliases": [
-    "cryo2",
-    "cy2"
-   ]
-  }
- ],
- [
-  "sneakycards:43",
-  {
-   "commandName": "mixedupgravedigger",
-   "aliases": [
-    "mug",
-    "mixed",
-    "mixedup",
-    "gravedigger"
-   ]
-  }
- ],
- [
-  "sneakycards:44",
-  {
-   "commandName": "surprisegargantuar",
-   "aliases": [
-    "surprisegarg",
-    "surprise",
-    "sg5"
-   ]
-  }
- ],
- [
-  "sneakycards:45",
-  {
-   "commandName": "walrusrider",
-   "aliases": [
-    "walrus",
-    "wr"
-   ]
-  }
- ],
- [
-  "sneakycards:46",
-  {
-   "commandName": "cursedgargolith",
-   "aliases": [
-    "cg2",
-    "cursed",
-    "gargolith",
-    "cursedgarg"
-   ]
-  }
- ],
- [
-  "sneakycards:47",
-  {
-   "commandName": "zombotaerostaticgondola",
-   "aliases": [
-    "aerostatic",
-    "gondola",
-    "aerostaticgondola",
-    "aristotle",
-    "goondala",
-    "zombot6",
-    "zag"
-   ]
-  }
- ],
- [
-  "sneakycards:48",
-  {
-   "commandName": "zombotsharktronicsub",
-   "aliases": [
-    "shark",
-    "sharktronicsub",
-    "sharktronic",
-    "sub",
-    "zombot7",
-    "zss"
-   ]
-  }
- ],
- [
-  "sneakycards:50",
-  {
-   "commandName": "zombotplankwalker",
-   "aliases": [
-    "plankwalker",
-    "plank",
-    "zombot9",
-    "zpw"
-   ]
-  }
- ],
- [
-  "sneakytricks:1",
-  {
-   "commandName": "graveyard",
-   "aliases": [
-    "yard"
-   ]
-  }
- ],
- [
-  "sneakytricks:2",
-  {
-   "commandName": "smokebomb",
-   "aliases": [
-    "smoke",
-    "bomb1",
-    "sb3"
-   ]
-  }
- ],
- [
-  "sneakytricks:3",
-  {
-   "commandName": "barrelofbarrels",
-   "aliases": [
-    "bob"
-   ]
-  }
- ],
- [
-  "sneakytricks:4",
-  {
-   "commandName": "frostymustache",
-   "aliases": [
-    "frosty",
-    "fm2"
-   ]
-  }
- ],
- [
-  "sneakytricks:5",
-  {
-   "commandName": "backyardbounce",
-   "aliases": [
-    "byb",
-    "bb5",
-    "backyard",
-    "bounce",
-    "trampoline"
-   ]
-  }
- ],
- [
-  "sneakytricks:6",
-  {
-   "commandName": "laserbasealpha",
-   "aliases": [
-    "lba",
-    "laserbase",
-    "laser"
-   ]
-  }
- ],
- [
-  "sneakytricks:7",
-  {
-   "commandName": "zombotstomp",
-   "aliases": [
-    "stomp",
-    "whatarethose",
-    "whatarethooooose",
-    "feet",
-    "zombot8",
-    "zs"
-   ]
-  }
- ],
- [
-  "sneakytricks:8",
-  {
-   "commandName": "dolphinado",
-   "aliases": [
-    "blow2"
-   ]
-  }
- ],
- [
-  "sneakytricks:9",
-  {
-   "commandName": "frozentundra",
-   "aliases": [
-    "bffreeze",
-    "bfsig",
-    "frozen",
-    "tundra",
-    "ft"
-   ]
-  }
- ],
- [
-  "sneakytricks:10",
-  {
-   "commandName": "icemoon",
-   "aliases": [
-    "freezeenvironment",
-    "freezeenv",
-    "im1"
-   ]
-  }
- ],
- [
-  "sneakytricks:11",
-  {
-   "commandName": "incrypted",
-   "aliases": [
-    "encrypt",
-    "incrypt",
-    "crypt",
-    "encrypted",
-    "ic2"
-   ]
-  }
- ],
- [
-  "sneakytricks:12",
-  {
-   "commandName": "superstench",
-   "aliases": [
-    "deadly",
-    "stench",
-    "ss2"
-   ]
-  }
- ],
- [
-  "sneakytricks:13",
-  {
-   "commandName": "triplethreat",
-   "aliases": [
-    "triple",
-    "threat",
-    "ifsig",
-    "imps",
-    "clones1",
-    "ifclones",
-    "tt2"
-   ]
-  }
- ],
- [
-  "deckbuilders:1",
-  {
-   "commandName": "boing",
-   "aliases": [
-    "decksmadebyboming",
-    "helpboming",
-    "bominghelp",
-    "bomingdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:2",
-  {
-   "commandName": "badorni",
-   "aliases": [
-    "decksmadebybadorni",
-    "badornihelp",
-    "helpbadorni",
-    "baddecks",
-    "decksmadebybad",
-    "badhelp",
-    "helpbad",
-    "badornidecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:3",
-  {
-   "commandName": "bomi",
-   "aliases": [
-    "decksmadebybomi",
-    "helpbomi",
-    "bomihelp",
-    "bomidecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:4",
-  {
-   "commandName": "boris",
-   "aliases": [
-    "borishelp",
-    "borisdecks",
-    "decksmadebyboris",
-    "helpboris"
-   ]
-  }
- ],
- [
-  "deckbuilders:5",
-  {
-   "commandName": "bowlingbulbenjoyer",
-   "aliases": [
-    "bowlingbulb",
-    "bowlingdecks",
-    "bolwingbulbhelp",
-    "bowlinghelp",
-    "bbe",
-    "bowlingbulbenjoyerdecks",
-    "bowlingbulbdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:6",
-  {
-   "commandName": "cgp23",
-   "aliases": [
-    "cgp23decks",
-    "cgp23help",
-    "helpcgp23",
-    "cgpdecks",
-    "cgphelp",
-    "cgp"
-   ]
-  }
- ],
- [
-  "deckbuilders:7",
-  {
-   "commandName": "creeperblade",
-   "aliases": [
-    "helpcreeperblade",
-    "creeperbladehelp",
-    "decksmadebycreeperblade",
-    "creeperbladedecks",
-    "creeperdecks",
-    "creeper",
-    "cpb"
-   ]
-  }
- ],
- [
-  "deckbuilders:8",
-  {
-   "commandName": "div",
-   "aliases": [
-    "decksmadebydiv",
-    "helpdiv",
-    "divhelp",
-    "divdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:9",
-  {
-   "commandName": "dozza",
-   "aliases": [
-    "decksmadebydozza",
-    "helpdozza",
-    "dozzahelp",
-    "dozzadecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:10",
-  {
-   "commandName": "durga",
-   "aliases": [
-    "decksmadebydurga",
-    "helpdurga",
-    "durgahelp",
-    "durgadecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:11",
-  {
-   "commandName": "firsthero",
-   "aliases": [
-    "decksmadebyfirsthero",
-    "helpfirsthero",
-    "firstherohelp",
-    "firstherodecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:12",
-  {
-   "commandName": "franinja",
-   "aliases": [
-    "franinjadecks",
-    "franinjahelp",
-    "helpfraninja"
-   ]
-  }
- ],
- [
-  "deckbuilders:13",
-  {
-   "commandName": "glassinabin",
-   "aliases": [
-    "glassdecks",
-    "glasshelp",
-    "helpglass",
-    "glass"
-   ]
-  }
- ],
- [
-  "deckbuilders:15",
-  {
-   "commandName": "igma",
-   "aliases": [
-    "igmadecks",
-    "igmahelp",
-    "helpigma",
-    "decksmadebyigma",
-    "igmarockers",
-    "decksigma",
-    "deckigma"
-   ]
-  }
- ],
- [
-  "deckbuilders:17",
-  {
-   "commandName": "justini",
-   "aliases": [
-    "justinidecks",
-    "helpjustini",
-    "justinihelp",
-    "decksmadebyjustini",
-    "justini12"
-   ]
-  }
- ],
- [
-  "deckbuilders:18",
-  {
-   "commandName": "kenmartin",
-   "aliases": [
-    "helpkenmartin",
-    "kenmartindecks",
-    "kenmartinhelp",
-    "decksmadebykenmartin",
-    "martin"
-   ]
-  }
- ],
- [
-  "deckbuilders:19",
-  {
-   "commandName": "kingfishcommander",
-   "aliases": [
-    "kingfishcommanderdecks",
-    "kingfishcommanderhelp",
-    "helpkingfishcommander",
-    "decksmadebykingfishcommander",
-    "kingfish",
-    "kfc",
-    "kingfish_commander"
-   ]
-  }
- ],
- [
-  "deckbuilders:20",
-  {
-   "commandName": "lolatopia",
-   "aliases": [
-    "decksmadebylolatopia",
-    "lolatopiadecks",
-    "lolatopiahelp",
-    "helplolatopia"
-   ]
-  }
- ],
- [
-  "deckbuilders:21",
-  {
-   "commandName": "makemeacoffee",
-   "aliases": [
-    "decksmadebymakemeacoffee",
-    "makemeacoffeedecks",
-    "makemeacoffeehelp",
-    "helpmakemeacoffee",
-    "coffee",
-    "makemeacoffeedeck",
-    "coffeedecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:22",
-  {
-   "commandName": "maker",
-   "aliases": [
-    "decksmadebymaker",
-    "helpmaker",
-    "makerhelp",
-    "makerdecks",
-    "maker"
-   ]
-  }
- ],
- [
-  "deckbuilders:23",
-  {
-   "commandName": "masterbomber32",
-   "aliases": [
-    "decksmadebymasterbomber32",
-    "helpmasterbomber32",
-    "masterbomber32help",
-    "masterbomber32decks",
-    "masterbomber",
-    "mb32"
-   ]
-  }
- ],
- [
-  "deckbuilders:24",
-  {
-   "commandName": "michael",
-   "aliases": [
-    "decksmadebymichael",
-    "helpmichael",
-    "michaelhelp",
-    "michaeldecks",
-    "michael"
-   ]
-  }
- ],
- [
-  "deckbuilders:25",
-  {
-   "commandName": "mono",
-   "aliases": [
-    "decksmadebymono",
-    "monodecks",
-    "monohelp",
-    "helpmono",
-    "monosexual"
-   ]
-  }
- ],
- [
-  "deckbuilders:26",
-  {
-   "commandName": "natz",
-   "aliases": [
-    "decksmadebynatz",
-    "helpnatz",
-    "natzhelp",
-    "natzdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:27",
-  {
-   "commandName": "non",
-   "aliases": [
-    "nondecks",
-    "nonhelp",
-    "nonsequitur",
-    "nonsequiturhelp",
-    "nonsequiturdecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:30",
-  {
-   "commandName": "pillowy",
-   "aliases": [
-    "decksmadebypillowy",
-    "helppillowy",
-    "pillowyhelp",
-    "pillowydecks"
-   ]
-  }
- ],
- [
-  "deckbuilders:31",
-  {
-   "commandName": "pvzfurmade",
-   "aliases": [
-    "decksmadebypvzfurmade",
-    "pvzfurmadedecks",
-    "pvzfurmadehelp",
-    "furmade",
-    "furmadedecks",
-    "helppvzfurmade",
-    "furmadehelp",
-    "helpfurmade"
-   ]
-  }
- ],
- [
-  "deckbuilders:32",
-  {
-   "commandName": "salt",
-   "aliases": [
-    "helpsalt",
-    "salthelp",
-    "decksmadebysalt",
-    "saltdecklists",
-    "decklistsmadebysalt",
-    "saltdecks",
-    "snortingsaltdecks",
-    "snortingsalt",
-    "snorting",
-    "decksalt"
-   ]
-  }
- ],
- [
-  "deckbuilders:33",
-  {
-   "commandName": "seasons",
-   "aliases": [
-    "decksmadebyseasons",
-    "seasonsdecks",
-    "seasonshelp",
-    "helpseasons",
-    "georgebradley",
-    "george_bradley",
-    "george_bradleythe3rd"
-   ]
-  }
- ],
- [
-  "deckbuilders:34",
-  {
-   "commandName": "shortbow",
-   "aliases": [
-    "decksmadebyshortbow",
-    "shortbowdecks",
-    "shortbowhelp",
-    "helpshortbow"
-   ]
-  }
- ],
- [
-  "deckbuilders:35",
-  {
-   "commandName": "slewer",
-   "aliases": [
-    "decksmadebyslewer",
-    "slewerdecks",
-    "slewerhelp",
-    "helpslewer"
-   ]
-  }
- ],
- [
-  "deckbuilders:36",
-  {
-   "commandName": "stingray",
-   "aliases": [
-    "decksmadebystingray",
-    "stingraydecks",
-    "stingrayhelp",
-    "helpstingray",
-    "gigraduate",
-    "stingray201"
-   ]
-  }
- ],
- [
-  "deckbuilders:37",
-  {
-   "commandName": "sushi",
-   "aliases": [
-    "decksmadebysushi",
-    "sushihelp",
-    "helpsushi",
-    "sushidecks",
-    "sushidecklists",
-    "decklistsmadebysushi",
-    "ikurasushi"
-   ]
-  }
- ],
- [
-  "deckbuilders:38",
-  {
-   "commandName": "tbone",
-   "aliases": [
-    "decksmadebytbone",
-    "tbonedecks",
-    "tbonehelp",
-    "helptbone"
-   ]
-  }
- ],
- [
-  "deckbuilders:39",
-  {
-   "commandName": "thequestionmark",
-   "aliases": [
-    "thequestionmarkdecks",
-    "questionmark",
-    "questionmarkhelp",
-    "thequestionmarkhelp",
-    "helpthequestionmark",
-    "questionmarkdecks",
-    "tqm",
-    "helptqm",
-    "tqmdecks",
-    "tqmhelp"
-   ]
-  }
- ],
- [
-  "deckbuilders:40",
-  {
-   "commandName": "tryhard",
-   "aliases": [
-    "tryharddecks",
-    "tryhardhelp",
-    "helptryhard",
-    "decksmadebytryhard",
-    "trydecks",
-    "helptry",
-    "tryhelp",
-    "try",
-    "decksmadebytry",
-    "trycommands",
-    "commandstry",
-    "pvztryhardhelp",
-    "pvztryhard"
-   ]
-  }
- ],
- [
-  "deckbuilders:41",
-  {
-   "commandName": "voof",
-   "aliases": [
-    "decksmadebyvoof",
-    "voofdecks",
-    "voofhelp",
-    "helpvoof"
-   ]
-  }
- ],
- [
-  "deckbuilders:42",
-  {
-   "commandName": "xera",
-   "aliases": [
-    "xeradecks",
-    "xerahelp",
-    "helpxera",
-    "decksmadebyxera"
-   ]
-  }
- ],
- [
-  "deckbuilders:43",
-  {
-   "commandName": "starstormvz",
-   "aliases": [
-    "starstormvzdecks",
-    "helpstarstormvz",
-    "decksmadebystarstormvz",
-    "starstormvzdecklists"
-   ]
-  }
- ],
- [
-  "deckbuilders:44",
-  {
-   "commandName": "crimpton",
-   "aliases": [
-    "crimptondecks",
-    "crimptonhelp",
-    "helpcrimpton",
-    "decksmadebycrimpton"
-   ]
-  }
- ],
- [
-  "deckbuilders:45",
-  {
-   "commandName": "mososaurus",
-   "aliases": [
-    "mososaurusdecks",
-    "mososaurushelp",
-    "helpmososaurus",
-    "decksmadebymososaurus"
-   ]
-  }
- ],
- [
-  "helpcommands:1",
-  {
-   "commandName": "helpbc",
-   "aliases": [
-    "bchelp",
-    "bccommands",
-    "commandsbc",
-    "helpbeta",
-    "helpcarrotina",
-    "helpbetacarrotina",
-    "betacarrotinahelp",
-    "beta-carrotinadecks",
-    "betacarrotinadecks",
-    "bcdecks",
-    "betacarrotinacommands",
-    "betadecks",
-    "betahelp",
-    "carrotinadecks",
-    "bcdeck"
-   ]
-  }
- ],
- [
-  "helpcommands:2",
-  {
-   "commandName": "helpct",
-   "aliases": [
-    "ctcommands",
-    "commandsct",
-    "cthelp",
-    "helpcitron",
-    "helptron",
-    "ctdecks",
-    "citronhelp",
-    "citrondecks",
-    "citroncommands",
-    "ctdeck"
-   ]
-  }
- ],
- [
-  "helpcommands:3",
-  {
-   "commandName": "helpcc",
-   "aliases": [
-    "cccomands",
-    "commandscc",
-    "cchelp",
-    "helpcaptin",
-    "ccdeck",
-    "captaincombustibledecks",
-    "helpcombustible",
-    "helpcaptincombustible",
-    "ccdecks",
-    "captincombustiblehelp",
-    "captincombustibledecks",
-    "helpcaptain"
-   ]
-  }
- ],
- [
-  "helpcommands:4",
-  {
-   "commandName": "helpcz",
-   "aliases": [
-    "czhelp",
-    "czcommands",
-    "commandscz",
-    "helpchomp",
-    "helpzilla",
-    "zillahelp",
-    "chompzillahelp",
-    "chompzillacommands",
-    "czdecks",
-    "chompzilladecks",
-    "helpchompzilla"
-   ]
-  }
- ],
- [
-  "helpcommands:5",
-  {
-   "commandName": "helpgk",
-   "aliases": [
-    "gkcommands",
-    "commandsgk",
-    "gkhelp",
-    "helpgrass",
-    "helpknuckles",
-    "grassknuckleshelp",
-    "helpgrassknuckles",
-    "gkdecks",
-    "grassknucklesdecks",
-    "knucklesdecks",
-    "decksgk"
-   ]
-  }
- ],
- [
-  "helpcommands:6",
-  {
-   "commandName": "helpgs",
-   "aliases": [
-    "gscommands",
-    "commandsforgs",
-    "gshelp",
-    "helpgreen",
-    "helpshadow",
-    "gsdecks",
-    "decksgs",
-    "greenshadowhelp",
-    "shadowhelp",
-    "shadowdecks",
-    "greenshadowdecks"
-   ]
-  }
- ],
- [
-  "helpcommands:7",
-  {
-   "commandName": "helpnc",
-   "aliases": [
-    "nccommands",
-    "commandsnc",
-    "nightcapdecks",
-    "nchelp",
-    "helpnightcap",
-    "nightcaphelp",
-    "helpcap",
-    "helpnight",
-    "ncdecks",
-    "capdecks",
-    "ncdeck"
-   ]
-  }
- ],
- [
-  "helpcommands:8",
-  {
-   "commandName": "helpro",
-   "aliases": [
-    "rohelp",
-    "rocommands",
-    "commandsro",
-    "rosedeck",
-    "helprose",
-    "rosedb",
-    "rodecks",
-    "rosehelp",
-    "rosedecks",
-    "helprs",
-    "rshelp"
-   ]
-  }
- ],
- [
-  "helpcommands:9",
-  {
-   "commandName": "helpsf",
-   "aliases": [
-    "sfcommands",
-    "commandssf",
-    "sfhelp",
-    "helpsolarflare",
-    "helpflare",
-    "sfdecks",
-    "solarflaredecks",
-    "solarflarehelp",
-    "flaredecks",
-    "flarehelp"
-   ]
-  }
- ],
- [
-  "helpcommands:10",
-  {
-   "commandName": "helpsp",
-   "aliases": [
-    "sphelp",
-    "spcommands",
-    "commmandssp",
-    "spdecks",
-    "spudowhelp",
-    "helpspudow",
-    "spudowdecks",
-    "helpsd",
-    "sdhelp",
-    "spudowdeck"
-   ]
-  }
- ],
- [
-  "helpcommands:11",
-  {
-   "commandName": "helpwk",
-   "aliases": [
-    "commandswk",
-    "wkcommands",
-    "wkhelp",
-    "helpwall",
-    "helpknight",
-    "helpwallknight",
-    "wkdecks",
-    "wallknighthelp",
-    "wallknightdecks",
-    "wkdeck",
-    "wallknightdeck"
-   ]
-  }
- ],
- [
-  "helpcommands:12",
-  {
-   "commandName": "helpbf",
-   "aliases": [
-    "bfhelp",
-    "bfcommands",
-    "commandsbf",
-    "helpfreeze",
-    "helpbrainfreeze",
-    "brainfreezehelp",
-    "bfdecks",
-    "brainfreezedecks"
-   ]
-  }
- ],
- [
-  "helpcommands:13",
-  {
-   "commandName": "helpeb",
-   "aliases": [
-    "ebcommands",
-    "commandseb",
-    "ebhelp",
-    "helpelectric",
-    "helpelectricboog",
-    "helpboog",
-    "helpelectricboogaloo",
-    "ebdecks",
-    "electricboogaloohelp",
-    "electricboogaloodecks",
-    "deckseb",
-    "helpboogaloo",
-    "helpboogaloodecks",
-    "boogaloocommands",
-    "boogaloodecks"
-   ]
-  }
- ],
- [
-  "helpcommands:14",
-  {
-   "commandName": "helphg",
-   "aliases": [
-    "hgcommands",
-    "commandshg",
-    "hghelp",
-    "helphuge",
-    "helphugegigantacus",
-    "hgdecks",
-    "deckshg",
-    "hugegigantacushelp",
-    "hugegigantacusdecks"
-   ]
-  }
- ],
- [
-  "helpcommands:15",
-  {
-   "commandName": "helpsb",
-   "aliases": [
-    "sbcommands",
-    "commandssb",
-    "sbhelp",
-    "helpsuperbrainz",
-    "helpsuper",
-    "sbdecks",
-    "deckssb",
-    "superbrainzhelp",
-    "superbrainzdecks"
-   ]
-  }
- ],
- [
-  "helpcommands:16",
-  {
-   "commandName": "helpif",
-   "aliases": [
-    "ifhelp",
-    "ifcommands",
-    "commandsif",
-    "helpimpifinity",
-    "helpimpfinity",
-    "impfinitydecks",
-    "impfinityhelp",
-    "ifdecks",
-    "impifinityhelp",
-    "impifinitydecks",
-    "helpimp"
-   ]
-  }
- ],
- [
-  "helpcommands:17",
-  {
-   "commandName": "helpim",
-   "aliases": [
-    "imhelp",
-    "imcommands",
-    "helpit",
-    "commandsim",
-    "helpimmort",
-    "immorticiadeck",
-    "helpimmorticia",
-    "immorticahelp",
-    "immorticiahelp",
-    "imdecks",
-    "immorticiadecks",
-    "decksim",
-    "decksimmorticia"
-   ]
-  }
- ],
- [
-  "helpcommands:18",
-  {
-   "commandName": "helpnt",
-   "aliases": [
-    "ntcommands",
-    "commandsnt",
-    "nthelp",
-    "helpneptuna",
-    "helptuna",
-    "helpnp",
-    "ntdecks",
-    "decksnt",
-    "neptunahelp",
-    "neptunadecks"
-   ]
-  }
- ],
- [
-  "helpcommands:19",
-  {
-   "commandName": "helppb",
-   "aliases": [
-    "pbhelp",
-    "pbcommands",
-    "commandspb",
-    "helpprofessor",
-    "helpbrainstorm",
-    "helppbs",
-    "helpprofessorbrainstorm",
-    "pbsdecks",
-    "bsdecks",
-    "bsdeck",
-    "pbdecks",
-    "helpbs",
-    "bshelp",
-    "professorbrainstormdecks",
-    "professorbrainstormhelp",
-    "pbshelp"
-   ]
-  }
- ],
- [
-  "helpcommands:20",
-  {
-   "commandName": "helprb",
-   "aliases": [
-    "rbhelp",
-    "rbcommands",
-    "commandsrb",
-    "helprust",
-    "helpbolt",
-    "helprustbolt",
-    "rustcommands",
-    "boltcommands",
-    "rustboltcommands",
-    "rbdecks",
-    "rustboltdecks",
-    "rustbolthelp"
-   ]
-  }
- ],
- [
-  "helpcommands:21",
-  {
-   "commandName": "helpsm",
-   "aliases": [
-    "smhelp",
-    "smcommands",
-    "commandssm",
-    "smdeck",
-    "smashdb",
-    "helpsmash",
-    "smashcommands",
-    "smashhelp",
-    "smdecks",
-    "smashdecks",
-    "deckssm",
-    "deckssmash",
-    "helpts",
-    "helpthesmash",
-    "tshelp",
-    "smashlist",
-    "smashlists"
-   ]
-  }
- ],
- [
-  "helpcommands:22",
-  {
-   "commandName": "helpzm",
-   "aliases": [
-    "zmhelp",
-    "zmcommands",
-    "zmdeck",
-    "commandszm",
-    "helpzmech",
-    "zmechcommands",
-    "commandszmech",
-    "helpmech",
-    "zmdecks",
-    "deckszm",
-    "zmechdecks",
-    "deckszmech",
-    "zmechhelp"
-   ]
-  }
- ],
- [
-  "herocommands:1",
-  {
-   "commandName": "betacarrotina",
-   "aliases": [
-    "bc",
-    "beta",
-    "carrotina",
-    "carrot",
-    "tina",
-    "beta-carrotina"
-   ]
-  }
- ],
- [
-  "herocommands:2",
-  {
-   "commandName": "captaincombustible",
-   "aliases": [
-    "cc",
-    "captain",
-    "combustible",
-    "combust",
-    "stumpy"
-   ]
-  }
- ],
- [
-  "herocommands:3",
-  {
-   "commandName": "chompzilla",
-   "aliases": [
-    "cz",
-    "zilla"
-   ]
-  }
- ],
- [
-  "herocommands:4",
-  {
-   "commandName": "citron",
-   "aliases": [
-    "ct",
-    "tron"
-   ]
-  }
- ],
- [
-  "herocommands:5",
-  {
-   "commandName": "grassknuckles",
-   "aliases": [
-    "gk",
-    "knuckles"
-   ]
-  }
- ],
- [
-  "herocommands:6",
-  {
-   "commandName": "greenshadow",
-   "aliases": [
-    "gs",
-    "green",
-    "shadow",
-    "penelopea"
-   ]
-  }
- ],
- [
-  "herocommands:7",
-  {
-   "commandName": "nightcap",
-   "aliases": [
-    "nc",
-    "night",
-    "cap"
-   ]
-  }
- ],
- [
-  "herocommands:8",
-  {
-   "commandName": "rose",
-   "aliases": [
-    "ro"
-   ]
-  }
- ],
- [
-  "herocommands:9",
-  {
-   "commandName": "solarflare",
-   "aliases": [
-    "sf",
-    "solar",
-    "flare"
-   ]
-  }
- ],
- [
-  "herocommands:10",
-  {
-   "commandName": "spudow",
-   "aliases": [
-    "sp",
-    "spud",
-    "sd"
-   ]
-  }
- ],
- [
-  "herocommands:11",
-  {
-   "commandName": "wallknight",
-   "aliases": [
-    "wk",
-    "knight",
-    "wall-knight"
-   ]
-  }
- ],
- [
-  "herocommands:12",
-  {
-   "commandName": "brainfreeze",
-   "aliases": [
-    "bf"
-   ]
-  }
- ],
- [
-  "herocommands:13",
-  {
-   "commandName": "electricboogaloo",
-   "aliases": [
-    "eb",
-    "boog",
-    "electric",
-    "boogaloo",
-    "loo"
-   ]
-  }
- ],
- [
-  "herocommands:14",
-  {
-   "commandName": "hugegigantacus",
-   "aliases": [
-    "hg",
-    "huge",
-    "gigantacus",
-    "huge-gigantacus"
-   ]
-  }
- ],
- [
-  "herocommands:15",
-  {
-   "commandName": "immorticia",
-   "aliases": [
-    "im",
-    "ticia",
-    "i’m",
-    "i'm",
-    "it",
-    "immortica",
-    "imorticia",
-    "immort"
-   ]
-  }
- ],
- [
-  "herocommands:16",
-  {
-   "commandName": "impfinity",
-   "aliases": [
-    "if"
-   ]
-  }
- ],
- [
-  "herocommands:17",
-  {
-   "commandName": "neptuna",
-   "aliases": [
-    "nt",
-    "tuna",
-    "np",
-    "neptune"
-   ]
-  }
- ],
- [
-  "herocommands:18",
-  {
-   "commandName": "professorbrainstorm",
-   "aliases": [
-    "pb",
-    "pbs",
-    "professor",
-    "brainstorm",
-    "prof",
-    "bs"
-   ]
-  }
- ],
- [
-  "herocommands:19",
-  {
-   "commandName": "rustbolt",
-   "aliases": [
-    "rb",
-    "rust"
-   ]
-  }
- ],
- [
-  "herocommands:20",
-  {
-   "commandName": "superbrainz",
-   "aliases": [
-    "sb",
-    "brainz",
-    "superbrains"
-   ]
-  }
- ],
- [
-  "herocommands:21",
-  {
-   "commandName": "thesmash",
-   "aliases": [
-    "smash",
-    "sm",
-    "ts",
-    "the-smash"
-   ]
-  }
- ],
- [
-  "herocommands:22",
-  {
-   "commandName": "zmech",
-   "aliases": [
-    "zm",
-    "mech",
-    "z-mech"
-   ]
-  }
- ]
 ]

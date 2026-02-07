@@ -6,7 +6,7 @@ Author: Tbone Gaming
         Tbonegaming18@gmail.com
 */
 const { token, user, host, password, database, deckNotificationChannelId } = require("./config.json");
-const scanAllTablesAndSync = require("./Utilities/scanAllTablesAndSync");
+const scanAllTablesAndSync = require("./src/lib/db/scanAllTablesAndSync");
 const mysql = require(`mysql2`);
 const {
   Client,
@@ -14,7 +14,6 @@ const {
   Collection,
   GatewayIntentBits,
 } = require("discord.js");
-require("./deploy-commands");
 const client = new Client({
   partials: [Partials.Channel],
   intents: [
@@ -31,11 +30,10 @@ const db = mysql
   .promise();
   module.exports = db;
 client.db = db;
-client.commands = new Collection();
 client.slashCommands = new Collection();
 const fs = require("node:fs");
 const path = require("node:path");
-const foldersPath = path.join(__dirname, "commands");
+const foldersPath = path.join(__dirname, "src", "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
@@ -55,7 +53,7 @@ for (const folder of commandFolders) {
     }
   }
 }
-const eventsPath = path.join(__dirname, "Events"); 
+const eventsPath = path.join(__dirname, "src", "events"); 
 const eventFiles = fs
   .readdirSync(eventsPath)
   .filter((file) => file.endsWith(".js"));
