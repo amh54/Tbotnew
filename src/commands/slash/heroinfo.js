@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, MessageFlags } = require("discord.js");
-const createHeroEmbedWithButton = require("../../features/heroes/createHeroEmbedWithButton.js");
+const createHeroEmbed = require("../../features/heroes/createHeroEmbed.js");
 const {
   getHeroAutocompleteResults,
   resolveHeroName
@@ -45,8 +45,8 @@ module.exports = {
         });
       }
 
-      const { embed, button } = await createHeroEmbedWithButton(rows[0]);
-      return interaction.reply({ embeds: [embed], components: [button] });
+      const embed = createHeroEmbed(rows[0]);
+      return interaction.reply({ embeds: [embed] });
     } catch (error) {
       console.error("Error in heroname command:", error);
       return interaction.reply({
