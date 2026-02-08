@@ -77,27 +77,83 @@ function extractDeckbuilderNames(creator) {
   // Extract names from both "Created by" and "optimized by" lines
   const lines = text.split('\n');
   const names = [];
+
+  const aliasMap = new Map([
+    ["igmarockers", "Igma"],
+    ["pilowy", "Pillowy"],
+    ["thequestionmark", "The Question Mark"],
+    ["justini1212", "Justini"],
+    ["stingray201", "Stingray"],
+    ["snortingsalt", "Salt"],
+    ["aveorni", "BADorni"],
+    ["averoni", "BADorni"]
+  ]);
+
+  const normalizeName = (raw) => {
+    const cleaned = raw
+      .trim()
+        .replaceAll(/^by\s+/gi, "")
+        .replaceAll(/\?+$/g, "")
+      .trim();
+    if (!cleaned) return "";
+
+    const lookupKey = cleaned.replaceAll(/\s+/g, "").toLowerCase();
+    return aliasMap.get(lookupKey) || cleaned;
+  };
   
+  const normalizeAndSplitName = (raw) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return [];
+
+    const withoutInspired = trimmed.replaceAll(/\binspired\s+by\b.*$/gi, "").trim();
+    if (!withoutInspired) return [];
+
+    const phraseMatch = withoutInspired.match(
+      /^(.*?)(?:\boptimized\s+by\b|\bmodified\s+by\b|\bredefined\s+by\b)\s+(.+)$/i
+    );
+    if (phraseMatch) {
+      const left = phraseMatch[1].trim();
+      const right = phraseMatch[2].trim();
+      const parts = [];
+      if (left) parts.push(left);
+      if (right) parts.push(right);
+      return parts.flatMap(normalizeAndSplitName);
+    }
+
+    const cleaned = normalizeName(withoutInspired);
+    return cleaned ? [cleaned] : [];
+  };
+
   for (const line of lines) {
+    if (/^inspired by\b/i.test(line)) {
+      continue;
+    }
+
     const createdMatch = line.match(/^Created by\s+(.+?)$/i);
     const optimizedMatch = line.match(/optimized by[:\s]+(.+?)$/i);
     
     if (createdMatch) {
       const creators = createdMatch[1]
-        .replaceAll(/\s+(and|,)\s+/gi, ',')
+          .replaceAll(/\s+(and|&)\s+/gi, ',')
+          .replaceAll("/", ',')
         .split(',')
         .map(name => name.trim())
         .filter(Boolean);
-      names.push(...creators);
+      for (const creator of creators) {
+        names.push(...normalizeAndSplitName(creator));
+      }
     }
     
     if (optimizedMatch) {
       const optimizers = optimizedMatch[1]
-        .replaceAll(/\s+(and|,)\s+/gi, ',')
+          .replaceAll(/\s+(and|&)\s+/gi, ',')
+          .replaceAll("/", ',')
         .split(',')
         .map(name => name.trim())
         .filter(Boolean);
-      names.push(...optimizers);
+      for (const optimizer of optimizers) {
+        names.push(...normalizeAndSplitName(optimizer));
+      }
     }
   }
   

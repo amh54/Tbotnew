@@ -19,7 +19,7 @@ function generateRowKey(table, row) {
  * @param {object} t - Table configuration
  * @param {array} rows - Database rows
  * @param {object} options - Options object containing client, dbCommandMap, dbTableColors, notificationChannelId, isInitialLoad, db
- * @returns {object} Object containing seenKeys and currentDeckNames
+ * @returns {Promise<object>} Promise resolving to object containing seenKeys and currentDeckNames
  */
 async function processTableRows(t, rows, options) {
   const { client, dbCommandMap, dbTableColors, notificationChannelId, isInitialLoad, db } = options;
@@ -35,7 +35,16 @@ async function processTableRows(t, rows, options) {
       currentDeckNames.add(row.name);
     }
     
-    await registerOrUpdateDbCommand(t, row, client, dbCommandMap, dbTableColors, channelId, db);
+    await registerOrUpdateDbCommand(
+      t,
+      row,
+      client,
+      dbCommandMap,
+      dbTableColors,
+      channelId,
+      db,
+      isInitialLoad
+    );
   }
 
   return { seenKeys, currentDeckNames };

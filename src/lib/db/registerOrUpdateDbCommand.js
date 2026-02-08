@@ -81,8 +81,8 @@ async function handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, 
   }
 }
 
-async function handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, db) {
-  if (!isDeck || !db) return;
+async function handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, db, isInitialLoad) {
+  if (!isDeck || !db || isInitialLoad) return;
   
   if (isNewDeck) {
     await updateDeckbuilderCounts(db, row.creator, 1);
@@ -92,7 +92,17 @@ async function handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, e
   }
 }
 
-async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap, dbTableColors = {}, notificationChannelId = null, db = null) {
+async function registerOrUpdateDbCommand(tableConfig, options) {
+  const {
+    row,
+    client,
+    dbCommandMap,
+    dbTableColors = {},
+    notificationChannelId = null,
+    db = null,
+    isInitialLoad = false
+  } = options;
+
   const key = extractKeyFromRow(tableConfig, row);
   const baseName = getBaseName(row);
   const baseSan = sanitizeCommandName(baseName);
@@ -114,7 +124,7 @@ async function registerOrUpdateDbCommand(tableConfig, row, client, dbCommandMap,
   dbCommandMap.set(key, { commandName: baseSan, aliases: aliasesArray, hash, rowData: row });
 
   await handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, { client, notificationChannelId, row, tableConfig, dbTableColors });
-  await handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, db);
+  await handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, db, isInitialLoad);
 }
 
 async function updateDeckbuilderCounts(db, creator, delta) {
@@ -145,27 +155,83 @@ function extractDeckbuilderNames(creator) {
   // Extract names from both "Created by" and "optimized by" lines
   const lines = text.split('\n');
   const names = [];
+
+  const aliasMap = new Map([
+    ["igmarockers", "Igma"],
+    ["pilowy", "Pillowy"],
+    ["thequestionmark", "The Question Mark"],
+    ["justini1212", "Justini"],
+    ["stingray201", "Stingray"],
+    ["snortingsalt", "Salt"],
+    ["aveorni", "BADorni"],
+    ["averoni", "BADorni"]
+  ]);
+
+  const normalizeName = (raw) => {
+    const cleaned = raw
+      .trim()
+        .replaceAll(/^by\s+/gi, "")
+        .replaceAll(/\?+$/g, "")
+      .trim();
+    if (!cleaned) return "";
+
+    const lookupKey = cleaned.replaceAll(/\s+/g, "").toLowerCase();
+    return aliasMap.get(lookupKey) || cleaned;
+  };
   
+  const normalizeAndSplitName = (raw) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return [];
+
+    const withoutInspired = trimmed.replaceAll(/\binspired\s+by\b.*$/gi, "").trim();
+    if (!withoutInspired) return [];
+
+    const phraseMatch = withoutInspired.match(
+      /^(.*?)(?:\boptimized\s+by\b|\bmodified\s+by\b|\bredefined\s+by\b)\s+(.+)$/i
+    );
+    if (phraseMatch) {
+      const left = phraseMatch[1].trim();
+      const right = phraseMatch[2].trim();
+      const parts = [];
+      if (left) parts.push(left);
+      if (right) parts.push(right);
+      return parts.flatMap(normalizeAndSplitName);
+    }
+
+    const cleaned = normalizeName(withoutInspired);
+    return cleaned ? [cleaned] : [];
+  };
+
   for (const line of lines) {
+    if (/^inspired by\b/i.test(line)) {
+      continue;
+    }
+
     const createdMatch = line.match(/^Created by\s+(.+?)$/i);
     const optimizedMatch = line.match(/optimized by[:\s]+(.+?)$/i);
     
     if (createdMatch) {
       const creators = createdMatch[1]
-        .replaceAll(/\s+(and|,)\s+/gi, ',')
+        .replaceAll(/\s+(and|&)\s+/gi, ',')
+          .replaceAll("/", ',')
         .split(',')
         .map(name => name.trim())
         .filter(Boolean);
-      names.push(...creators);
+      for (const creator of creators) {
+        names.push(...normalizeAndSplitName(creator));
+      }
     }
     
     if (optimizedMatch) {
       const optimizers = optimizedMatch[1]
-        .replaceAll(/\s+(and|,)\s+/gi, ',')
+        .replaceAll(/\s+(and|&)\s+/gi, ',')
+          .replaceAll("/", ',')
         .split(',')
         .map(name => name.trim())
         .filter(Boolean);
-      names.push(...optimizers);
+      for (const optimizer of optimizers) {
+        names.push(...normalizeAndSplitName(optimizer));
+      }
     }
   }
   
