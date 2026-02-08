@@ -1,10 +1,10 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 function createHeroEmbed(row) {
   const embed = new EmbedBuilder()
     .setThumbnail(row.thumbnail)
     .setTitle(`${row.title}`)
-    .setDescription(`**\\- ${row.description} -**`)
+    .setDescription(String.raw`**\- ${row.description} -**`)
     .setColor(row.hero_color)
     .addFields(
       {
@@ -21,15 +21,7 @@ function createHeroEmbed(row) {
       }
     );
 
-  const button = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`herohelp_${row.herocommand}`)
-      .setLabel(`${row.heroname} Decks`)
-      .setStyle(ButtonStyle.Primary)
-      .setEmoji(row.hero_emoji)
-  );
-
-  return { embed, button };
+  return embed;
 }
 
 module.exports = createHeroEmbed;
