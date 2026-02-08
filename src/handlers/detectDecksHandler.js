@@ -151,12 +151,16 @@ async function handleCategorySelect(interaction, data, client) {
       .setStyle(ButtonStyle.Primary)
   );
 
-  const replyMessage = await interaction.reply({
+  const response = await interaction.reply({
     embeds: [categoryEmbed],
     components: [navRow],
     flags: MessageFlags.Ephemeral,
-    fetchReply: true,
+    withResponse: true,
   });
+
+  const replyMessage = response.resource?.message ||
+    (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
+  if (!replyMessage) return;
 
   if (!client.detectDecksData) {
     client.detectDecksData = new Map();

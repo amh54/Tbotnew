@@ -104,12 +104,20 @@ module.exports = {
           .setStyle(ButtonStyle.Link)
           .setURL('https://discord.gg/2NSwt96vmS'),
       );
-     const replyMessage = await interaction.editReply({
+     const editReplyResponse = await interaction.editReply({
       content: `✅ Your deck has been submitted successfully!`,
       files: [file], 
       components: [tbotServer],
-      fetchReply: true
+      withResponse: true
       });
+      const replyMessage = editReplyResponse.resource?.message ||
+        (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
+      if (!replyMessage) {
+        return interaction.editReply({
+          content: "❌ Could not fetch the submission message.",
+          flags: MessageFlags.Ephemeral
+        });
+      }
       const permanentUrl = replyMessage.attachments.first().url;
 
     const forumChannel = interaction.client.channels.cache.get('1100160031128830104');

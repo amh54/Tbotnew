@@ -220,10 +220,13 @@ function buildCategoryNavRow(categoryKey, listLength) {
 
 async function sendInteractionReply(interaction, payload) {
   if (interaction.replied || interaction.deferred) {
-    return interaction.followUp({ ...payload, fetchReply: true });
+    const response = await interaction.followUp({ ...payload, withResponse: true });
+    return response.resource?.message || null;
   }
 
-  return interaction.reply({ ...payload, fetchReply: true });
+  const response = await interaction.reply({ ...payload, withResponse: true });
+  return response.resource?.message ||
+    (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
 }
 
 async function runHelpDb(interaction, selectedType) {

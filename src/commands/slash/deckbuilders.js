@@ -120,11 +120,14 @@ module.exports = {
         console.error("Error fetching user for deckbuilder thumbnail:", error);
       }
 
-      const responseMessage = await interaction.editReply({
+      const response = await interaction.editReply({
         embeds: [embed],
         components: [new ActionRowBuilder().addComponents(select)],
-        fetchReply: true
+        withResponse: true
       });
+      const responseMessage = response.resource?.message ||
+        (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
+      if (!responseMessage) return;
 
       if (!interaction.client.deckbuilderData) {
         interaction.client.deckbuilderData = new Map();
