@@ -55,8 +55,7 @@ module.exports = {
     return interaction.reply({
       content: `Hello ${interaction.user.username}, you got **${randomHero}** as your random ${
         isPlants ? "plant" : "zombie"
-      } hero!`,
-      flags: MessageFlags.Ephemeral
+      } hero!`
     });
   }
 };
