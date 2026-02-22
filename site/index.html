@@ -11,30 +11,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Karla:wght@300;400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=Rajdhani:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="bg-orbs" aria-hidden="true"></div>
+    <div class="sky-glow" aria-hidden="true"></div>
+    <div class="grid-noise" aria-hidden="true"></div>
+
     <header class="site-header">
       <nav class="nav">
         <div class="brand">
-          <img
-            src="assets/logo-placeholder.svg"
-            alt="TBot logo"
-            class="logo"
-          />
           <span class="brand-name">TBot</span>
         </div>
         <div class="nav-links">
           <a href="#features">Features</a>
           <a href="#commands">Commands</a>
           <a href="#gallery">Gallery</a>
+          <a href="#stats">Stats</a>
           <a href="#faq">FAQ</a>
         </div>
-        <a class="cta" href="https://discord.com/api/oauth2/authorize?client_id=1043528908148052089&permissions=378944&scope=bot">
+        <a
+          class="cta"
+          href="https://discord.com/api/oauth2/authorize?client_id=1043528908148052089&permissions=378944&scope=bot"
+        >
           Invite TBot
         </a>
       </nav>
@@ -44,7 +45,7 @@
       <section class="hero" id="top">
         <div class="hero-text">
           <p class="kicker">Community PVZH companion</p>
-          <h1>Summon smarter deck help in seconds.</h1>
+          <h1>Find top-tier PVZH decks by hero, archetype, and playstyle in seconds.</h1>
           <p class="lead">
             TBot is a community PVZH bot built for quick answers. Search decks by
             hero, look up any card, and use helpful tools without leaving your
@@ -74,24 +75,18 @@
             </div>
           </div>
         </div>
-        <div class="hero-card">
-          <div class="floating-card">
-            <p class="card-title">/cardinfo</p>
-            <p class="card-body">"Tell me about Astrocado"</p>
-            <div class="card-bar"></div>
-            <p class="card-title">/deckbuilders</p>
-            <p class="card-body">"Top deckbuilders this week"</p>
-            <div class="card-bar"></div>
-            <p class="card-title">/herodecks</p>
-            <p class="card-body">"Show Solar Flare decks"</p>
+        <div class="hero-badge reveal">
+          <div class="badge-frame">
+            <img src="assets/logo.webp" alt="TBot emblem" />
           </div>
+          <div class="badge-caption">Deck intel on demand</div>
         </div>
       </section>
 
       <section class="features" id="features">
         <div class="section-title">
           <p class="kicker">Features</p>
-          <h2>Arcane tools for every PVZH guild.</h2>
+          <h2>Built like the game: bold, fast, and packed with answers.</h2>
         </div>
         <div class="feature-grid">
           <article class="feature reveal">
@@ -115,8 +110,8 @@
 
       <section class="commands" id="commands">
         <div class="section-title">
-          <p class="kicker">Commands</p>
-          <h2>Fast access to the most-used spells.</h2>
+          <p class="kicker">Command list</p>
+          <h2>Tap a command, get the answer.</h2>
         </div>
         <div class="command-grid">
           <div class="command-card reveal">
@@ -124,12 +119,16 @@
             <p>Look up any PVZH card and view stats or details.</p>
           </div>
           <div class="command-card reveal">
-            <h4>/deckbuilders</h4>
-            <p>See top deckbuilders and trending builds.</p>
+            <h4>/cardsearch</h4>
+            <p>Search the full card database with filters and keywords.</p>
           </div>
           <div class="command-card reveal">
             <h4>/herodecks</h4>
             <p>Browse decks by hero with interactive navigation.</p>
+          </div>
+          <div class="command-card reveal">
+            <h4>/deckbuilders</h4>
+            <p>See top deckbuilders and trending builds.</p>
           </div>
           <div class="command-card reveal">
             <h4>/keeporscrap</h4>
@@ -139,31 +138,48 @@
             <h4>/randomdeck</h4>
             <p>Spin up a surprise deck to spark new ideas.</p>
           </div>
-          <div class="command-card reveal">
-            <h4>/help</h4>
-            <p>Shortcut to onboarding and command discovery.</p>
-          </div>
         </div>
       </section>
 
       <section class="gallery" id="gallery">
         <div class="section-title">
           <p class="kicker">Gallery</p>
-          <h2>Shareable moments from your server.</h2>
+          <h2>Real snapshots from the bot in action.</h2>
         </div>
         <div class="gallery-grid">
           <figure class="reveal">
-            <img src="assets/screen-1.svg" alt="Deck discovery preview" />
-            <figcaption>Deck discovery responses</figcaption>
-          </figure>
-          <figure class="reveal">
-            <img src="assets/screen-2.svg" alt="Card info preview" />
+            <img src="assets/cardinfo.png" alt="Card info preview" />
             <figcaption>Card info embeds</figcaption>
           </figure>
           <figure class="reveal">
-            <img src="assets/screen-3.svg" alt="Hero deck preview" />
+            <img src="assets/cardsearch.png" alt="Card search preview" />
+            <figcaption>Card search results</figcaption>
+          </figure>
+          <figure class="reveal">
+            <img src="assets/herodecks.png" alt="Hero decks preview" />
             <figcaption>Hero deck menus</figcaption>
           </figure>
+        </div>
+      </section>
+
+      <section class="stats" id="stats">
+        <div class="section-title">
+          <p class="kicker">Stats</p>
+          <h2>Speed + clarity for every match night.</h2>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card reveal">
+            <span class="stat-number">All cards</span>
+            <span class="stat-label">Full PVZH card access</span>
+          </div>
+          <div class="stat-card reveal">
+            <span class="stat-number">Decks for days</span>
+            <span class="stat-label">Curated, useful builds</span>
+          </div>
+          <div class="stat-card reveal">
+            <span class="stat-number">All heroes</span>
+            <span class="stat-label">Every hero supported</span>
+          </div>
         </div>
       </section>
 

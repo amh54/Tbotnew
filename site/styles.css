@@ -1,11 +1,15 @@
 :root {
-  --bg: #0f0b12;
-  --bg-soft: #191221;
-  --accent: #e7c47e;
-  --accent-2: #88d9c8;
-  --text: #f6f3ef;
-  --muted: #c7bfb1;
-  --shadow: 0 30px 60px rgba(7, 4, 10, 0.55);
+  --bg: #121416;
+  --bg-soft: #1a1e22;
+  --panel: #2a2f35;
+  --panel-dark: #1b1f24;
+  --accent: #7adf3a;
+  --accent-2: #b05bff;
+  --accent-3: #6ee7c8;
+  --text: #fef7e7;
+  --muted: #cdd3d9;
+  --shadow: 0 24px 0 rgba(0, 0, 0, 0.35);
+  --stroke: #0b0d10;
 }
 
 * {
@@ -14,19 +18,34 @@
 
 body {
   margin: 0;
-  font-family: "Karla", sans-serif;
-  background: radial-gradient(circle at top, #2a1c34 0%, #0f0b12 52%, #08060a 100%);
+  font-family: "Rajdhani", sans-serif;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(122, 223, 58, 0.25), transparent 45%),
+    radial-gradient(circle at 85% 18%, rgba(176, 91, 255, 0.28), transparent 46%),
+    linear-gradient(155deg, #1a1f22 0%, #121416 55%, #0a0c0f 100%);
   color: var(--text);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.bg-orbs {
+.sky-glow {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 12% 20%, rgba(231, 196, 126, 0.2), transparent 40%),
-    radial-gradient(circle at 80% 12%, rgba(136, 217, 200, 0.22), transparent 45%),
-    radial-gradient(circle at 70% 75%, rgba(120, 81, 159, 0.22), transparent 40%);
+    radial-gradient(circle at 12% 20%, rgba(122, 223, 58, 0.22), transparent 40%),
+    radial-gradient(circle at 82% 12%, rgba(176, 91, 255, 0.22), transparent 45%),
+    radial-gradient(circle at 70% 80%, rgba(110, 231, 200, 0.18), transparent 50%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+.grid-noise {
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.22;
   pointer-events: none;
   z-index: -1;
 }
@@ -35,8 +54,10 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Cinzel", serif;
+  font-family: "Bungee", sans-serif;
   letter-spacing: 0.02em;
+  margin: 0 0 12px;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
 }
 
 a {
@@ -45,7 +66,7 @@ a {
 }
 
 .site-header {
-  padding: 24px 6vw 0;
+  padding: 22px 6vw 0;
 }
 
 .nav {
@@ -53,11 +74,11 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  background: rgba(15, 11, 18, 0.72);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(231, 196, 126, 0.2);
-  border-radius: 18px;
+  background: linear-gradient(180deg, #2b3138, #1a1f25);
+  border: 3px solid var(--stroke);
+  border-radius: 22px;
   padding: 14px 20px;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
 }
 
 .brand {
@@ -68,12 +89,17 @@ a {
 }
 
 .logo {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  background: radial-gradient(circle, #22272d 0%, #14181d 100%);
+  border-radius: 12px;
+  padding: 6px;
+  border: 2px solid var(--stroke);
 }
 
 .brand-name {
-  font-family: "Cinzel", serif;
+  font-family: "Bungee", sans-serif;
   font-size: 1.1rem;
 }
 
@@ -92,30 +118,34 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 20px;
+  padding: 12px 22px;
   border-radius: 999px;
-  border: 1px solid rgba(231, 196, 126, 0.3);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid var(--stroke);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+  background: linear-gradient(180deg, #2b3138, #1a1f25);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 .cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(231, 196, 126, 0.2);
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 106, 0, 0.6);
 }
 
 .cta.primary {
-  background: linear-gradient(120deg, #f0d28f, #d6a84a);
-  color: #0f0b12;
+  background: linear-gradient(180deg, #ff9a2f, #ff6a00);
+  color: #1b1106;
   font-weight: 700;
+  border-color: var(--stroke);
 }
 
 .cta.ghost {
-  border-color: rgba(231, 196, 126, 0.4);
+  border-color: rgba(122, 223, 58, 0.6);
   color: var(--text);
 }
 
 main {
-  padding: 40px 6vw 80px;
+  padding: 40px 6vw 90px;
 }
 
 .hero {
@@ -123,32 +153,31 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 40px;
   align-items: center;
-  padding: 60px 0 80px;
+  padding: 50px 0 70px;
 }
 
 .kicker {
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
   color: var(--accent-2);
-  margin: 0 0 12px;
+  margin-bottom: 12px;
 }
 
 .hero h1 {
-  font-size: clamp(2.4rem, 4vw, 3.7rem);
-  margin: 0 0 16px;
+  font-size: clamp(2.1rem, 3.8vw, 3.4rem);
 }
 
 .lead {
   font-size: 1.05rem;
   color: var(--muted);
-  max-width: 520px;
+  max-width: 540px;
 }
 
 .hero-actions {
   display: flex;
   gap: 16px;
-  margin: 28px 0;
+  margin: 26px 0;
   flex-wrap: wrap;
 }
 
@@ -165,35 +194,31 @@ main {
   color: var(--text);
 }
 
-.hero-card {
-  display: flex;
-  justify-content: center;
+.hero-badge {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
 }
 
-.floating-card {
-  background: linear-gradient(160deg, rgba(25, 18, 33, 0.9), rgba(10, 7, 13, 0.95));
-  border: 1px solid rgba(231, 196, 126, 0.2);
-  border-radius: 24px;
-  padding: 28px;
-  width: min(360px, 100%);
-  box-shadow: var(--shadow);
-  animation: float 5s ease-in-out infinite;
+.badge-frame {
+  width: min(280px, 80vw);
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(180deg, #2d333b, #1c2127);
+  border-radius: 28px;
+  border: 3px solid var(--stroke);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 0 rgba(0, 0, 0, 0.35);
 }
 
-.card-title {
-  font-family: "Cinzel", serif;
-  margin: 0 0 6px;
+.badge-frame img {
+  width: 72%;
+  height: auto;
 }
 
-.card-body {
-  margin: 0 0 16px;
-  color: var(--muted);
-}
-
-.card-bar {
-  height: 1px;
-  background: rgba(231, 196, 126, 0.2);
-  margin: 12px 0 18px;
+.badge-caption {
+  font-weight: 600;
+  color: var(--accent-3);
 }
 
 section {
@@ -201,13 +226,14 @@ section {
 }
 
 .section-title {
-  max-width: 620px;
+  max-width: 680px;
   margin-bottom: 32px;
 }
 
 .feature-grid,
 .command-grid,
-.gallery-grid {
+.gallery-grid,
+.stat-grid {
   display: grid;
   gap: 20px;
 }
@@ -224,14 +250,19 @@ section {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
+.stat-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
 .feature,
 .command-card,
-.gallery figure {
-  background: rgba(25, 18, 33, 0.75);
-  border: 1px solid rgba(231, 196, 126, 0.18);
-  border-radius: 18px;
+.gallery figure,
+.stat-card {
+  background: linear-gradient(180deg, #2b3138, #1b2026);
+  border: 3px solid var(--stroke);
+  border-radius: 20px;
   padding: 22px;
-  box-shadow: 0 20px 40px rgba(7, 4, 10, 0.35);
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
 }
 
 .feature h3 {
@@ -240,8 +271,9 @@ section {
 
 .gallery img {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   display: block;
+  border: 2px solid var(--stroke);
 }
 
 .gallery figcaption {
@@ -249,12 +281,25 @@ section {
   color: var(--muted);
 }
 
+.stat-card {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: "Bungee", sans-serif;
+  font-size: 1.4rem;
+  color: var(--accent-3);
+}
+
 .faq-list details {
-  background: rgba(25, 18, 33, 0.7);
-  border-radius: 14px;
-  border: 1px solid rgba(231, 196, 126, 0.16);
+  background: linear-gradient(180deg, #2b3138, #1b2026);
+  border-radius: 16px;
+  border: 3px solid var(--stroke);
   padding: 16px 18px;
   margin-bottom: 12px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
 }
 
 .faq-list summary {
@@ -264,15 +309,16 @@ section {
 
 .cta-strip {
   margin-top: 90px;
-  background: linear-gradient(120deg, rgba(231, 196, 126, 0.18), rgba(136, 217, 200, 0.18));
-  border: 1px solid rgba(231, 196, 126, 0.25);
+  background: linear-gradient(180deg, #3a2f1c, #2a2316);
+  border: 3px solid var(--stroke);
   padding: 32px;
-  border-radius: 24px;
+  border-radius: 26px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35);
 }
 
 .site-footer {
@@ -292,17 +338,7 @@ section {
   transform: translateY(0);
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .nav {
     flex-direction: column;
     align-items: flex-start;
