@@ -26,9 +26,8 @@ TBot is a community PVZH bot built for quick answers. Search decks by hero, look
 ## Quick Start (For Players)
 
 1) In any server where TBot is installed, type `/help`.
-2) Pick a hero or command from the help menu.
-3) Use autocomplete to find the exact deck or card you want.
-4) Click buttons or select menus to browse and paginate results.
+2) Use autocomplete to find the exact deck or TBot is a community PVZH bot built for quick answers. Search decks by hero, look up any card, and use helpful tools without leaving your servercard you want.
+3) Click buttons or select menus to browse and paginate results.
 
 ## What You Can Do With TBot
 

@@ -35,16 +35,15 @@ async function processTableRows(t, rows, options) {
       currentDeckNames.add(row.name);
     }
     
-    await registerOrUpdateDbCommand(
-      t,
+    await registerOrUpdateDbCommand(t, {
       row,
       client,
       dbCommandMap,
       dbTableColors,
-      channelId,
+      notificationChannelId: channelId,
       db,
       isInitialLoad
-    );
+    });
   }
 
   return { seenKeys, currentDeckNames };

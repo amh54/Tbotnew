@@ -128,7 +128,18 @@ function calculateVariance(data, width, height, channels) {
   return variance;
 }
 
-function buildFlagsList(largestRedCluster, lower, text, quantityMatches, colorDiversity, variance) {
+function buildFlagsList({
+  largestRedCluster,
+  lower,
+  text,
+  quantityMatches,
+  colorDiversity,
+  variance,
+  data,
+  width,
+  height,
+  channels
+}) {
   const flags = [];
 
   if (largestRedCluster > 10000) {
@@ -139,7 +150,7 @@ function buildFlagsList(largestRedCluster, lower, text, quantityMatches, colorDi
     flags.push('non_game_text');
   }
 
-  if (detectOverlayImages(...arguments.slice(1, 5))) {
+  if (detectOverlayImages(data, width, height, channels)) {
     flags.push('overlay_images');
   }
 
@@ -207,7 +218,18 @@ async function validateDeckImage(imageUrl) {
     const colorDiversity = getColorDiversity(data, width, height, channels);
     const variance = calculateVariance(data, width, height, channels);
 
-    const flags = buildFlagsList(largestRedCluster, lower, text, quantityMatches, colorDiversity, variance);
+    const flags = buildFlagsList({
+      largestRedCluster,
+      lower,
+      text,
+      quantityMatches,
+      colorDiversity,
+      variance,
+      data,
+      width,
+      height,
+      channels
+    });
     const criticalFlags = getCriticalFlags(flags);
     const isValid = determineValidity(grid, deckSizePresent, quantityMatches, criticalFlags);
 

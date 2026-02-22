@@ -93,26 +93,50 @@ async function handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, e
 }
 
 async function registerOrUpdateDbCommand(tableConfig, options) {
+  if (!options?.row && arguments.length > 2) {
+    const [, row, client, dbCommandMap, dbTableColors, notificationChannelId, db, isInitialLoad] = arguments;
+    options = {
+      row,
+      client,
+      dbCommandMap,
+      dbTableColors,
+      notificationChannelId,
+      db,
+      isInitialLoad
+    };
+  }
+
   const {
     row,
-    client,
-    dbCommandMap,
-    dbTableColors = {},
-    notificationChannelId = null,
-    db = null,
-    isInitialLoad = false
-  } = options;
+    client: resolvedClient,
+    dbCommandMap: resolvedDbCommandMap,
+    dbTableColors: resolvedDbTableColors = {},
+    notificationChannelId: resolvedNotificationChannelId = null,
+    db: resolvedDb = null,
+    isInitialLoad: resolvedIsInitialLoad = false
+  } = options || {};
+
+  if (!row || !resolvedDbCommandMap || typeof resolvedDbCommandMap.get !== "function") {
+    console.error("registerOrUpdateDbCommand missing required data", {
+      hasRow: Boolean(row),
+      hasDbCommandMap: Boolean(resolvedDbCommandMap),
+      dbCommandMapType: typeof resolvedDbCommandMap,
+      dbCommandMapHasGet: Boolean(resolvedDbCommandMap?.get),
+      table: tableConfig?.table
+    });
+    return;
+  }
 
   const key = extractKeyFromRow(tableConfig, row);
   const baseName = getBaseName(row);
   const baseSan = sanitizeCommandName(baseName);
   const hash = rowHash(row);
 
-  const existing = dbCommandMap.get(key);
+  const existing = resolvedDbCommandMap.get(key);
   if (existing?.hash === hash) return;
 
   const isDeck = isDeckRow(tableConfig, row);
-  const isTrulyNew = isDeckTrulyNew(isDeck, existing, row, tableConfig, dbCommandMap);
+  const isTrulyNew = isDeckTrulyNew(isDeck, existing, row, tableConfig, resolvedDbCommandMap);
   
   const isNewDeck = isDeck && !existing && isTrulyNew;
   const isUpdatedDeck = isDeck && existing && existing.hash !== hash && existing.rowData?.name === row.name;
@@ -121,10 +145,16 @@ async function registerOrUpdateDbCommand(tableConfig, options) {
   const changedFields = detectChangedFields(existing, row);
   const aliasesArray = parseAliases(row);
 
-  dbCommandMap.set(key, { commandName: baseSan, aliases: aliasesArray, hash, rowData: row });
+  resolvedDbCommandMap.set(key, { commandName: baseSan, aliases: aliasesArray, hash, rowData: row });
 
-  await handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, { client, notificationChannelId, row, tableConfig, dbTableColors });
-  await handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, db, isInitialLoad);
+  await handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, {
+    client: resolvedClient,
+    notificationChannelId: resolvedNotificationChannelId,
+    row,
+    tableConfig,
+    dbTableColors: resolvedDbTableColors
+  });
+  await handleDeckbuilderCounts(isDeck, isNewDeck, creatorChanged, row, existing, resolvedDb, resolvedIsInitialLoad);
 }
 
 async function updateDeckbuilderCounts(db, creator, delta) {

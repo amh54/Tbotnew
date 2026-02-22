@@ -114,6 +114,30 @@ function extractDeckbuilderNames(creator) {
   return [...new Set(names)];
 }
 
+function addNameToTracking(name, count, table, deckName, counts, deckNamesByBuilder) {
+  counts.set(name, (counts.get(name) || 0) + 1);
+  if (deckName) {
+    if (!deckNamesByBuilder.has(name)) {
+      deckNamesByBuilder.set(name, new Map());
+    }
+    const tablesMap = deckNamesByBuilder.get(name);
+    if (!tablesMap.has(table)) {
+      tablesMap.set(table, new Set());
+    }
+    tablesMap.get(table).add(deckName);
+  }
+}
+
+function formatDeckList(deckNamesByBuilder, name) {
+  const tableDecks = deckNamesByBuilder.get(name);
+  return tableDecks
+    ? [...tableDecks.entries()]
+        .sort(([tableA], [tableB]) => tableA.localeCompare(tableB))
+        .map(([tableName, deckSet]) => `${tableName}: ${[...deckSet].sort((a, b) => a.localeCompare(b)).join(", ")}`)
+        .join("; ")
+    : "(no deck names found)";
+}
+
 async function rebuildCounts() {
   const db = mysql
     .createPool({
@@ -126,13 +150,14 @@ async function rebuildCounts() {
     .promise();
 
   const counts = new Map();
+  const deckNamesByBuilder = new Map();
 
   for (const table of deckTables) {
-    const [rows] = await db.query(`SELECT creator FROM \`${table}\``);
+    const [rows] = await db.query(`SELECT creator, name FROM \`${table}\``);
     for (const row of rows) {
       const names = extractDeckbuilderNames(row.creator);
       for (const name of names) {
-        counts.set(name, (counts.get(name) || 0) + 1);
+        addNameToTracking(name, 0, table, row.name, counts, deckNamesByBuilder);
       }
     }
   }
@@ -151,7 +176,8 @@ async function rebuildCounts() {
       updated += 1;
     } else {
       missing += 1;
-      console.warn(`Missing deckbuilder row for: ${name}`);
+      const deckList = formatDeckList(deckNamesByBuilder, name);
+      console.warn(`Missing deckbuilder row for: ${name} | Decks: ${deckList}`);
     }
   }
 
@@ -161,11 +187,9 @@ async function rebuildCounts() {
   await db.end();
 }
 
-(async () => {
-  try {
-    await rebuildCounts();
-  } catch (error) {
-    console.error("Rebuild failed:", error);
-    process.exitCode = 1;
-  }
-})();
+try {
+  await rebuildCounts();
+} catch (error) {
+  console.error("Rebuild failed:", error);
+  process.exitCode = 1;
+}

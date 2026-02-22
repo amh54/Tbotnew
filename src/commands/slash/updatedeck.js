@@ -10,6 +10,7 @@ const {
 } = require("discord.js");
 const axios = require("axios");
 const {validateDeckImage} = require('../../features/decks/validateDeckImage');
+const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -182,9 +183,34 @@ module.exports = {
         "1100171177529446492": "smdecks",
         "1100170981013729410": "zmdecks",
       }
+      const dbTableColors = {
+        sbdecks: "#9B59B6",
+        ccdecks: "#E67E22",
+        sfdecks: "#F1C40F",
+        rodecks: "#E91E63",
+        gsdecks: "#2ECC71",
+        wkdecks: "#3498DB",
+        czdecks: "#8E44AD",
+        spdecks: "#95A5A6",
+        ctdecks: "#1ABC9C",
+        bcdecks: "#16A085",
+        gkdecks: "#27AE60",
+        ncdecks: "#8E44AD",
+        hgdecks: "#3498DB",
+        zmdecks: "#E74C3C",
+        smdecks: "#E67E22",
+        ifdecks: "#9B59B6",
+        rbdecks: "#95A5A6",
+        ebdecks: "#F39C12",
+        bfdecks: "#3498DB",
+        pbdecks: "#9B59B6",
+        imdecks: "#8E44AD",
+        ntdecks: "#3498DB",
+      };
       const heroId = interaction.options.getString("hero");
     const tableName = heroDeckMap[heroId];
     const name = interaction.options.getString("name");
+    const normalizedName = name.toLowerCase().replaceAll(/\s+/g, "");
     
     // Verify hero ID is valid
     if (!tableName && heroId !== "1100171558263193700" && heroId !== "1100170925208502282") {
@@ -198,21 +224,21 @@ module.exports = {
     let rows;
     if (heroId === "1100171558263193700") {
       query = `
-        SELECT name FROM ctdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
+        SELECT *, 'ctdecks' AS tableName FROM ctdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
         UNION ALL
-        SELECT name FROM bcdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
+        SELECT *, 'bcdecks' AS tableName FROM bcdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
       `;
-      [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+      [rows] = await db.query(query, [normalizedName, normalizedName]);
     } 
     // check for hg/SB
     else if (heroId === "1100170925208502282") {
-      query = `SELECT name FROM hgdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
+      query = `SELECT *, 'hgdecks' AS tableName FROM hgdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
         UNION ALL
-        SELECT name FROM sbdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?`;
-      [rows] = await db.query(query, [name.toLowerCase().replaceAll(/\s+/g, ""), name.toLowerCase().replaceAll(/\s+/g, "")]);
+        SELECT *, 'sbdecks' AS tableName FROM sbdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?`;
+      [rows] = await db.query(query, [normalizedName, normalizedName]);
     }
     else {
-    [rows] = await db.query(`SELECT name FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [name.toLowerCase().replaceAll(/\s+/g, "")]);
+    [rows] = await db.query(`SELECT *, '${tableName}' AS tableName FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [normalizedName]);
     }
     
     if (rows.length === 0) {
@@ -222,6 +248,8 @@ module.exports = {
         flags: MessageFlags.Ephemeral
       });
     }
+    const deckRow = rows[0];
+    const resolvedTableName = deckRow.tableName || tableName;
     const description = interaction.options.getString("description");
     const decktype = interaction.options.getString("deck_type");
     const deckarchetype = interaction.options.getString("deck_archetype");
@@ -330,14 +358,10 @@ module.exports = {
     await starterMessage.pin();
     await starterMessage.react("<:upvote:1081953853903220876>");
     await starterMessage.react("<:downvote:1081953860534403102>");
-    //send message to thread 
-    const deckPin = await thread.send({
-      content: `<@${interaction.client.user.id}> ${name}`
-    })
-    await deckPin.pin();
-    const deckMessage = await thread.send({
-    content: `<@${interaction.client.user.id}> ${name}`
-  })
-    await deckMessage.pin();
+    const previousInfoEmbed = buildDeckEmbedFromRow(deckRow, resolvedTableName, dbTableColors);
+    const previousInfoMessage = await thread.send({
+      embeds: [previousInfoEmbed],
+    });
+    await previousInfoMessage.pin();
   },
 };
