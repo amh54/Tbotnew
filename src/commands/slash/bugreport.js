@@ -1,4 +1,5 @@
 const {SlashCommandBuilder, EmbedBuilder, MessageFlags} = require('discord.js');
+const BUG_REPORT_THREAD_ID = "1503900903605010432";
 module.exports = {  
     data: new SlashCommandBuilder()
         .setName('bugreport')
@@ -54,7 +55,7 @@ async execute(interaction) {
 
       const commandName = interaction.options.getString('command_name');
       const bugDescription = interaction.options.getString('bug_description');
-      const owner = await interaction.client.users.fetch("625172218120372225");
+      const bugReportThread = await interaction.client.channels.fetch(BUG_REPORT_THREAD_ID).catch(() => null);
           
           if (slashNames.includes(commandName)) {
         const embed = new EmbedBuilder()
@@ -69,16 +70,20 @@ async execute(interaction) {
           .setDescription(bugDescription);
 
             try {
-                await owner.send({
+              if (!bugReportThread) {
+                throw new Error(`Unable to fetch bug report thread: ${BUG_REPORT_THREAD_ID}`);
+              }
+
+              await bugReportThread.send({
                     embeds: [embed],
                 });
             } catch (error) {
                 console.error('Error sending bug report:', error);
-                await interaction.reply({ content: 'There was an error sending your bug report.', flags: MessageFlags.Ephemeral });
+              await interaction.editReply({ content: 'There was an error sending your bug report.' });
                 return;
             }
     
-                await interaction.editReply({ content: 'Thank you for your bug report! It has been reported to Tbone, who is the owner of Tbot' });
+              await interaction.editReply({ content: 'Thank you for your bug report! It has been sent to the bug report thread.' });
               } else {
                 await interaction.editReply({ content: 'The command name you provided does not exist. Please check the name and try again.' });
               }
