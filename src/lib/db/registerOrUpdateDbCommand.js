@@ -62,6 +62,9 @@ function isDeckTrulyNew(isDeck, existing, row, tableConfig, dbCommandMap) {
 function detectChangedFields(existing, row) {
   const changedFields = [];
   if (existing?.rowData) {
+    if (existing.rowData.name !== row.name) {
+      changedFields.push('name');
+    }
     if (existing.rowData.description !== row.description) {
       changedFields.push('description');
     }
@@ -139,7 +142,7 @@ async function registerOrUpdateDbCommand(tableConfig, options) {
   const isTrulyNew = isDeckTrulyNew(isDeck, existing, row, tableConfig, resolvedDbCommandMap);
   
   const isNewDeck = isDeck && !existing && isTrulyNew;
-  const isUpdatedDeck = isDeck && existing && existing.hash !== hash && existing.rowData?.name === row.name;
+  const isUpdatedDeck = isDeck && existing && existing.hash !== hash;
   const creatorChanged = isUpdatedDeck && existing?.rowData?.creator !== row.creator;
 
   const changedFields = detectChangedFields(existing, row);

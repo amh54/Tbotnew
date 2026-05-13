@@ -1,6 +1,26 @@
 const registerOrUpdateDbCommand = require("./registerOrUpdateDbCommand");
 const unregisterDbCommandByKey = require("./unregisterDbCommandByKey");
 
+const fallbackDbCommandMap = new Map();
+let warnedInvalidDbCommandMap = false;
+
+function resolveDbCommandMap(dbCommandMap) {
+  const isMapLike =
+    dbCommandMap &&
+    typeof dbCommandMap.get === "function" &&
+    typeof dbCommandMap.set === "function" &&
+    typeof dbCommandMap.keys === "function" &&
+    typeof dbCommandMap.entries === "function";
+
+  if (isMapLike) return dbCommandMap;
+
+  if (!warnedInvalidDbCommandMap) {
+    warnedInvalidDbCommandMap = true;
+    console.warn("DB sync received invalid dbCommandMap. Falling back to internal map.");
+  }
+  return fallbackDbCommandMap;
+}
+
 /**
  * @description Generates a unique key for a database row
  * @param {string} table - Table name
@@ -62,10 +82,15 @@ async function removeDeletedCommands(table, seenKeys, currentDeckNames, t, optio
   const { client, dbCommandMap, dbTableColors, notificationChannelId, isInitialLoad, db } = options;
   const channelId = isInitialLoad ? null : notificationChannelId;
 
+  if (!dbCommandMap || typeof dbCommandMap.keys !== "function") {
+    console.warn("DB command cleanup skipped: invalid dbCommandMap");
+    return;
+  }
+
   for (const existingKey of Array.from(dbCommandMap.keys())) {
     if (!existingKey.startsWith(`${table}:`)) continue;
     if (!seenKeys.has(existingKey)) {
-      await unregisterDbCommandByKey(existingKey, client, dbCommandMap, t, dbTableColors, channelId, currentDeckNames, db);
+      await unregisterDbCommandByKey(existingKey, { client, dbCommandMap, tableConfig: t, dbTableColors, notificationChannelId: channelId, currentDeckNames, db });
     }
   }
 }
@@ -76,7 +101,8 @@ async function removeDeletedCommands(table, seenKeys, currentDeckNames, t, optio
  */
 async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors, notificationChannelId = null, isInitialLoad = false) {
   try {
-    const options = { client, dbCommandMap, dbTableColors, notificationChannelId, isInitialLoad, db };
+    const resolvedDbCommandMap = resolveDbCommandMap(dbCommandMap);
+    const options = { client, dbCommandMap: resolvedDbCommandMap, dbTableColors, notificationChannelId, isInitialLoad, db };
     for (const t of dbTables) {
       const [rows] = await db
         .query(`SELECT * FROM \`${t.table}\``)

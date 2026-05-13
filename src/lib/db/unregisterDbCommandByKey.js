@@ -14,8 +14,13 @@ const heroDeckThreadMap = require("../../features/heroes/heroDeckThreadMap");
  * @param {*} options.db Database connection
  * @returns {Promise<void>} Resolves when the command is unregistered
  */
-async function unregisterDbCommandByKey(key, options) {
+async function unregisterDbCommandByKey(key, options = {}) {
   const { client, dbCommandMap, tableConfig, dbTableColors, currentDeckNames, db = null } = options;
+  if (!dbCommandMap || typeof dbCommandMap.get !== "function" || typeof dbCommandMap.entries !== "function") {
+    console.warn("DB command unregister skipped: invalid dbCommandMap");
+    return;
+  }
+
   const info = dbCommandMap.get(key);
   if (!info) return;
   

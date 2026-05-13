@@ -1,6 +1,26 @@
-const { EmbedBuilder } = require("discord.js");  
+const { EmbedBuilder, ChannelType } = require("discord.js");  
+
+function resolveNotificationTarget(notificationType, notificationTarget) {
+  if (!notificationTarget) return null;
+
+  if (typeof notificationTarget === "string") {
+    return notificationTarget;
+  }
+
+  if (notificationType === "new") {
+    return notificationTarget.newDeckThreadId || notificationTarget.defaultChannelId || null;
+  }
+
+  if (notificationType === "update") {
+    return notificationTarget.updateDeckThreadId || notificationTarget.defaultChannelId || null;
+  }
+
+  return notificationTarget.defaultChannelId || null;
+}
+
 /**
  * Sends a notification for a new, updated, or deleted deck
+ * @param {string|Object} notificationChannelId - Channel/thread ID or notification target object
  * @param {string} notificationType - 'new', 'update', or 'delete'
  * @param {Array<string>} changedFields - Array of field names that changed (for updates)
  */
@@ -11,8 +31,21 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
       if (!shouldNotify) return;
     }
 
-    const channel = await client.channels.fetch(notificationChannelId).catch(() => null);
-    if (!channel) return;
+    const targetId = resolveNotificationTarget(notificationType, notificationChannelId);
+    if (!targetId) {
+      throw new Error(`No notification target configured for type: ${notificationType}`);
+    }
+
+    const channel = await client.channels.fetch(targetId).catch(() => null);
+    if (!channel) {
+      throw new Error(`Failed to fetch notification target channel/thread: ${targetId}`);
+    }
+
+    if (channel.type === ChannelType.GuildForum) {
+      throw new Error(
+        `Notification target ${targetId} is a forum parent channel. Configure a thread ID instead.`
+      );
+    }
 
     const deckColor = dbTableColors[tableConfig.table] || "#00FF00";
     
@@ -46,6 +79,7 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
     await channel.send({ embeds: [embed] });
   } catch (error) {
     console.error("Failed to send deck notification:", error);
+    throw error;
   }
 }
 
