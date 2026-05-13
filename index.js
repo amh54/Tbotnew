@@ -164,7 +164,7 @@ const dbTableColors = {
   heartycards: "Orange",
   heartytricks: "Orange",
   sneakycards: "#000000",
-  sneakytricks: "#000000",
+  sneakytricks: "#000000"
 };
 
 // Start with empty map - let initial scan populate it fresh
