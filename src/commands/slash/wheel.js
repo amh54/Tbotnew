@@ -1,33 +1,37 @@
 const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js");
 
-// Helper function to extract card names from query results
-function extractCardNames(cardRows, trickRows) {
-  return [...cardRows.map(row => row.card_name), ...trickRows.map(row => row.card_name)];
+// Helper function to shuffle array (Fisher-Yates)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
-// Helper function to fetch all cards from database
+// Helper function to fetch all cards from database with costs and types
 async function getCardSelections(db) {
   const results = await Promise.all([
-    db.query('select card_name from guardiancards where set_rarity not like "%Token%" and description not like "%Superpower%"'), 
-    db.query('select card_name from smartycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from kabloomcards where set_rarity not like "%Token%"'),
-    db.query('select card_name from megagrowcards where set_rarity not like "%Token%"'),
-    db.query('select card_name from solarcards where set_rarity not like "%Token%"'),
-    db.query('select card_name from sneakycards where set_rarity not like "%Token%"'),
-    db.query('select card_name from beastlycards where set_rarity not like "%Token%"'),
-    db.query('select card_name from crazycards where set_rarity not like "%Token%"'),
-    db.query('select card_name from brainycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from heartycards where set_rarity not like "%Token%"'),
-    db.query('select card_name from guardiantricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from smartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from kabloomtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from megagrowtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from solartricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from sneakytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from beastlytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from crazytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from brainytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name from heartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats from guardiancards where set_rarity not like "%Token%" and description not like "%Superpower%"'), 
+    db.query('select card_name, stats from smartycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats from kabloomcards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from megagrowcards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from solarcards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from sneakycards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from beastlycards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from crazycards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats from brainycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats from heartycards where set_rarity not like "%Token%"'),
+    db.query('select card_name, stats, description from guardiantricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from smartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from kabloomtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from megagrowtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from solartricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from sneakytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from beastlytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from crazytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from brainytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
+    db.query('select card_name, stats, description from heartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
   ]);
   
   const [guardianCards, smartyCards, kabloomCards, megaGrowCards, solarCards, sneakyCards, 
@@ -35,17 +39,37 @@ async function getCardSelections(db) {
     kabloomTricks, megaGrowTricks, solarTricks, sneakyTricks, beastlyTricks, 
     crazyTricks, brainyTricks, heartyTricks] = results.map(result => result[0]);
   
+  // Helper to extract cost from stats string (Discord emoji format)
+  const extractCost = (stats) => {
+    if (!stats) return 0;
+    const match = stats.toString().trim().match(/^(\d+)/);
+    return match ? Number.parseInt(match[1], 10) : 0;
+  };
+  
+  // Helper to determine trick type from description
+  const getTrickType = (description) => {
+    if (!description) return 'Trick';
+    return description.includes('Environment') ? 'Environment' : 'Trick';
+  };
+  
+  // Process card tables (minions/spells)
+  const processCardTable = (cards) => 
+    cards.map(row => ({ card_name: row.card_name, cost: extractCost(row.stats), type: 'Minion' }));
+  
+   // Process trick tables
+  const processTrickTable = (tricks) => 
+    tricks.map(row => ({ card_name: row.card_name, cost: extractCost(row.stats), type: getTrickType(row.description) }));
   return {
-    guardian: extractCardNames(guardianCards, guardianTricks),
-    smarty: extractCardNames(smartyCards, smartyTricks),
-    kabloom: extractCardNames(kabloomCards, kabloomTricks),
-    megaGrow: extractCardNames(megaGrowCards, megaGrowTricks),
-    solar: extractCardNames(solarCards, solarTricks),
-    sneaky: extractCardNames(sneakyCards, sneakyTricks),
-    beastly: extractCardNames(beastlyCards, beastlyTricks),
-    crazy: extractCardNames(crazyCards, crazyTricks),
-    brainy: extractCardNames(brainyCards, brainyTricks),
-    hearty: extractCardNames(heartyCards, heartyTricks),
+    guardian: [...processCardTable(guardianCards), ...processTrickTable(guardianTricks)],
+    smarty: [...processCardTable(smartyCards), ...processTrickTable(smartyTricks)],
+    kabloom: [...processCardTable(kabloomCards), ...processTrickTable(kabloomTricks)],
+    megaGrow: [...processCardTable(megaGrowCards), ...processTrickTable(megaGrowTricks)],
+    solar: [...processCardTable(solarCards), ...processTrickTable(solarTricks)],
+    sneaky: [...processCardTable(sneakyCards), ...processTrickTable(sneakyTricks)],
+    beastly: [...processCardTable(beastlyCards), ...processTrickTable(beastlyTricks)],
+    crazy: [...processCardTable(crazyCards), ...processTrickTable(crazyTricks)],
+    brainy: [...processCardTable(brainyCards), ...processTrickTable(brainyTricks)],
+    hearty: [...processCardTable(heartyCards), ...processTrickTable(heartyTricks)],
   };
 }
 
@@ -86,62 +110,84 @@ function selectRandomCards(sourceArray, count) {
   return selected;
 }
 
-// Helper function to shuffle array (Fisher-Yates)
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+// Helper function to select random cards with a maximum copy count
+function selectRandomCardsWithMaxCopies(sourceArray, count, maxCopies = 4) {
+  const remaining = sourceArray.flatMap(card => Array.from({ length: maxCopies }, () => card));
+  const selected = [];
+
+  while (selected.length < count && remaining.length > 0) {
+    const randomIndex = Math.floor(Math.random() * remaining.length);
+    selected.push(remaining.splice(randomIndex, 1)[0]);
   }
-  return array;
+
+  return selected;
 }
 
-// Helper function to generate random ratio (sum to 40)
-function generateRandomRatio() {
-  const ratio1 = Math.floor(Math.random() * 30) + 5; // 5-34
-  const ratio2 = 40 - ratio1; // 6-35
-  return [ratio1, ratio2];
+// Helper function to get card cost
+function getCardCost(card) {
+  return card.cost || 0;
 }
 
-// Helper function to build deck with multipliers
-function buildDeckWithMultipliers(faction1Words, faction2Words, ratio1, ratio2) {
-  const deck = [];
-  let remaining = 40;
+// Helper function to get card type
+function getCardType(card) {
+  return card.type || 'Minion';
+}
+
+// Helper function to check if deck meets constraints
+function checkDeckConstraints(deck) {
+  const EARLY_MIN = 14;   // min 1-2 drops
+  const MID_MIN = 12;     // min 3-4 drops
+  const LATE_MIN = 8;     // min 5+ drops
+  const MAX_ENVIRONMENTS = 8;
+  const MAX_TRICKS = 12;
   
-  // Faction 1
-  const f1Remaining = [...faction1Words];
-  shuffleArray(f1Remaining);
-  let f1Count = 0;
-  for (const card of f1Remaining) {
-    if (f1Count >= ratio1) break;
-    const multiplier = Math.min(Math.floor(Math.random() * 4) + 1, ratio1 - f1Count);
-    deck.push({ card, multiplier });
-    f1Count += multiplier;
+  let early = 0, mid = 0, late = 0;
+  let environments = 0, tricks = 0;
+  
+  for (const card of deck) {
+    const cost = getCardCost(card);
+    const type = getCardType(card);
+    
+    if (cost <= 2) early++;
+    else if (cost <= 4) mid++;
+    else late++;
+    
+    if (type === 'Environment') environments++;
+    if (type === 'Trick') tricks++;
   }
   
-  // Faction 2
-  const f2Remaining = [...faction2Words];
-  shuffleArray(f2Remaining);
-  let f2Count = 0;
-  for (const card of f2Remaining) {
-    if (f2Count >= ratio2) break;
-    const multiplier = Math.min(Math.floor(Math.random() * 4) + 1, ratio2 - f2Count);
-    deck.push({ card, multiplier });
-    f2Count += multiplier;
+  return {
+    valid: early >= EARLY_MIN && mid >= MID_MIN && late >= LATE_MIN && 
+           environments <= MAX_ENVIRONMENTS && tricks <= MAX_TRICKS,
+    early, mid, late, environments, tricks
+  };
+}
+
+// Helper function to build deck with independent draws and constraints
+function buildDeckWithConstraints(faction1Cards, faction2Cards, ratio1, ratio2) {
+  const MAX_RETRIES = 50;
+  
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const deck = [
+      ...selectRandomCardsWithMaxCopies(faction1Cards, ratio1),
+      ...selectRandomCardsWithMaxCopies(faction2Cards, ratio2),
+    ];
+    
+    // Check constraints
+    const constraints = checkDeckConstraints(deck);
+    if (constraints.valid) {
+      shuffleArray(deck);
+      return { deck, ratio1, ratio2 };
+    }
   }
   
-  // Shuffle final deck
+ // If we fail all retries, return best attempt
+  const deck = [
+    ...selectRandomCardsWithMaxCopies(faction1Cards, ratio1),
+    ...selectRandomCardsWithMaxCopies(faction2Cards, ratio2),
+  ];
   shuffleArray(deck);
-  return deck;
-}
-
-// Helper function to build deck based on mode
-function buildDeck(mode, wordsArray, faction1Words, faction2Words, faction1Ratio, faction2Ratio) {
-  if (mode === 'normal') {
-    return selectRandomCards(wordsArray, wordsArray.length).map(card => ({ card, multiplier: 1 }));
-  }
-  
-  const [ratio1, ratio2] = generateRandomRatio();
-  return buildDeckWithMultipliers(faction1Words, faction2Words, ratio1, ratio2);
+  return { deck, ratio1, ratio2 };
 }
 
 module.exports = {
@@ -206,23 +252,45 @@ module.exports = {
           // Get card selections from database
           const cards = await getCardSelections(db);
           const heroFactionMap = buildHeroFactionMap(cards);
-          const [faction1Words, faction2Words] = heroFactionMap[hero];
-          const wordsArray = [...faction1Words, ...faction2Words];
+          const [faction1Cards, faction2Cards] = heroFactionMap[hero];
+          const allCards = [...faction1Cards, ...faction2Cards];
           
           // Build deck based on mode
           let deckCards;
           
           if (mode === 'normal') {
-            deckCards = selectRandomCards(wordsArray, number).map(card => ({ card, multiplier: 1 }));
+            // Normal mode: just random cards at 1x each
+            const selected = selectRandomCards(allCards, number);
+            // Sort by cost
+            selected.sort((a, b) => getCardCost(a) - getCardCost(b));
+            deckCards = selected.map(card => `1x ${card.card_name}`);
           } else {
-            const [ratio1, ratio2] = generateRandomRatio();
-            deckCards = buildDeckWithMultipliers(faction1Words, faction2Words, ratio1, ratio2);
+            // Ratio mode: generate random ratio and build constrained deck
+            const ratio1 = Math.floor(Math.random() * 30) + 5; // 5-34
+            const ratio2 = 40 - ratio1;
+            const result = buildDeckWithConstraints(faction1Cards, faction2Cards, ratio1, ratio2);
+            
+            // Sort deck by cost
+            result.deck.sort((a, b) => getCardCost(a) - getCardCost(b));
+            
+            // Count card multipliers while maintaining sort order
+            const cardCounts = {};
+            const cardOrder = [];
+            for (const card of result.deck) {
+              if (!cardCounts[card.card_name]) {
+                cardOrder.push(card.card_name);
+              }
+              cardCounts[card.card_name] = (cardCounts[card.card_name] || 0) + 1;
+            }
+            
+            // Format as "Nx CardName" in sorted order
+            deckCards = cardOrder.map(name => `${cardCounts[name]}x ${name}`);
           }
           
           // Build and send embed
           const capitalizedHero = hero.charAt(0).toUpperCase() + hero.slice(1);
           const deckTitle = `Wheel ${capitalizedHero} Deck`;
-          const cardList = deckCards.map(item => `${item.multiplier}x ${item.card}`).join("\n");
+          const cardList = deckCards.join("\n");
           const deckDescription = `Here is your wheel deck for ${hero}:\n**${cardList}**`;
           
           const embed = new EmbedBuilder()
