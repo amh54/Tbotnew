@@ -71,16 +71,19 @@ function detectChangedFields(existing, row) {
     if (existing.rowData.image !== row.image) {
       changedFields.push('image');
     }
+    if (existing.rowData.type !== row.type) {
+      changedFields.push('type');
+    }
   }
   return changedFields;
 }
 
 async function handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, options) {
-  const { client, notificationChannelId, row, tableConfig, dbTableColors } = options;
+  const { client, notificationChannelId, row, tableConfig, dbTableColors, existing } = options;
   if (isNewDeck && notificationChannelId) {
     await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'new');
   } else if (isUpdatedDeck && notificationChannelId && changedFields.length > 0) {
-    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'update', changedFields);
+    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'update', changedFields, existing?.rowData);
   }
 }
 
