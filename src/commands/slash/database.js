@@ -26,8 +26,8 @@ const helpDbChoices = [
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("helpdb")
-    .setDescription("Browse all decks in the database")
+    .setName("database")
+    .setDescription("Browse all decks in Tbot")
     .addStringOption((option) =>
       option
         .setName("type")

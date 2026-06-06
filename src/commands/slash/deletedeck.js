@@ -138,7 +138,7 @@ module.exports = {
                         deckData,
                         { table },
                         dbTableColors,
-                        'delete'
+                        { notificationType: 'delete' }
                     );
                     console.log('Deletion notification sent successfully');
                 } catch (notifError) {

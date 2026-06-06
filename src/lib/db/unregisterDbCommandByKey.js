@@ -46,7 +46,7 @@ async function unregisterDbCommandByKey(key, options = {}) {
     // Use hero-specific thread channel instead of general notification channel
     const threadChannelId = heroDeckThreadMap[tableConfig.table];
     if (threadChannelId) {
-      await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, 'delete');
+      await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, { notificationType: 'delete' });
     }
   }
 

@@ -81,9 +81,9 @@ function detectChangedFields(existing, row) {
 async function handleDeckNotifications(isNewDeck, isUpdatedDeck, changedFields, options) {
   const { client, notificationChannelId, row, tableConfig, dbTableColors, existing } = options;
   if (isNewDeck && notificationChannelId) {
-    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'new');
+    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, { notificationType: 'new' });
   } else if (isUpdatedDeck && notificationChannelId && changedFields.length > 0) {
-    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, 'update', changedFields, existing?.rowData);
+    await sendDeckNotification(client, notificationChannelId, row, tableConfig, dbTableColors, { notificationType: 'update', changedFields, existingRow: existing?.rowData });
   }
 }
 
