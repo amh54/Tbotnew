@@ -268,9 +268,17 @@ module.exports = {
       return interaction.editReply({
         content: `❌ **Invalid image detected!**\n\n` +
           `The uploaded image doesn't appear to be a PvZ Heroes deck screenshot.\n\n` +
+          `Debug Info:\n` +
+          `\`\`\`\n` +
+          `Flags: ${validation.flags?.join(', ') || 'none'}\n` +
+          `Critical Flags: ${validation.criticalFlags?.join(', ') || 'none'}\n` +
+          `Reason: ${validation.reason || 'unknown'}\n` +
+          `\`\`\`\n\n` +
           `Please ensure you're uploading:\n` +
-          `• A full deck screenshot from PvZ Heroes\n` +
-          `• Not a cropped or edited image\n` +
+          `• A full deck screenshot from PvZ Heroes (not cropped)\n` +
+          `• The "40/40" deck size is visible\n` +
+          `• Card quantities (x1, x2, x3, x4) are visible\n` +
+          `• No annotations or overlays\n` +
           `• A clear, readable screenshot\n\n` +
           `If you believe this is an error, please contact <@625172218120372225>.`,
         flags: MessageFlags.Ephemeral

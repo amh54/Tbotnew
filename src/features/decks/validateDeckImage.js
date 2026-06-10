@@ -61,7 +61,8 @@ function detectRedAnnotations(data, width, height, channels) {
     if (size > largestRedCluster) largestRedCluster = size;
   }
 
-  return largestRedCluster > 10000;
+  // Only flag if the red cluster is VERY large (player-drawn annotations)
+  return largestRedCluster > 50000;
 }
 
 function checkBannedWords(lower) {
@@ -158,7 +159,7 @@ function buildFlagsList({
     flags.push('handwritten_or_overlay_text');
   }
 
-  if (colorDiversity > 280) {
+  if (colorDiversity > 350) {
     flags.push('excessive_color_diversity');
   }
 
@@ -214,7 +215,7 @@ async function validateDeckImage(imageUrl) {
       };
     }
 
-    const largestRedCluster = detectRedAnnotations(data, width, height, channels) ? 10001 : 0;
+    const largestRedCluster = detectRedAnnotations(data, width, height, channels) ? 50001 : 0;
     const colorDiversity = getColorDiversity(data, width, height, channels);
     const variance = calculateVariance(data, width, height, channels);
 
