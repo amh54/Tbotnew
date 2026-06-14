@@ -11,6 +11,7 @@ module.exports = {
         .setDescription("Choose plants or zombies")
         .setRequired(true)
         .addChoices(
+          {name: "Intro/Explaination", value: "intro"},
           { name: "Plants", value: "plants" },
           { name: "Zombies", value: "zombies" }
         )
@@ -18,14 +19,21 @@ module.exports = {
   async execute(interaction) {
     const side = interaction.options.getString("side");
     const {
+      introContainer,
       plantContainer,
       zombieContainer
     } = await keepOrScrapCommand.buildKeepOrScrapContainers(interaction.client, false);
 
-    const container = side === "plants" ? plantContainer : zombieContainer;
+    const containersBySide = {
+      intro: introContainer,
+      plants: plantContainer,
+      zombies: zombieContainer
+    };
+    const container = containersBySide[side];
     return interaction.reply({
       components: [container],
-      flags: MessageFlags.IsComponentsV2
+      flags: MessageFlags.IsComponentsV2,
+      allowedMentions: { parse: [] }
     });
   }
 };
