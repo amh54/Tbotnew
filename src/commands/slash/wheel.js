@@ -99,17 +99,6 @@ function buildHeroFactionMap(cards) {
   };
 }
 
-// Helper function to select random cards from an array
-function selectRandomCards(sourceArray, count) {
-  const remaining = [...sourceArray];
-  const selected = [];
-  for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * remaining.length);
-    selected.push(remaining.splice(randomIndex, 1)[0]);
-  }
-  return selected;
-}
-
 // Helper function to select random cards with a maximum copy count
 function selectRandomCardsWithMaxCopies(sourceArray, count, maxCopies = 4) {
   const remaining = sourceArray.flatMap(card => Array.from({ length: maxCopies }, () => card));
@@ -121,6 +110,30 @@ function selectRandomCardsWithMaxCopies(sourceArray, count, maxCopies = 4) {
   }
 
   return selected;
+}
+
+function getRandomFactionRatio(totalCards) {
+  if (totalCards <= 1) {
+    return { ratio1: totalCards, ratio2: 0 };
+  }
+
+  const ratio1 = Math.floor(Math.random() * (totalCards - 1)) + 1;
+  return { ratio1, ratio2: totalCards - ratio1 };
+}
+
+function formatDeckCards(deck) {
+  deck.sort((a, b) => getCardCost(a) - getCardCost(b));
+
+  const cardCounts = {};
+  const cardOrder = [];
+  for (const card of deck) {
+    if (!cardCounts[card.card_name]) {
+      cardOrder.push(card.card_name);
+    }
+    cardCounts[card.card_name] = (cardCounts[card.card_name] || 0) + 1;
+  }
+
+  return cardOrder.map(name => `${cardCounts[name]}x ${name}`);
 }
 
 // Helper function to get card cost
@@ -253,38 +266,24 @@ module.exports = {
           const cards = await getCardSelections(db);
           const heroFactionMap = buildHeroFactionMap(cards);
           const [faction1Cards, faction2Cards] = heroFactionMap[hero];
-          const allCards = [...faction1Cards, ...faction2Cards];
           
           // Build deck based on mode
           let deckCards;
           
           if (mode === 'normal') {
-            // Normal mode: just random cards at 1x each
-            const selected = selectRandomCards(allCards, number);
-            // Sort by cost
-            selected.sort((a, b) => getCardCost(a) - getCardCost(b));
-            deckCards = selected.map(card => `1x ${card.card_name}`);
+            // Normal mode: user chooses deck size, then cards are drawn with copies using a random faction ratio.
+            const { ratio1, ratio2 } = getRandomFactionRatio(number);
+            const selected = [
+              ...selectRandomCardsWithMaxCopies(faction1Cards, ratio1),
+              ...selectRandomCardsWithMaxCopies(faction2Cards, ratio2),
+            ];
+            deckCards = formatDeckCards(selected);
           } else {
             // Ratio mode: generate random ratio and build constrained deck
             const ratio1 = Math.floor(Math.random() * 30) + 5; // 5-34
             const ratio2 = 40 - ratio1;
             const result = buildDeckWithConstraints(faction1Cards, faction2Cards, ratio1, ratio2);
-            
-            // Sort deck by cost
-            result.deck.sort((a, b) => getCardCost(a) - getCardCost(b));
-            
-            // Count card multipliers while maintaining sort order
-            const cardCounts = {};
-            const cardOrder = [];
-            for (const card of result.deck) {
-              if (!cardCounts[card.card_name]) {
-                cardOrder.push(card.card_name);
-              }
-              cardCounts[card.card_name] = (cardCounts[card.card_name] || 0) + 1;
-            }
-            
-            // Format as "Nx CardName" in sorted order
-            deckCards = cardOrder.map(name => `${cardCounts[name]}x ${name}`);
+            deckCards = formatDeckCards(result.deck);
           }
           
           // Build and send embed
