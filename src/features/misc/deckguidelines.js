@@ -6,6 +6,7 @@ const {
   SectionBuilder,
   TextDisplayBuilder,
   ThumbnailBuilder,
+  SeparatorSpacingSize,
 } = require("discord.js");
 
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
       .addTextDisplayComponents(titleText)
       .setThumbnailAccessory(thumbnail);
     container.addSectionComponents(titleSection);
-
+    container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
     const guidelinesText = new TextDisplayBuilder().setContent(
       [
         "1. Decks submitted must be fairly well made; it should have a solid strategy, use cards that are relevant and ideal for that strategy, and attempt to run optimized ratios (e.g. No random 1x cards).",
