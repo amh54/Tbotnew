@@ -9,12 +9,12 @@ const {
   MessageFlags,
 } = require("discord.js");
 const axios = require("axios");
-const {validateDeckImage} = require('../../features/decks/validateDeckImage');
-const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow");
+const {validateDeckImage} = require('../../features/decks/validateDeckImage.js');
+const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("updatedeck")
+    .setName("submitdeckupdate")
     .setDescription("Submit an update to a PvZ Heroes decklist in Tbot")
     .addStringOption((option) =>
       option

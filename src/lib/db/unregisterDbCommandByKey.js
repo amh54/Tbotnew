@@ -49,6 +49,9 @@ async function unregisterDbCommandByKey(key, options = {}) {
       await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, { notificationType: 'delete' });
     }
   }
+  if (isManuallyDeleted) {
+    globalThis.manuallyDeletedDecks?.delete(key);
+  }
 
   if (isDeck && !deckMovedToNewId && db) {
     await updateDeckbuilderCounts(db, info.rowData?.creator, -1);

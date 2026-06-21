@@ -105,6 +105,8 @@ module.exports = {
                 return interaction.editReply(`No deck found with the name "${deckNameInput}" in the ${table} table.`);
             }
             const deckData = rows[0];
+            const deletionKey = `${table}:${deckData.DeckID ?? deckData.deckID ?? deckData.id}`;
+            let deletionNotificationSent = false;
             const threadChannelId = heroDeckThreadMap[table];
             if (threadChannelId) {
                 const dbTableColors = {
@@ -140,6 +142,7 @@ module.exports = {
                         dbTableColors,
                         { notificationType: 'delete' }
                     );
+                    deletionNotificationSent = true;
                     console.log('Deletion notification sent successfully');
                 } catch (notifError) {
                     console.error('Failed to send deletion notification:', notifError);
@@ -148,16 +151,18 @@ module.exports = {
                 console.log('No thread channel ID found for table:', table);
             }
             
-            if (!globalThis.manuallyDeletedDecks) {
-                globalThis.manuallyDeletedDecks = new Set();
+            if (deletionNotificationSent) {
+                if (!globalThis.manuallyDeletedDecks) {
+                    globalThis.manuallyDeletedDecks = new Set();
+                }
+                globalThis.manuallyDeletedDecks.add(deletionKey);
             }
-            globalThis.manuallyDeletedDecks.add(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
             
             await db.query(`DELETE FROM ${table} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [deckNameInput]);
-            // Clean up the marker after a short delay (longer than scan interval)
+            // Fallback cleanup in case the DB scanner never consumes the marker.
             setTimeout(() => {
-                globalThis.manuallyDeletedDecks?.delete(`${table}:${deckData.DeckID || deckData.deckID || deckData.id}`);
-            }, 10000);
+                globalThis.manuallyDeletedDecks?.delete(deletionKey);
+            }, 120_000);
             
             return interaction.editReply(`✅ Successfully deleted the deck "${deckData.name}" from the ${table} table.`);
             
