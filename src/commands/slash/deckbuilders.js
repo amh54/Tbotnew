@@ -5,6 +5,10 @@ const {
 } = require("discord.js");
 const buildDeckBuilderFromRow = require("../../features/decks/buildDeckBuilderFromRow.js");
 const {
+  deckMatchesDeckbuilder,
+  getDeckbuilderSearchNames
+} = require("../../features/decks/deckbuilderCredits.js");
+const {
   getDeckbuilderAutocompleteResults,
   resolveDeckbuilderName
 } = require("../../features/decks/deckbuilderAutocomplete.js");
@@ -76,15 +80,21 @@ module.exports = {
       ];
 
       const allDecks = [];
+      const deckbuilderRow = builderRows[0];
+      const searchNames = getDeckbuilderSearchNames(deckbuilderRow);
       for (const { table, hero } of deckTables) {
         try {
+          const whereClause = searchNames.map(() => "creator LIKE ?").join(" OR ");
+          const params = searchNames.map((name) => `%${name}%`);
           const [decks] = await db.query(
-            `SELECT * FROM ${table} WHERE creator LIKE ? AND creator NOT LIKE ?`,
-            [`%${deckbuilderName}%`, `%inspired by ${deckbuilderName}%`]
+            `SELECT * FROM ${table} WHERE ${whereClause}`,
+            params
           );
 
           for (const deck of decks) {
-            allDecks.push({ ...deck, hero, table });
+            if (deckMatchesDeckbuilder(deck.creator, deckbuilderRow)) {
+              allDecks.push({ ...deck, hero, table });
+            }
           }
         } catch (tableError) {
           console.error(`Error querying ${table} for ${deckbuilderName}:`, tableError);
