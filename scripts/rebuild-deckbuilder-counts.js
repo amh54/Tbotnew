@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 const { host, user, password, database, port } = require("../config.json");
+const { resolveDeckbuilderNamesFromRows } = require("../src/features/decks/deckbuilderCredits");
 
 const deckTables = [
   "rbdecks",
@@ -25,94 +26,6 @@ const deckTables = [
   "spdecks",
   "wkdecks"
 ];
-
-function extractDeckbuilderNames(creator) {
-  if (!creator) return [];
-  const text = creator.toString();
-  const lines = text.split("\n");
-  const names = [];
-
-  const aliasMap = new Map([
-    ["igmarockers", "Igma"],
-    ["pilowy", "Pillowy"],
-    ["thequestionmark", "The Question Mark"],
-    ["justini1212", "Justini"],
-    ["stingray201", "Stingray"],
-    ["snortingsalt", "Salt"],
-    ["aveorni", "BADorni"],
-    ["averoni", "BADorni"]
-  ]);
-
-  const normalizeName = (raw) => {
-    const cleaned = raw
-      .trim()
-      .replaceAll(/^by\s+/gi, "")
-      .replaceAll(/\?+$/g, "")
-      .trim();
-    if (!cleaned) return "";
-
-    const lookupKey = cleaned.replaceAll(/\s+/g, "").toLowerCase();
-    return aliasMap.get(lookupKey) || cleaned;
-  };
-
-  const normalizeAndSplitName = (raw) => {
-    const trimmed = raw.trim();
-    if (!trimmed) return [];
-
-    const withoutInspired = trimmed.replaceAll(/\binspired\s+by\b.*$/gi, "").trim();
-    if (!withoutInspired) return [];
-
-    const phraseMatch = withoutInspired.match(
-      /^(.*?)(?:\boptimized\s+by\b|\bmodified\s+by\b|\bredefined\s+by\b)\s+(.+)$/i
-    );
-    if (phraseMatch) {
-      const left = phraseMatch[1].trim();
-      const right = phraseMatch[2].trim();
-      const parts = [];
-      if (left) parts.push(left);
-      if (right) parts.push(right);
-      return parts.flatMap(normalizeAndSplitName);
-    }
-
-    const cleaned = normalizeName(withoutInspired);
-    return cleaned ? [cleaned] : [];
-  };
-
-  for (const line of lines) {
-    if (/^inspired by\b/i.test(line)) {
-      continue;
-    }
-
-    const createdMatch = line.match(/^Created by\s+(.+?)$/i);
-    const optimizedMatch = line.match(/optimized by[:\s]+(.+?)$/i);
-
-    if (createdMatch) {
-      const creators = createdMatch[1]
-        .replaceAll(/\s+(and|&)\s+/gi, ",")
-        .replaceAll("/", ",")
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean);
-      for (const creator of creators) {
-        names.push(...normalizeAndSplitName(creator));
-      }
-    }
-
-    if (optimizedMatch) {
-      const optimizers = optimizedMatch[1]
-        .replaceAll(/\s+(and|&)\s+/gi, ",")
-        .replaceAll("/", ",")
-        .split(",")
-        .map((name) => name.trim())
-        .filter(Boolean);
-      for (const optimizer of optimizers) {
-        names.push(...normalizeAndSplitName(optimizer));
-      }
-    }
-  }
-
-  return [...new Set(names)];
-}
 
 function addNameToTracking(name, count, table, deckName, counts, deckNamesByBuilder) {
   counts.set(name, (counts.get(name) || 0) + 1);
@@ -151,11 +64,12 @@ async function rebuildCounts() {
 
   const counts = new Map();
   const deckNamesByBuilder = new Map();
+  const [deckbuilderRows] = await db.query("SELECT deckbuilder_name, aliases FROM deckbuilders");
 
   for (const table of deckTables) {
     const [rows] = await db.query(`SELECT creator, name FROM \`${table}\``);
     for (const row of rows) {
-      const names = extractDeckbuilderNames(row.creator);
+      const names = resolveDeckbuilderNamesFromRows(deckbuilderRows, row.creator);
       for (const name of names) {
         addNameToTracking(name, 0, table, row.name, counts, deckNamesByBuilder);
       }
@@ -187,9 +101,13 @@ async function rebuildCounts() {
   await db.end();
 }
 
-try {
-  await rebuildCounts();
-} catch (error) {
-  console.error("Rebuild failed:", error);
-  process.exitCode = 1;
+if (require.main === module) {
+  rebuildCounts().catch((error) => {
+    console.error("Rebuild failed:", error);
+    process.exitCode = 1;
+  });
 }
+
+module.exports = {
+  rebuildCounts
+};

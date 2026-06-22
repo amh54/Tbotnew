@@ -79,19 +79,26 @@ function deckMatchesDeckbuilder(creator, deckbuilder) {
   return extractDeckbuilderNames(creator).some((name) => targets.has(comparableName(name)));
 }
 
-async function resolveDeckbuilderNames(db, creator) {
+function resolveDeckbuilderNamesFromRows(deckbuilderRows, creator) {
   const credits = extractDeckbuilderNames(creator);
-  if (credits.length === 0 || !db) return [];
+  if (credits.length === 0) return [];
 
-  const [rows] = await db.query("SELECT deckbuilder_name, aliases FROM deckbuilders");
-  return rows
+  return (deckbuilderRows || [])
     .filter((row) => credits.some((credit) => deckMatchesDeckbuilder(`Created by ${credit}`, row)))
     .map((row) => row.deckbuilder_name);
+}
+
+async function resolveDeckbuilderNames(db, creator) {
+  if (!db) return [];
+
+  const [rows] = await db.query("SELECT deckbuilder_name, aliases FROM deckbuilders");
+  return resolveDeckbuilderNamesFromRows(rows, creator);
 }
 
 module.exports = {
   deckMatchesDeckbuilder,
   extractDeckbuilderNames,
   getDeckbuilderSearchNames,
-  resolveDeckbuilderNames
+  resolveDeckbuilderNames,
+  resolveDeckbuilderNamesFromRows
 };
