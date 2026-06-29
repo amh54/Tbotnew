@@ -9,35 +9,63 @@ function shuffleArray(array) {
   return array;
 }
 
-// Helper function to fetch all cards from database with costs and types
-async function getCardSelections(db) {
-  const results = await Promise.all([
-    db.query('select card_name, stats from guardiancards where set_rarity not like "%Token%" and description not like "%Superpower%"'), 
-    db.query('select card_name, stats from smartycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats from kabloomcards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from megagrowcards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from solarcards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from sneakycards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from beastlycards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from crazycards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats from brainycards where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats from heartycards where set_rarity not like "%Token%"'),
-    db.query('select card_name, stats, description from guardiantricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from smartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from kabloomtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from megagrowtricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from solartricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from sneakytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from beastlytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from crazytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from brainytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-    db.query('select card_name, stats, description from heartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"'),
-  ]);
-  
-  const [guardianCards, smartyCards, kabloomCards, megaGrowCards, solarCards, sneakyCards, 
-    beastlyCards, crazyCards, brainyCards, heartyCards, guardianTricks, smartyTricks, 
-    kabloomTricks, megaGrowTricks, solarTricks, sneakyTricks, beastlyTricks, 
-    crazyTricks, brainyTricks, heartyTricks] = results.map(result => result[0]);
+const CARD_SELECTION_CACHE_TTL_MS = 15 * 60 * 1000;
+let cachedCardSelections = null;
+let cachedCardSelectionsAt = 0;
+let pendingCardSelections = null;
+
+const CARD_SELECTION_QUERIES = [
+  { key: "guardianCards", query: 'select card_name, stats from guardiancards where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "smartyCards", query: 'select card_name, stats from smartycards where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "kabloomCards", query: 'select card_name, stats from kabloomcards where set_rarity not like "%Token%"' },
+  { key: "megaGrowCards", query: 'select card_name, stats from megagrowcards where set_rarity not like "%Token%"' },
+  { key: "solarCards", query: 'select card_name, stats from solarcards where set_rarity not like "%Token%"' },
+  { key: "sneakyCards", query: 'select card_name, stats from sneakycards where set_rarity not like "%Token%"' },
+  { key: "beastlyCards", query: 'select card_name, stats from beastlycards where set_rarity not like "%Token%"' },
+  { key: "crazyCards", query: 'select card_name, stats from crazycards where set_rarity not like "%Token%"' },
+  { key: "brainyCards", query: 'select card_name, stats from brainycards where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "heartyCards", query: 'select card_name, stats from heartycards where set_rarity not like "%Token%"' },
+  { key: "guardianTricks", query: 'select card_name, stats, description from guardiantricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "smartyTricks", query: 'select card_name, stats, description from smartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "kabloomTricks", query: 'select card_name, stats, description from kabloomtricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "megaGrowTricks", query: 'select card_name, stats, description from megagrowtricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "solarTricks", query: 'select card_name, stats, description from solartricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "sneakyTricks", query: 'select card_name, stats, description from sneakytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "beastlyTricks", query: 'select card_name, stats, description from beastlytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "crazyTricks", query: 'select card_name, stats, description from crazytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "brainyTricks", query: 'select card_name, stats, description from brainytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+  { key: "heartyTricks", query: 'select card_name, stats, description from heartytricks where set_rarity not like "%Token%" and description not like "%Superpower%"' },
+];
+
+async function loadCardSelections(db) {
+  const rowsByKey = {};
+  for (const selectionQuery of CARD_SELECTION_QUERIES) {
+    const [rows] = await db.query(selectionQuery.query);
+    rowsByKey[selectionQuery.key] = rows;
+  }
+
+  const {
+    guardianCards,
+    smartyCards,
+    kabloomCards,
+    megaGrowCards,
+    solarCards,
+    sneakyCards,
+    beastlyCards,
+    crazyCards,
+    brainyCards,
+    heartyCards,
+    guardianTricks,
+    smartyTricks,
+    kabloomTricks,
+    megaGrowTricks,
+    solarTricks,
+    sneakyTricks,
+    beastlyTricks,
+    crazyTricks,
+    brainyTricks,
+    heartyTricks
+  } = rowsByKey;
   
   // Helper to extract cost from stats string (Discord emoji format)
   const extractCost = (stats) => {
@@ -71,6 +99,28 @@ async function getCardSelections(db) {
     brainy: [...processCardTable(brainyCards), ...processTrickTable(brainyTricks)],
     hearty: [...processCardTable(heartyCards), ...processTrickTable(heartyTricks)],
   };
+}
+
+// Helper function to fetch all cards from database with costs and types
+async function getCardSelections(db) {
+  const now = Date.now();
+  if (cachedCardSelections && now - cachedCardSelectionsAt < CARD_SELECTION_CACHE_TTL_MS) {
+    return cachedCardSelections;
+  }
+
+  if (!pendingCardSelections) {
+    pendingCardSelections = loadCardSelections(db)
+      .then((cardSelections) => {
+        cachedCardSelections = cardSelections;
+        cachedCardSelectionsAt = Date.now();
+        return cardSelections;
+      })
+      .finally(() => {
+        pendingCardSelections = null;
+      });
+  }
+
+  return pendingCardSelections;
 }
 
 // Helper function to build hero faction mappings

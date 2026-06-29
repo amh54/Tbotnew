@@ -73,7 +73,6 @@ function checkBannedWords(lower) {
     'here',
     'lol',
     'lmao',
-    'meme',
     'stop'
   ];
   return bannedWords.some(w => lower.includes(w));

@@ -35,6 +35,9 @@ const db = mysql
     user: user,
     password: password,
     database: database,
+    waitForConnections: true,
+    connectionLimit: 5,
+    queueLimit: 0,
   })
   .promise();
   module.exports = db;
