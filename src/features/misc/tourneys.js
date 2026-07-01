@@ -40,62 +40,62 @@ module.exports = {
         return message.channel.send("No tournament servers are currently listed.");
       }
 
-      const container = new ContainerBuilder()
-    const tourneyText = new TextDisplayBuilder().setContent(
-      "# Looking for Tournaments for PvZ Heroes? Below are some servers that host tournaments for PvZ Heroes!");
-      container.addTextDisplayComponents(tourneyText);
-      container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
+      const buildTourneysContainer = (serverRows, titleText) => {
+        const container = new ContainerBuilder();
+        const tourneyText = new TextDisplayBuilder().setContent(titleText);
+        container.addTextDisplayComponents(tourneyText);
+        container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
 
-      rows.forEach((row, index) => {
-        const serverName = row.servername || "Unnamed Server";
-        const description = row.description || "No description available.";
-        const buttonLabel = row.label || serverName;
-        const serverUrl = row.discord_url;
-        const imageLink = row.image_link;
+        serverRows.forEach((row) => {
+          const serverName = row.servername || "Unnamed Server";
+          const description = row.description || "No description available.";
+          const buttonLabel = row.label || serverName;
+          const serverUrl = row.discord_url;
+          const imageLink = row.image_link;
 
-        const details = [
-          `# ${serverName}`,
-          description,
-        ]
-          .filter(Boolean)
-          .join("\n");
+          const details = [
+            `# ${serverName}`,
+            description,
+          ]
+            .filter(Boolean)
+            .join("\n");
 
-        const serverText = new TextDisplayBuilder().setContent(details);
-        const section = new SectionBuilder().addTextDisplayComponents(serverText);
+          const serverText = new TextDisplayBuilder().setContent(details);
+          const section = new SectionBuilder().addTextDisplayComponents(serverText);
 
-        if (imageLink) {
-          section.setThumbnailAccessory((thumbnail) =>
-            thumbnail
-              .setDescription(`${serverName} server image`)
-              .setURL(imageLink)
-          );
-        }
+          if (serverUrl) {
+            const button = new ButtonBuilder()
+              .setLabel(buttonLabel.substring(0, 80))
+              .setStyle(ButtonStyle.Link)
+              .setURL(serverUrl);
 
-        container.addSectionComponents(section);
+            if (imageLink) {
+              button.setEmoji(imageLink);
+            }
 
-        if (serverUrl) {
-          const linkSectionText = new TextDisplayBuilder().setContent(`Join ${serverName}:`);
-          const linkSection = new SectionBuilder()
-            .addTextDisplayComponents(linkSectionText)
-            .setButtonAccessory(
-              new ButtonBuilder()
-                .setLabel(buttonLabel.substring(0, 80))
-                .setStyle(ButtonStyle.Link)
-                .setURL(serverUrl)
-            );
+            section.setButtonAccessory(button);
+          }
 
-          container.addSectionComponents(linkSection);
-        }
-
-        if (index < rows.length - 1) {
+          container.addSectionComponents(section);
           container.addSeparatorComponents(separator => separator.setSpacing(SeparatorSpacingSize.Large));
-        }
-      });
+        });
 
-    message.channel.send({
-      components: [container],
-      flags: MessageFlags.IsComponentsV2
-    });
+        return container;
+      };
+
+      const maxRowsPerMessage = 18;
+      for (let start = 0; start < rows.length; start += maxRowsPerMessage) {
+        const chunk = rows.slice(start, start + maxRowsPerMessage);
+        const title = start === 0
+          ? "# Looking for Tournaments for PvZ Heroes? Below are some servers that host tournaments for PvZ Heroes!"
+          : "# More PvZ Heroes tournament servers:";
+
+        const container = buildTourneysContainer(chunk, title);
+        await message.channel.send({
+          components: [container],
+          flags: MessageFlags.IsComponentsV2,
+        });
+      }
   }
   },
 };
