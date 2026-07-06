@@ -8,12 +8,24 @@ const {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("cardsearch")
-    .setDescription("Find decks that contain a specific card")
+    .setDescription("Find decks that contain one or more specific cards")
     .addStringOption((option) =>
       option
         .setName("card")
-        .setDescription("Card name")
+        .setDescription("Primary card name")
         .setRequired(true)
+        .setAutocomplete(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("card2")
+        .setDescription("Optional second card name")
+        .setAutocomplete(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("card3")
+        .setDescription("Optional third card name")
         .setAutocomplete(true)
     ),
   async autocomplete(interaction) {
@@ -29,8 +41,16 @@ module.exports = {
   },
   async execute(interaction) {
     const db = require("../../../index.js");
-    const cardInput = interaction.options.getString("card");
-    const cardName = (await resolveCardName(db, cardInput)) || cardInput;
-    return startDetectDecksByName(interaction, db, cardName);
+    const requestedCards = [
+      interaction.options.getString("card"),
+      interaction.options.getString("card2"),
+      interaction.options.getString("card3")
+    ].filter(Boolean);
+
+    const resolvedCards = await Promise.all(
+      requestedCards.map(async (cardInput) => (await resolveCardName(db, cardInput)) || cardInput)
+    );
+
+    return startDetectDecksByName(interaction, db, resolvedCards);
   }
 };

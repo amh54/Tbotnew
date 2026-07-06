@@ -13,29 +13,39 @@ const createCategorySelectMenu = require("../features/decks/createCategorySelect
 const calculateNavIndices = require("../features/decks/calculateNavIndices.js");
 const buildNavigationRow = require("../features/decks/buildNavigationRow.js");
 
-async function startDetectDecksByName(interaction, db, cardName) {
-  console.log("Detecting decks for card:", cardName);
+async function startDetectDecksByName(interaction, db, cardNames) {
+  const requestedCards = Array.isArray(cardNames)
+    ? cardNames.filter(Boolean)
+    : [cardNames].filter(Boolean);
+
+  if (requestedCards.length === 0) {
+    await interaction.reply({ content: "Please provide at least one card to search for.", flags: MessageFlags.Ephemeral });
+    return;
+  }
+
+  const cardLabel = requestedCards.join(" + ");
+  console.log("Detecting decks for cards:", requestedCards);
   await interaction.deferReply();
 
-  const allDecks = await collectDecksWithCard(db, cardName);
+  const allDecks = await collectDecksWithCard(db, requestedCards);
 
   if (allDecks.length === 0) {
     await interaction.deleteReply();
     await interaction.followUp({
-      content: `No decks found containing "${cardName}".`,
+      content: `No decks found containing "${cardLabel}".`,
       flags: MessageFlags.Ephemeral,
     });
     return;
   }
 
   const { availableCategories, deckLists } = categorizeDecks(allDecks);
-  const select = createCategorySelectMenu(cardName, availableCategories, deckLists);
+  const select = createCategorySelectMenu(cardLabel, availableCategories, deckLists);
 
   const initialEmbed = new EmbedBuilder()
-    .setTitle(`Decks containing "${cardName}"`)
+    .setTitle(`Decks containing "${cardLabel}"`)
     .setColor("Blue")
     .setDescription([
-      `Found **${allDecks.length}** deck(s) containing **"${cardName}"**`,
+      `Found **${allDecks.length}** deck(s) containing **"${cardLabel}"**`,
       "",
       "Select a category below to browse the decks with navigation."
     ].join("\n"))
@@ -51,13 +61,13 @@ async function startDetectDecksByName(interaction, db, cardName) {
     interaction.client.detectDecksData = new Map();
   }
   interaction.client.detectDecksData.set(message.id, {
-    cardName,
+    cardName: cardLabel,
     deckLists,
     availableCategories
   });
 
   console.log(`Stored detectdecks data for message ID: ${message.id}`);
-  setupDetectDecksCollector(message, cardName, interaction.client);
+  setupDetectDecksCollector(message, cardLabel, interaction.client);
 }
 
 async function handleDetectDecks(interaction, db) {
