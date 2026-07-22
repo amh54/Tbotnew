@@ -9,6 +9,7 @@ const {
   handleHeroDeckBackToList,
   handleHeroCategorySelect 
 } = require("./heroHandler.js");
+const { handleNotificationRoleSelection } = require("../features/misc/notificationRoles.js");
 
 async function handleMessageComponent(interaction, db, client) {
   const { customId } = interaction;
@@ -44,6 +45,10 @@ async function handleMessageComponent(interaction, db, client) {
 
   if (customId.startsWith("herodklist_")) {
     return await handleHeroDeckBackToList(interaction);
+  }
+
+  if (customId === "notification-role-select") {
+    return await handleNotificationRoleSelection(interaction);
   }
 
   if (customId.startsWith("hangman-")) {

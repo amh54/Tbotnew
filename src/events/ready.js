@@ -1,4 +1,5 @@
 const { Events, ActivityType } = require("discord.js");
+const crypto = require("node:crypto");
 const XLSX = require('xlsx');
 const path = require('node:path');
 
@@ -71,12 +72,12 @@ module.exports = {
     // Set activity status every 5 minutes
     setInterval(() => {
       const randomYoutubers =
-        youtubers[Math.floor(Math.random() * youtubers.length)];
+        youtubers[getSecureRandomIndex(youtubers.length)];
       const randomTourney =
-        tourneys[Math.floor(Math.random() * tourneys.length)];
-      let randomDeck = client.deckData[Math.floor(Math.random() * client.deckData.length)];
+        tourneys[getSecureRandomIndex(tourneys.length)];
+      const randomDeck = client.deckData[getSecureRandomIndex(client.deckData.length)];
       const randomStreamers =
-        streamers[Math.floor(Math.random() * streamers.length)];
+        streamers[getSecureRandomIndex(streamers.length)];
 
       // Use current status data from client
       const customStatus = client.statusData.map(row => row.status);
@@ -103,7 +104,7 @@ module.exports = {
       // Combine database statuses with dynamic ones
       const allStatuses = [...customStatus, ...dynamicStatuses];
       
-      const status = allStatuses[Math.floor(Math.random() * allStatuses.length)];
+      const status = allStatuses[getSecureRandomIndex(allStatuses.length)];
       client.user.setActivity({
         type: ActivityType.Custom,
         name: `${status}`,
@@ -113,6 +114,13 @@ module.exports = {
 };
 
 // Function to update deck data from database
+function getSecureRandomIndex(length) {
+  if (!length) return 0;
+  const randomBytes = crypto.randomBytes(4);
+  const randomValue = randomBytes.readUInt32BE(0);
+  return Math.floor((randomValue / 0x100000000) * length);
+}
+
 async function updateDeckData(client, db) {
   try {
     console.log('Updating deck data...');
