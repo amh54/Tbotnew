@@ -1,4 +1,4 @@
-const { EmbedBuilder, MessageFlags, RoleSelectMenuBuilder } = require("discord.js");
+const { EmbedBuilder, MessageFlags, StringSelectMenuBuilder } = require("discord.js");
 const { ownerId, guildId} = require("../../../config.json");
 
 const NOTIFICATION_ROLE_NAMES = ["tbotping", "tbotyt", "tbottwitch"];
@@ -18,12 +18,20 @@ function buildNotificationRoleEmbed() {
     });
 }
 
-function buildNotificationRoleSelectMenu() {
-  return new RoleSelectMenuBuilder()
+async function buildNotificationRoleSelectMenu(guild) {
+  const availableRoles = await getAvailableNotificationRoles(guild);
+  const options = availableRoles.map((role) => ({
+    label: role.name,
+    value: role.id,
+    description: "Notification role",
+  }));
+
+  return new StringSelectMenuBuilder()
     .setCustomId("notification-role-select")
     .setPlaceholder("Select your notification roles")
     .setMinValues(0)
-    .setMaxValues(NOTIFICATION_ROLE_NAMES.length);
+    .setMaxValues(options.length)
+    .addOptions(options);
 }
 
 async function getAvailableNotificationRoles(guild) {
@@ -66,12 +74,21 @@ async function handleNotificationRoleSelection(interaction) {
     (id) => !selectedRoleIds.includes(id) && interaction.member.roles.cache.has(id)
   );
 
-  if (rolesToAdd.length) {
-    await interaction.member.roles.add(rolesToAdd);
-  }
+  try {
+    if (rolesToAdd.length) {
+      await interaction.member.roles.add(rolesToAdd);
+    }
 
-  if (rolesToRemove.length) {
-    await interaction.member.roles.remove(rolesToRemove);
+    if (rolesToRemove.length) {
+      await interaction.member.roles.remove(rolesToRemove);
+    }
+  } catch (error) {
+    console.error("Failed to update notification roles", error);
+    return interaction.reply({
+      content:
+        "I could not update your roles. Please make sure the bot has Manage Roles permission and that its role is above the notification roles.",
+      flags: MessageFlags.Ephemeral,
+    });
   }
 
   const selectedRoleNames = interaction.guild.roles.cache
@@ -98,5 +115,6 @@ module.exports = {
   NOTIFICATION_ROLE_NAMES,
   buildNotificationRoleEmbed,
   buildNotificationRoleSelectMenu,
+  getAvailableNotificationRoles,
   handleNotificationRoleSelection,
 };
