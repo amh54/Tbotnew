@@ -29,18 +29,57 @@ const client = new Client({
     GatewayIntentBits.Guilds,
   ],
 });
-const db = mysql
+const dbPool = mysql
   .createPool({
     host: host,
     user: user,
     password: password,
     database: database,
     waitForConnections: true,
-    connectionLimit: 5,
+    connectionLimit: 1,
     queueLimit: 0,
+    connectTimeout: 10000,
+    idleTimeout: 60000,
   })
   .promise();
-  module.exports = db;
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function executeWithRetry(queryFn, attempt = 1) {
+  try {
+    return await queryFn();
+  } catch (error) {
+    if (error?.code === "ER_CON_COUNT_ERROR" && attempt < 4) {
+      console.warn(`[DB] Connection limit reached, retrying in ${attempt * 2}s...`);
+      await wait(attempt * 2000);
+      return executeWithRetry(queryFn, attempt + 1);
+    }
+    throw error;
+  }
+}
+
+let activeDbQuery = Promise.resolve();
+const serializedQuery = (...args) => {
+  const runQuery = () => executeWithRetry(() => dbPool.query(...args));
+  const previousQuery = activeDbQuery;
+  const nextQuery = previousQuery.then(runQuery, runQuery);
+  activeDbQuery = nextQuery.catch(() => {});
+  return nextQuery;
+};
+
+const db = new Proxy(dbPool, {
+  get(target, prop, receiver) {
+    if (prop === "query") {
+      return serializedQuery;
+    }
+    if (prop === "execute") {
+      return (...args) => serializedQuery(...args);
+    }
+    return Reflect.get(target, prop, receiver);
+  },
+});
+
+module.exports = db;
 client.db = db;
 client.slashCommands = new Collection();
 const fs = require("node:fs");

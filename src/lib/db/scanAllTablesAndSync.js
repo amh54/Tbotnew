@@ -120,4 +120,24 @@ async function scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableC
   }
 }
 
+let syncInFlight = false;
+let syncQueue = Promise.resolve();
+
+async function runSerializedDbSync(...args) {
+  const run = async () => {
+    syncInFlight = true;
+    try {
+      return await scanAllTablesAndSync(...args);
+    } finally {
+      syncInFlight = false;
+    }
+  };
+
+  const previous = syncQueue;
+  syncQueue = previous.then(run, run);
+  return syncQueue;
+}
+
+module.exports = runSerializedDbSync;
+
 module.exports = scanAllTablesAndSync;

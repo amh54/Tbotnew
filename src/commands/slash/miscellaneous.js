@@ -3,6 +3,7 @@ const { buildMessageFromInteraction } = require("../../lib/discord/interactionMe
 
 const miscCommands = {
   aboutme: require("../../features/misc/aboutme.js"),
+  deckbuilders: require("../../features/misc/deckbuilders.js"),
   deckguidelines: require("../../features/misc/deckguidelines.js"),
   discord: require("../../features/misc/discord.js"),
   donate: require("../../features/misc/donate.js"),
@@ -23,6 +24,7 @@ const builder = new SlashCommandBuilder()
       .setRequired(true)
       .addChoices(
         { name: "About Tbot", value: "aboutme" },
+        {name: "All Deckbuilders", value: "deckbuilders"},
         { name: "Deck submission guidelines", value: "deckguidelines" },
         { name: "Tbot Discord invite", value: "discord" },
         { name: "Support Tbot", value: "donate" },

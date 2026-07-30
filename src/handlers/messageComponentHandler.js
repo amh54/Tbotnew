@@ -10,6 +10,7 @@ const {
   handleHeroCategorySelect 
 } = require("./heroHandler.js");
 const { handleNotificationRoleSelection } = require("../features/misc/notificationRoles.js");
+const { handleDeckbuilderPager } = require("../features/misc/deckbuilders.js");
 
 async function handleMessageComponent(interaction, db, client) {
   const { customId } = interaction;
@@ -26,6 +27,10 @@ async function handleMessageComponent(interaction, db, client) {
     
     if (customId.startsWith("deckbuildercat_")) {
       return await handleDeckBuilderCategory(interaction);
+    }
+
+    if (customId === "deckbuilderpager_prev" || customId === "deckbuilderpager_next") {
+      return await handleDeckbuilderPager(interaction);
     }
 
     if (customId.startsWith("herocat_")) {
