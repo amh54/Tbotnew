@@ -4,7 +4,6 @@ function createHeroEmbed(row) {
   const embed = new EmbedBuilder()
     .setThumbnail(row.thumbnail)
     .setTitle(`${row.title}`)
-    .setDescription(String.raw`**\- ${row.description} -**`)
     .setColor(row.hero_color)
     .addFields(
       {

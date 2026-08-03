@@ -18,8 +18,8 @@ module.exports = {
           { name: "Smarty", value: "smarty" },
           { name: "Solar", value: "solar" },
           { name: "Beastly", value: "beastly" },
+           { name: "Brainy", value: "brainy" },
           { name: "Crazy", value: "crazy" },
-          { name: "Brainy", value: "brainy" },
           { name: "Hearty", value: "hearty" },
           { name: "Sneaky", value: "sneaky" },
         )
