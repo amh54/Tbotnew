@@ -28,7 +28,7 @@ function resolveDbCommandMap(dbCommandMap) {
  * @returns {string} Unique key
  */
 function generateRowKey(table, row) {
-  const identifier = row.DeckID ?? row.deckID ?? row.id ?? row.cardid ?? row.heroID ?? 
+  const identifier = row.DeckID ?? row.deckID ?? row.deckid ?? row.id ?? row.cardid ?? row.heroID ?? 
     row.card_name ?? row.title ?? row.name ?? row.deckbuilder_name 
     ?? row.herocommand ?? row.heroname;
   return `${table}:${identifier}`;

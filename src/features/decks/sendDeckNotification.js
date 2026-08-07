@@ -40,9 +40,10 @@ function getStatusText(notificationType, changedFields) {
   }
 
   // Update cases
-  const hasDescription = changedFields.includes('description');
-  const hasType = changedFields.includes('type');
-  const hasImage = changedFields.includes('image');
+  const safeChangedFields = Array.isArray(changedFields) ? changedFields : [];
+  const hasDescription = safeChangedFields.includes('description');
+  const hasType = safeChangedFields.includes('type') || safeChangedFields.includes('category');
+  const hasImage = safeChangedFields.includes('image');
 
   if (hasDescription && !hasImage) return "🔄 Description Updated";
   if (hasType && !hasImage) return "🔄 Deck Type Updated";
@@ -50,26 +51,27 @@ function getStatusText(notificationType, changedFields) {
 }
 
 function addDeckFields(embed, row, changedFields, existingRow) {
-  const showTypeChange = changedFields.includes('type') && existingRow?.type;
+  const showTypeChange = changedFields.includes('category') && existingRow?.category && existingRow.category !== row.category;
 
   if (showTypeChange) {
     embed.addFields(
-      { name: "Deck Type", value: `**${existingRow.type}** → **${row.type || "N/A"}**`, inline: true },
-      { name: "Archetype", value: `**__${row.archetype || "N/A"}__**`, inline: true },
-      { name: "Deck Cost", value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**", inline: true }
+      { name: "Category", value: `**${existingRow.category}** → **${row.category || "N/A"}**`, inline: true },
+      { name: "Archetype", value: `**${existingRow.archetype}** → **${row.archetype || "N/A"}**`, inline: true },
+      { name: "Cost", value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**", inline: true }
     );
   } else {
     embed.addFields(
-      { name: "Deck Type", value: `**__${row.type || "N/A"}__**`, inline: true },
+      { name: "Category", value: `**__${row.category || "N/A"}__**`, inline: true },
       { name: "Archetype", value: `**__${row.archetype || "N/A"}__**`, inline: true },
-      { name: "Deck Cost", value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**", inline: true }
+      { name: "Cost", value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**", inline: true }
     );
   }
 }
 
 function shouldSendNotification(notificationType, changedFields) {
   if (notificationType !== 'update') return true;
-  return changedFields.includes('image') || changedFields.includes('description') || changedFields.includes('type');
+  const safeChangedFields = Array.isArray(changedFields) ? changedFields : [];
+  return safeChangedFields.includes('image') || safeChangedFields.includes('description') || safeChangedFields.includes('type') || safeChangedFields.includes('category');
 }
 
 /**

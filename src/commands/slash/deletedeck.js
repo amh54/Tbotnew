@@ -86,7 +86,7 @@ module.exports = {
       }
 
       const deckData = rows[0];
-      const deletionKey = `tbot_decks:${deckData.deckID}`;
+      const deletionKey = `tbot_decks:${deckData.deckID ?? deckData.deckid ?? deckData.id ?? deckData.name}`;
 
       if (!globalThis.manuallyDeletedDecks) {
         globalThis.manuallyDeletedDecks = new Set();

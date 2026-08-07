@@ -9,7 +9,7 @@ const { resolveDeckbuilderNames } = require("../../features/decks/deckbuilderCre
  * @returns {Promise<void>} - Resolves when the command is registered or updated
  */
 function extractKeyFromRow(tableConfig, row) {
-  return `${tableConfig.table}:${row.DeckID ?? row.deckID ?? row.id ?? row.cardid ?? row.heroID ?? 
+  return `${tableConfig.table}:${row.DeckID ?? row.deckID ?? row.deckid ?? row.id ?? row.cardid ?? row.heroID ?? 
     row.card_name ?? row.title ?? row.name ?? row.deckbuilder_name 
     ?? row.herocommand ?? row.heroname}`;
 }
@@ -38,7 +38,7 @@ function parseAliases(row) {
 }
 
 function isDeckRow(tableConfig, row) {
-  const hasDeckIdentifier = row.DeckID || row.deckID || row.id || row.deck_id;
+  const hasDeckIdentifier = row.DeckID || row.deckID || row.deckid || row.id || row.deck_id;
   const isDeckTable = tableConfig.table?.includes("decks");
   return hasDeckIdentifier && isDeckTable;
 }
@@ -71,6 +71,11 @@ function detectChangedFields(existing, row) {
     }
     if (existing.rowData.image !== row.image) {
       changedFields.push('image');
+    }
+    const prevCategory = existing.rowData.category ?? existing.rowData.type;
+    const nextCategory = row.category ?? row.type;
+    if (prevCategory !== nextCategory) {
+      changedFields.push('category');
     }
     if (existing.rowData.type !== row.type) {
       changedFields.push('type');
