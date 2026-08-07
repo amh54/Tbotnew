@@ -1,3 +1,6 @@
+const isUnknownInteractionError = (error) =>
+  error?.code === 10062 || error?.rawError?.code === 10062;
+
 async function handleAutocomplete(interaction) {
   const command = interaction.client.slashCommands.get(interaction.commandName);
 
@@ -9,6 +12,10 @@ async function handleAutocomplete(interaction) {
   try {
     await command.autocomplete(interaction);
   } catch (error) {
+    if (isUnknownInteractionError(error)) {
+      return;
+    }
+
     console.error(error);
   }
 }

@@ -12,6 +12,9 @@ const normalizeDeckInput = (value) => (value || "")
   .toLowerCase()
   .replaceAll(/\s+/g, "");
 
+const isUnknownInteractionError = (error) =>
+  error?.code === 10062 || error?.rawError?.code === 10062;
+
 function createHeroDeckCommand({ commandName, heroName, description }) {
   const config = getHeroConfig(commandName) || getHeroConfig(heroName);
   const actualHeroName = config?.hero || heroName;
@@ -39,8 +42,19 @@ function createHeroDeckCommand({ commandName, heroName, description }) {
         );
         await interaction.respond(results);
       } catch (error) {
+        if (isUnknownInteractionError(error)) {
+          return;
+        }
+
         console.error("Autocomplete error:", error);
-        await interaction.respond([]);
+
+        try {
+          await interaction.respond([]);
+        } catch (respondError) {
+          if (!isUnknownInteractionError(respondError)) {
+            console.error("Autocomplete fallback error:", respondError);
+          }
+        }
       }
     },
 
