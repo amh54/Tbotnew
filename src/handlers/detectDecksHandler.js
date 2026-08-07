@@ -1,10 +1,11 @@
 const {
   ActionRowBuilder,
-  EmbedBuilder,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
   MessageFlags,
 } = require("discord.js");
+
 const createCategoryEmbed = require("../features/decks/createCategoryEmbed.js");
 const buildDeckEmbed = require("../features/decks/buildDeckEmbed.js");
 const collectDecksWithCard = require("../features/cards/collectDecksWithCard.js");
@@ -13,223 +14,286 @@ const createCategorySelectMenu = require("../features/decks/createCategorySelect
 const calculateNavIndices = require("../features/decks/calculateNavIndices.js");
 const buildNavigationRow = require("../features/decks/buildNavigationRow.js");
 
+function buildDeckListNavRow(category, listLength) {
+  if (listLength <= 1) {
+    return null;
+  }
+
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`decknav_${category}_${listLength - 1}`)
+      .setEmoji("⬅️")
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId(`decknav_${category}_0`)
+      .setEmoji("➡️")
+      .setStyle(ButtonStyle.Primary),
+  );
+}
+
 async function startDetectDecksByName(interaction, db, cardNames) {
   const requestedCards = Array.isArray(cardNames)
     ? cardNames.filter(Boolean)
     : [cardNames].filter(Boolean);
 
   if (requestedCards.length === 0) {
-    await interaction.reply({ content: "Please provide at least one card to search for.", flags: MessageFlags.Ephemeral });
-    return;
+    return interaction.reply({
+      content: "Please provide at least one card to search for.",
+      flags: MessageFlags.Ephemeral,
+    });
   }
 
   const cardLabel = requestedCards.join(" + ");
-  console.log("Detecting decks for cards:", requestedCards);
+
   await interaction.deferReply();
 
   const allDecks = await collectDecksWithCard(db, requestedCards);
 
   if (allDecks.length === 0) {
-    await interaction.deleteReply();
-    await interaction.followUp({
+    return interaction.editReply({
       content: `No decks found containing "${cardLabel}".`,
-      flags: MessageFlags.Ephemeral,
     });
-    return;
   }
 
   const { availableCategories, deckLists } = categorizeDecks(allDecks);
-  const select = createCategorySelectMenu(cardLabel, availableCategories, deckLists);
+
+  const select = createCategorySelectMenu(
+    cardLabel,
+    availableCategories,
+    deckLists,
+  );
 
   const initialEmbed = new EmbedBuilder()
     .setTitle(`Decks containing "${cardLabel}"`)
     .setColor("Blue")
-    .setDescription([
-      `Found **${allDecks.length}** deck(s) containing **"${cardLabel}"**`,
-      "",
-      "Select a category below to browse the decks with navigation."
-    ].join("\n"))
-    .setFooter({ text: "Use the select menu to filter by category" });
+    .setDescription(
+      [
+        `Found **${allDecks.length}** deck(s) containing **${cardLabel}**`,
+        "",
+        "Select a category below to browse the decks with navigation.",
+        "Use the select menu to filter by category",
+      ].join("\n"),
+    );
 
   const message = await interaction.editReply({
     embeds: [initialEmbed],
-    components: [new ActionRowBuilder().addComponents(select)]
+    components: [new ActionRowBuilder().addComponents(select)],
   });
 
-  // Store data for navigation
   if (!interaction.client.detectDecksData) {
     interaction.client.detectDecksData = new Map();
   }
+
   interaction.client.detectDecksData.set(message.id, {
+    userId: interaction.user.id,
     cardName: cardLabel,
     deckLists,
-    availableCategories
+    availableCategories,
   });
-
-  console.log(`Stored detectdecks data for message ID: ${message.id}`);
-  setupDetectDecksCollector(message, cardLabel, interaction.client);
 }
 
 async function handleDetectDecks(interaction, db) {
   const cardName = interaction.customId.replace("detectdecks_", "");
 
-  // Only handle initial button click
-  if (!interaction.customId.match(/^detectdecks_[^_]+$/)) return;
+  if (!interaction.customId.startsWith("detectdecks_")) {
+    return false;
+  }
 
   await startDetectDecksByName(interaction, db, cardName);
-}
-
-function setupDetectDecksCollector(message, cardName, client) {
-  const filter = (i) => (
-    i.customId.startsWith(`deckcat_${cardName}`) ||
-    i.customId.startsWith("decknav_") ||
-    i.customId.startsWith("deckback_")
-  );
-
-  const collector = message.createMessageComponentCollector({ filter });
-
-  collector.on("collect", async (i) => {
-    try {
-      await handleDetectDecksNavigation(i, message.id, client);
-    } catch (error) {
-      console.error("Error in detectdecks collector:", error);
-    }
-  });
+  return true;
 }
 
 async function handleDetectDecksNavigation(interaction, messageId, client) {
-  const data = client.detectDecksData.get(messageId);
+  if (!client?.detectDecksData) {
+    return false;
+  }
+
+  let data = client.detectDecksData.get(messageId);
+
   if (!data) {
-    await interaction.reply({
-      content: "Data not found. Please try reclicking the button or resending command.",
-      flags: MessageFlags.Ephemeral
+    const userFallback = [...client.detectDecksData.values()].find(
+      (entry) => entry.userId === interaction.user.id
+    );
+
+    if (userFallback) {
+      data = userFallback;
+    }
+  }
+
+  if (!data) {
+    return interaction.reply({
+      content: "Data expired. Please run the command again.",
+      flags: MessageFlags.Ephemeral,
     });
-    return;
   }
 
-  if (interaction.isStringSelectMenu() && interaction.customId.startsWith("deckcat_")) {
-    await handleCategorySelect(interaction, data, client);
-    return;
+  if (
+    interaction.isStringSelectMenu() &&
+    interaction.customId.startsWith("deckcat_")
+  ) {
+    return handleCategorySelect(interaction, data);
   }
 
-  if (interaction.isButton() && interaction.customId.startsWith("decknav_")) {
-    await handleDeckNavigation(interaction, data);
-    return;
-  }
-
-  if (interaction.isButton() && interaction.customId.startsWith("deckback_")) {
-    await handleBackToList(interaction, data);
+  if (
+    interaction.isButton() &&
+    (interaction.customId.startsWith("decknav_") ||
+      interaction.customId.startsWith("decklist_"))
+  ) {
+    return handleDeckNavigation(interaction, data);
   }
 }
 
-async function handleCategorySelect(interaction, data, client) {
+function buildCardSearchDeckListEmbed(cardName, list) {
+  const deckLines = list.map((deck) => {
+    const normalizedName = String(deck.name || "Unknown")
+      .replaceAll(/\s+/gu, "")
+      .toLowerCase();
+    const hero = deck.hero ? ` (${deck.hero})` : "";
+    return `**${normalizedName}**${hero}`;
+  });
+
+  return new EmbedBuilder()
+    .setTitle(`${cardName} Decks`)
+    .setColor("Blue")
+    .setDescription(
+      [
+        `All **${cardName}** decks in Tbot are:`,
+        ...deckLines,
+        `**${cardName}** has ${list.length} total decks in Tbot`,
+        "Please click on the buttons below to navigate through the decks.",
+      ].join("\n"),
+    );
+}
+
+async function handleCategorySelect(interaction, data) {
   const category = interaction.values[0];
+
   const list = data.deckLists[category] || [];
 
   if (list.length === 0) {
-    return await interaction.reply({
+    return interaction.reply({
       content: "No decks in that category.",
       flags: MessageFlags.Ephemeral,
     });
   }
 
   if (list.length === 1) {
-    const embed = buildDeckEmbed(list[0], "Random");
-    return await interaction.reply({
-      embeds: [embed],
-      flags: MessageFlags.Ephemeral,
+    const deckEmbed = buildDeckEmbed(list[0], "Blue");
+    if (interaction.client?.detectDecksData) {
+      await interaction.reply({
+        embeds: [deckEmbed],
+        flags: MessageFlags.Ephemeral,
+      });
+
+      const reply = await interaction.fetchReply();
+      interaction.client.detectDecksData.set(reply.id, {
+        ...data,
+        userId: interaction.user.id,
+        currentCategory: category,
+        currentList: list,
+      });
+      interaction.client.detectDecksData.set(interaction.message.id, {
+        ...data,
+        userId: interaction.user.id,
+        currentCategory: category,
+        currentList: list,
+      });
+      return;
+    }
+    return interaction.update({
+      embeds: [deckEmbed],
+      components: [],
     });
   }
 
-  const categoryEmbed = createCategoryEmbed(
-    data.cardName,
-    "Blue",
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => `${deck.name.replaceAll(/\s+/g, "").toLowerCase()} (${deck.hero})`),
-    list.length,
-    null
-  );
+  const categoryEmbed = buildCardSearchDeckListEmbed(data.cardName, list);
+  const navRow = buildDeckListNavRow(category, list.length);
 
-  const navRow = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`decknav_${category}_${list.length - 1}`)
-      .setEmoji("⬅️")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId(`decknav_${category}_0`)
-      .setEmoji("➡️")
-      .setStyle(ButtonStyle.Primary)
-  );
+  if (interaction.client?.detectDecksData) {
+    await interaction.reply({
+      embeds: [categoryEmbed],
+      components: [navRow],
+      flags: MessageFlags.Ephemeral,
+    });
 
-  const response = await interaction.reply({
+    const reply = await interaction.fetchReply();
+    interaction.client.detectDecksData.set(reply.id, {
+      ...data,
+      userId: interaction.user.id,
+      currentCategory: category,
+      currentList: list,
+    });
+    interaction.client.detectDecksData.set(interaction.message.id, {
+      ...data,
+      userId: interaction.user.id,
+      currentCategory: category,
+      currentList: list,
+    });
+    return;
+  }
+
+  return interaction.update({
     embeds: [categoryEmbed],
     components: [navRow],
-    flags: MessageFlags.Ephemeral,
-    withResponse: true,
   });
-
-  const replyMessage = response.resource?.message ||
-    (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
-  if (!replyMessage) return;
-
-  if (!client.detectDecksData) {
-    client.detectDecksData = new Map();
-  }
-  client.detectDecksData.set(replyMessage.id, data);
-  setupDetectDecksCollector(replyMessage, data.cardName, client);
 }
 
 async function handleDeckNavigation(interaction, data) {
-  const [, category, indexStr] = interaction.customId.split("_");
-  const index = Number.parseInt(indexStr, 10);
+  if (interaction.customId.startsWith("decklist_")) {
+    let category = interaction.customId.replace("decklist_", "");
+    if (category.endsWith("_start") || category.endsWith("_end")) {
+      category = category.replace(/_(start|end)$/u, "");
+    }
+    const list = data.deckLists[category] || [];
+
+    if (list.length === 0) {
+      return interaction.reply({
+        content: "No decks in that category.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    const categoryEmbed = buildCardSearchDeckListEmbed(data.cardName, list);
+    const navRow = buildDeckListNavRow(category, list.length);
+
+    return interaction.update({
+      embeds: [categoryEmbed],
+      components: [navRow],
+    });
+  }
+
+  const parts = interaction.customId.split("_");
+  let indexString = parts.at(-1);
+  let category = parts.slice(1, -1).join("_");
+
+  if (indexString === "prev" || indexString === "next") {
+    indexString = parts.at(-2);
+    category = parts.slice(1, -2).join("_");
+  }
+
+  const index = Number.parseInt(indexString, 10);
   const list = data.deckLists[category] || [];
 
   if (!list[index]) {
-    return await interaction.reply({
+    return interaction.reply({
       content: "Deck not found.",
       flags: MessageFlags.Ephemeral,
     });
   }
 
-  const embed = buildDeckEmbed(list[index], "Random");
+  const embed = buildDeckEmbed(list[index], "Blue");
+  const prevIndex = index === 0 ? "list" : index - 1;
+  const nextIndex = index === list.length - 1 ? "list" : index + 1;
+  const navRow = buildNavigationRow(category, prevIndex, nextIndex, "decknav", "decklist");
 
-  const { prevIndex, nextIndex } = calculateNavIndices(index, list.length);
-  const navRow = buildNavigationRow(category, prevIndex, nextIndex, "decknav", "deckback");
-
-  return await interaction.update({
+  return interaction.update({
     embeds: [embed],
-    components: [navRow]
+    components: [navRow],
   });
 }
 
-async function handleBackToList(interaction, data) {
-  const category = interaction.customId.replace("deckback_", "");
-  const list = data.deckLists[category] || [];
-
-  const categoryEmbed = createCategoryEmbed(
-    data.cardName,
-    "Blue",
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => `${deck.name.replaceAll(/\s+/g, "").toLowerCase()} (${deck.hero})`),
-    list.length,
-    null
-  );
-
-  const navRow = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`decknav_${category}_${list.length - 1}`)
-      .setEmoji("⬅️")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId(`decknav_${category}_0`)
-      .setEmoji("➡️")
-      .setStyle(ButtonStyle.Primary)
-  );
-
-  return await interaction.update({
-    embeds: [categoryEmbed],
-    components: [navRow]
-  });
-}
-
-module.exports = { handleDetectDecks, startDetectDecksByName };
+module.exports = {
+  handleDetectDecks,
+  startDetectDecksByName,
+  handleDetectDecksNavigation,
+};

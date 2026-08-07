@@ -1,19 +1,14 @@
 const { EmbedBuilder } = require("discord.js");
-/**
- * @description Builds a Discord embed for a deck from a database row
- * @param {*} row  The database row object
- * @param {*} deckColor  The color to use for the embed
- * @returns {EmbedBuilder} The constructed embed
- */
+const buildDeckFooter = require("./buildDeckFooter.js");
+
 function buildDeckEmbed(row, deckColor) {
   const embed = new EmbedBuilder()
     .setTitle(row.name || "Unknown")
     .setDescription(row.description || "")
-    .setFooter({ text: row.creator || "" })
     .addFields(
       {
-        name: "Deck Type",
-        value: `**__${row.type || "N/A"}__**`,
+        name: "Category",
+        value: `**__${row.category || "N/A"}__**`,
         inline: true,
       },
       {
@@ -23,11 +18,19 @@ function buildDeckEmbed(row, deckColor) {
       },
       {
         name: "Deck Cost",
-        value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**__N/A__**",
+        value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**N/A**",
         inline: true,
-      }
+      },
     )
     .setColor(deckColor);
+
+  const footerText = buildDeckFooter(row);
+
+  if (footerText) {
+    embed.setFooter({
+      text: footerText,
+    });
+  }
 
   if (
     row.image &&
@@ -36,6 +39,7 @@ function buildDeckEmbed(row, deckColor) {
   ) {
     embed.setImage(row.image);
   }
+
   return embed;
 }
 

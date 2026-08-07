@@ -9,18 +9,17 @@ const createCategoryEmbed = require("../features/decks/createCategoryEmbed.js");
 const buildDeckEmbed = require("../features/decks/buildDeckEmbed.js");
 const categorizeHeroDecks = require("../features/heroes/categorizeHeroDecks.js");
 const createHeroSelectMenu = require("../features/heroes/createHeroSelectMenu.js");
-const calculateNavIndices = require("../features/decks/calculateNavIndices.js");
 const buildNavigationRow = require("../features/decks/buildNavigationRow.js");
-const { commandToHeroMap, heroTableMap, heroNameToTable } = require("../features/heroes/getHeroMappings.js");
+const { commandToHeroMap, getHeroConfig } = require("../features/heroes/getHeroMappings.js");
 
 async function handleHeroHelp(interaction, db, client) {
   const heroCommand = interaction.customId.replace("herohelp_", "");
   
   try {
     const heroName = commandToHeroMap[heroCommand];
-    const deckTable = heroTableMap[heroCommand];
+    const heroConfig = getHeroConfig(heroCommand);
 
-    if (!heroName || !deckTable) {
+    if (!heroName || !heroConfig) {
       return await interaction.reply({
         content: "Hero Data not found. Please try reclicking the button or resending command.",
         flags: MessageFlags.Ephemeral
@@ -36,7 +35,13 @@ async function handleHeroHelp(interaction, db, client) {
     }
 
     const heroRow = heroRows[0];
-    const [decks] = await db.query(`SELECT * FROM ${deckTable} ORDER BY name ASC`);
+    const [decks] = await db.query(
+      `SELECT * FROM tbot_decks
+       WHERE LOWER(side) = LOWER(?)
+         AND LOWER(hero) = LOWER(?)
+       ORDER BY name ASC`,
+      [heroConfig.side, heroConfig.hero]
+    );
     
     if (!decks || decks.length === 0) {
       return await interaction.reply({
@@ -45,7 +50,7 @@ async function handleHeroHelp(interaction, db, client) {
       });
     }
 
-    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, deckTable);
+    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, "tbot_decks");
 
     if (normalized.length === 1) {
       const embed = buildDeckEmbed(normalized[0], heroRow.deck_color || "Blue");
@@ -96,9 +101,9 @@ async function handleHeroHelp(interaction, db, client) {
 
 async function startHeroDecksByName(interaction, db, client, heroName) {
   try {
-    const deckTable = heroNameToTable[heroName];
+    const heroConfig = getHeroConfig(heroName);
 
-    if (!deckTable) {
+    if (!heroConfig) {
       return await interaction.reply({
         content: "Hero Data not found. Please check the hero name and try again.",
         flags: MessageFlags.Ephemeral
@@ -114,7 +119,13 @@ async function startHeroDecksByName(interaction, db, client, heroName) {
     }
 
     const heroRow = heroRows[0];
-    const [decks] = await db.query(`SELECT * FROM ${deckTable} ORDER BY name ASC`);
+    const [decks] = await db.query(
+      `SELECT * FROM tbot_decks
+       WHERE LOWER(side) = LOWER(?)
+         AND LOWER(hero) = LOWER(?)
+       ORDER BY name ASC`,
+      [heroConfig.side, heroConfig.hero]
+    );
 
     if (!decks || decks.length === 0) {
       return await interaction.reply({
@@ -123,7 +134,7 @@ async function startHeroDecksByName(interaction, db, client, heroName) {
       });
     }
 
-    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, deckTable);
+    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, "tbot_decks");
 
     if (normalized.length === 1) {
       const embed = buildDeckEmbed(normalized[0], heroRow.deck_color || "Blue");
@@ -236,9 +247,17 @@ async function handleHeroDeckCategory(interaction) {
 }
 
 async function handleHeroDeckNavigation(interaction) {
-  const [, category, indexStr] = interaction.customId.split("_");
+  const parts = interaction.customId.split("_");
+  let indexStr = parts[parts.length - 1];
+  let category = parts.slice(1, -1).join("_");
+
+  if (indexStr === "prev" || indexStr === "next") {
+    indexStr = parts[parts.length - 2];
+    category = parts.slice(1, -2).join("_");
+  }
+
   const index = Number.parseInt(indexStr, 10);
-  
+
   if (!interaction.client.heroDecksData) {
     interaction.client.heroDecksData = new Map();
   }
@@ -260,7 +279,8 @@ async function handleHeroDeckNavigation(interaction) {
   }
 
   const embed = buildDeckEmbed(list[index], data.categoryColor);
-  const { prevIndex, nextIndex } = calculateNavIndices(index, list.length);
+  const prevIndex = index === 0 ? "list" : index - 1;
+  const nextIndex = index === list.length - 1 ? "list" : index + 1;
   const navRow = buildNavigationRow(category, prevIndex, nextIndex, "herodknav", "herodklist");
 
   return await interaction.update({
@@ -411,7 +431,15 @@ function setupHeroCategoryCollector(message, client) {
 }
 
 async function handleHeroNavButton(interaction, data) {
-  const [, category, indexStr] = interaction.customId.split("_");
+  const parts = interaction.customId.split("_");
+  let indexStr = parts[parts.length - 1];
+  let category = parts.slice(1, -1).join("_");
+
+  if (indexStr === "prev" || indexStr === "next") {
+    indexStr = parts[parts.length - 2];
+    category = parts.slice(1, -2).join("_");
+  }
+
   const index = Number.parseInt(indexStr, 10);
   const list = data.deckLists[category] || [];
 
@@ -423,7 +451,8 @@ async function handleHeroNavButton(interaction, data) {
   }
 
   const embed = buildDeckEmbed(list[index], data.deckColor);
-  const { prevIndex, nextIndex } = calculateNavIndices(index, list.length);
+  const prevIndex = index === 0 ? "list" : index - 1;
+  const nextIndex = index === list.length - 1 ? "list" : index + 1;
   const navRow = buildNavigationRow(category, prevIndex, nextIndex, "heronav", "herolist");
 
   return await interaction.update({

@@ -1,4 +1,15 @@
-const { EmbedBuilder, ChannelType } = require("discord.js");  
+const { EmbedBuilder, ChannelType } = require("discord.js");
+const buildDeckFooter = require("./buildDeckFooter.js");
+
+const HERO_COLORS = {
+  "Rustbolt": "Orange", "Z-Mech": "Purple", "Citron": "White", "Green Shadow": "White",
+  "Beta-Carrotina": "White", "Brain Freeze": "Blue", "Captain Combustible": "Green",
+  "Chompzilla": "Yellow", "Electric Boogaloo": "Purple", "Grass Knuckles": "#964B00",
+  "Huge-Gigantacus": "#000000", "Super Brainz": "#000000", "Impfinity": "#000000",
+  "Immorticia": "Blue", "Night Cap": "White", "Neptuna": "#000000",
+  "Professor Brainstorm": "Purple", "Rose": "Yellow", "Solar Flare": "Yellow",
+  "The Smash": "Blue", "Spudow": "#964B00", "Wall-Knight": "Yellow"
+};
 
 function resolveNotificationTarget(notificationType, notificationTarget) {
   if (!notificationTarget) return null;
@@ -97,7 +108,7 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
       );
     }
 
-    const deckColor = dbTableColors[tableConfig.table] || "#00FF00";
+    const deckColor = HERO_COLORS[row.hero] || dbTableColors[tableConfig.table] || "#00FF00";
     const statusText = getStatusText(notificationType, changedFields);
     
     const embed = new EmbedBuilder()
@@ -106,7 +117,8 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
       .setColor(deckColor);
     
     addDeckFields(embed, row, changedFields, existingRow);
-    embed.setFooter({ text: `${row.creator || "Unknown"}` });
+    const footerText = buildDeckFooter(row);
+    embed.setFooter({ text: footerText || "Unknown" });
     
     if (row.image && typeof row.image === "string" && row.image.startsWith("http")) {
       embed.setImage(row.image);

@@ -1,3 +1,5 @@
+const { getHeroConfig } = require("../heroes/heroDeckConfig.js");
+
 const normalize = (value) => (value || "")
   .toString()
   .toLowerCase()
@@ -8,10 +10,12 @@ function buildAliasEntries(rows) {
   for (const row of rows || []) {
     const name = row.name;
     if (!name) continue;
+
     entries.push({ label: name, value: name, key: normalize(name) });
 
     const aliasField = row.aliases || "";
     if (typeof aliasField !== "string") continue;
+
     const aliases = aliasField
       .split(",")
       .map((alias) => alias.trim())
@@ -29,22 +33,30 @@ function buildAliasEntries(rows) {
 }
 
 function buildNameEntries(rows) {
-  const entries = [];
-  for (const row of rows || []) {
-    const name = row.name;
-    if (!name) continue;
-    entries.push({ label: name, value: name, key: normalize(name) });
-  }
-  return entries;
+  return (rows || [])
+    .filter((row) => row.name)
+    .map((row) => ({
+      label: row.name,
+      value: row.name,
+      key: normalize(row.name)
+    }));
 }
 
-async function getHeroDeckAutocompleteResults(db, tableName, focusedValue) {
+async function getHeroDeckAutocompleteResults(db, commandName, focusedValue) {
+  const config = getHeroConfig(commandName);
+  if (!config) return [];
+
   const [rows] = await db.query(
-    `SELECT name, aliases FROM ${tableName}`
+    `SELECT name, aliases
+     FROM tbot_decks
+     WHERE LOWER(side) = LOWER(?)
+       AND LOWER(hero) = LOWER(?)
+     ORDER BY name COLLATE utf8mb4_general_ci ASC`,
+    [config.side, config.hero]
   );
+
   const entries = buildNameEntries(rows);
   const search = normalize(focusedValue);
-
   const filtered = search
     ? entries.filter((entry) => entry.key.startsWith(search)).slice(0, 25)
     : entries.slice(0, 25);
@@ -52,10 +64,18 @@ async function getHeroDeckAutocompleteResults(db, tableName, focusedValue) {
   return filtered.map((entry) => ({ name: entry.label, value: entry.value }));
 }
 
-async function resolveHeroDeckName(db, tableName, input) {
+async function resolveHeroDeckName(db, commandName, input) {
+  const config = getHeroConfig(commandName);
+  if (!config) return null;
+
   const [rows] = await db.query(
-    `SELECT name, aliases FROM ${tableName}`
+    `SELECT name, aliases
+     FROM tbot_decks
+     WHERE LOWER(side) = LOWER(?)
+       AND LOWER(hero) = LOWER(?)`,
+    [config.side, config.hero]
   );
+
   const entries = buildAliasEntries(rows);
   const search = normalize(input);
   const match = entries.find((entry) => entry.key === search);

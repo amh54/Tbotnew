@@ -6,7 +6,6 @@ const {
 } = require("discord.js");
 const createCategoryEmbed = require("../features/decks/createCategoryEmbed.js");
 const buildDeckEmbed = require("../features/decks/buildDeckEmbed.js");
-const calculateNavIndices = require("../features/decks/calculateNavIndices.js");
 const buildNavigationRow = require("../features/decks/buildNavigationRow.js");
 
 async function handleDeckBuilderCategory(interaction) {
@@ -119,7 +118,8 @@ async function handleDeckBuilderNavigation(interaction, data) {
   }
 
   const embed = buildDeckEmbed(list[index], data.color || "Random");
-  const { prevIndex, nextIndex } = calculateNavIndices(index, list.length);
+  const prevIndex = index === 0 ? "list" : index - 1;
+  const nextIndex = index === list.length - 1 ? "list" : index + 1;
   const navRow = buildNavigationRow(category, prevIndex, nextIndex, "dbnav", "dblist");
 
   return await interaction.update({

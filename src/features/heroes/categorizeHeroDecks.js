@@ -2,17 +2,23 @@ const matchesCategory = require("../decks/matchesCategory.js");
 
 function categorizeHeroDecks(decks, heroName, deckTable) {
   const normalized = decks.map((r) => {
-    const rawType = (r.type || "").toString();
+    const rawType = (r.type || r.category || "").toString();
+    const rawCategory = (r.category || r.type || "").toString();
     const rawArch = (r.archetype || "").toString();
     const normalize = (s) => s.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
     return {
       id: r.deckID ?? null,
       name: r.name ?? r.deckID ?? "Unnamed",
       type: rawType,
+      category: rawCategory,
       archetype: rawArch,
       cost: r.cost ?? r.deckcost ?? "",
       image: r.image ?? null,
       creator: r.creator ?? "",
+      suggested_date: r.suggested_date ?? "",
+      updated_date: r.updated_date ?? "",
+      inspiration: r.inspiration ?? "",
+      optimization: r.optimization ?? "",
       typeNorm: normalize(rawType),
       archetypeNorm: normalize(rawArch),
       description: r.description ?? "",

@@ -1,80 +1,33 @@
-const commandToHeroMap = {
-  "helpbc": "Beta-Carrotina",
-  "helpcc": "Captain Combustible",
-  "helpct": "Citron",
-  "helpcz": "Chompzilla",
-  "helpgk": "Grass Knuckles",
-  "helpgs": "Green Shadow",
-  "helpnc": "Night Cap",
-  "helpro": "Rose",
-  "helpsf": "Solar Flare",
-  "helpsp": "Spudow",
-  "helpwk": "Wall-Knight",
-  "helpbf": "Brain Freeze",
-  "helpeb": "Electric Boogaloo",
-  "helphg": "Huge-Gigantacus",
-  "helpsb": "Super Brainz",
-  "helpif": "Impfinity",
-  "helpim": "Immorticia",
-  "helpnt": "Neptuna",
-  "helppb": "Professor Brainstorm",
-  "helprb": "Rustbolt",
-  "helpsm": "The Smash",
-  "helpzm": "Z-Mech"
-};
+const {
+  HEROES,
+  HERO_BY_COMMAND,
+  HERO_BY_NAME,
+  getHeroConfig,
+  getHeroCommand,
+  getHeroName,
+  getHeroSide
+} = require("./heroDeckConfig.js");
 
-const heroTableMap = {
-  "helpbc": "bcdecks",
-  "helpcc": "ccdecks",
-  "helpct": "ctdecks",
-  "helpcz": "czdecks",
-  "helpgk": "gkdecks",
-  "helpgs": "gsdecks",
-  "helpnc": "ncdecks",
-  "helpro": "rodecks",
-  "helpsf": "sfdecks",
-  "helpsp": "spdecks",
-  "helpwk": "wkdecks",
-  "helpbf": "bfdecks",
-  "helpeb": "ebdecks",
-  "helphg": "hgdecks",
-  "helpsb": "sbdecks",
-  "helpif": "ifdecks",
-  "helpim": "imdecks",
-  "helpnt": "ntdecks",
-  "helppb": "pbdecks",
-  "helprb": "rbdecks",
-  "helpsm": "smdecks",
-  "helpzm": "zmdecks"
-};
+const commandToHeroMap = {};
+const heroTableMap = {};
+const heroNameToTable = {};
 
-const heroNameToTable = {
-  "Beta-Carrotina": "bcdecks",
-  "Captain Combustible": "ccdecks",
-  "Citron": "ctdecks",
-  "Chompzilla": "czdecks",
-  "Grass Knuckles": "gkdecks",
-  "Green Shadow": "gsdecks",
-  "Night Cap": "ncdecks",
-  "Rose": "rodecks",
-  "Solar Flare": "sfdecks",
-  "Spudow": "spdecks",
-  "Wall-Knight": "wkdecks",
-  "Brain Freeze": "bfdecks",
-  "Electric Boogaloo": "ebdecks",
-  "Huge-Gigantacus": "hgdecks",
-  "Super Brainz": "sbdecks",
-  "Impfinity": "ifdecks",
-  "Immorticia": "imdecks",
-  "Neptuna": "ntdecks",
-  "Professor Brainstorm": "pbdecks",
-  "Rustbolt": "rbdecks",
-  "The Smash": "smdecks",
-  "Z-Mech": "zmdecks"
-};
+for (const hero of Object.values(HEROES)) {
+  const helpCommand = `help${hero.command.replace("decks", "")}`;
+  commandToHeroMap[helpCommand] = hero.hero;
+  heroTableMap[helpCommand] = hero.command;
+  heroNameToTable[hero.hero] = hero.command;
+}
 
 module.exports = {
+  HEROES,
+  HERO_BY_COMMAND,
+  HERO_BY_NAME,
   commandToHeroMap,
   heroTableMap,
-  heroNameToTable
+  heroNameToTable,
+  getHeroConfig,
+  getHeroCommand,
+  getHeroName,
+  getHeroSide
 };

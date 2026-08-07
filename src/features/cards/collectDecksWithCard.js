@@ -1,68 +1,78 @@
-const dbTables = [
-  { table: "gsdecks", hero: "Green Shadow" },
-  { table: "sfdecks", hero: "Solar Flare" },
-  { table: "wkdecks", hero: "Wall Knight" },
-  { table: "czdecks", hero: "Chompzilla" },
-  { table: "spdecks", hero: "Spudow" },
-  { table: "ctdecks", hero: "Citron" },
-  { table: "gkdecks", hero: "Grass Knuckles" },
-  { table: "ncdecks", hero: "Night Cap" },
-  { table: "rodecks", hero: "Rose" },
-  { table: "ccdecks", hero: "Captain Combustible" },
-  { table: "bcdecks", hero: "Beta Carrotina" },
-  { table: "sbdecks", hero: "Super Brainz" },
-  { table: "smdecks", hero: "The Smash" },
-  { table: "ifdecks", hero: "Impfinity" },
-  { table: "rbdecks", hero: "Rustbolt" },
-  { table: "ebdecks", hero: "Electric Boogaloo" },
-  { table: "bfdecks", hero: "Brain Freeze" },
-  { table: "pbdecks", hero: "Professor Brainstorm" },
-  { table: "imdecks", hero: "Immorticia" },
-  { table: "zmdecks", hero: "Z-Mech" },
-  { table: "ntdecks", hero: "Neptuna" },
-  { table: "hgdecks", hero: "Huge-Gigantacus" }
-];
-
 function normalizeCardName(cardName) {
-  return cardName.toString().trim().toLowerCase();
+  return cardName
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/^\d+x\s*/i, "")
+    .replace(/[^a-z0-9]/g, "");
 }
 
 function parseCardsList(row) {
   return (row.cards || "")
-    .split('\n')
-    .map((card) => card.trim().toLowerCase())
-    .filter((card) => card.length > 0);
+    .split("\n")
+    .map(normalizeCardName)
+    .filter(Boolean);
 }
 
-function buildDeckSummary(row, hero, table) {
-  const rawType = (row.type || "").toString();
-  const rawArch = (row.archetype || "").toString();
-  const normalize = (value) => value.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
+function normalize(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function buildDeckSummary(row) {
+  const rawCategory = (row.category || "").toString();
+
+  const rawArchetype = (row.archetype || "").toString();
 
   return {
     id: row.deckID ?? null,
+
     name: row.name ?? row.deckID ?? "Unnamed",
-    type: rawType,
-    archetype: rawArch,
-    cost: row.cost ?? row.deckcost ?? "",
-    typeNorm: normalize(rawType),
-    archetypeNorm: normalize(rawArch),
+
+    category: rawCategory,
+
+    archetype: rawArchetype,
+
+    cost: row.cost ?? "",
+
+    categoryNorm: normalize(rawCategory),
+
+    archetypeNorm: normalize(rawArchetype),
+
     description: row.description ?? "",
+
     image: row.image ?? null,
+
     creator: row.creator ?? "",
-    hero,
-    table,
+
+    inspiration: row.inspiration ?? "",
+
+    optimization: row.optimization ?? "",
+
+    suggested_date: row.suggested_date ?? "",
+
+    updated_date: row.updated_date ?? "",
+
+    hero: row.hero ?? "",
+
+    side: row.side ?? "",
+
+    table: "tbot_decks",
+
     raw: row,
   };
 }
 
-async function getDeckRowsForCard(db, table, cardName) {
+async function getDeckRowsForCard(db, cardSearch, cardKey) {
   const [rows] = await db.query(
-    `SELECT * FROM ${table} WHERE cards LIKE ?`,
-    [`%${cardName}%`]
+    `
+    SELECT *
+    FROM tbot_decks
+    WHERE LOWER(cards) LIKE ?
+    `,
+    [`%${cardSearch.toLowerCase()}%`],
   );
 
-  return rows.filter((row) => parseCardsList(row).includes(cardName));
+  return rows.filter((row) => parseCardsList(row).includes(cardKey));
 }
 
 async function collectDecksWithCard(db, cardNames) {
@@ -74,34 +84,34 @@ async function collectDecksWithCard(db, cardNames) {
     return [];
   }
 
-  const normalizedCards = requestedCards.map(normalizeCardName);
-  const allDecks = [];
+  const matchedDecks = new Map();
 
-  for (const { table, hero } of dbTables) {
-    try {
-      const matchedRows = new Map();
+  for (const cardName of requestedCards) {
+    const cardKey = normalizeCardName(cardName);
+    const rows = await getDeckRowsForCard(db, cardName.toString().trim(), cardKey);
 
-      for (const cardName of normalizedCards) {
-        const rows = await getDeckRowsForCard(db, table, cardName);
+    for (const row of rows) {
+      const key = row.deckID ?? row.name ?? JSON.stringify(row);
 
-        for (const row of rows) {
-          const rowKey = row.deckID ?? row.name ?? JSON.stringify(row);
-          const existingMatch = matchedRows.get(rowKey) || { row, matchCount: 0 };
-          existingMatch.matchCount += 1;
-          matchedRows.set(rowKey, existingMatch);
-        }
-      }
+      const entry = matchedDecks.get(key) || {
+        row,
+        matchCount: 0,
+      };
 
-      for (const { row, matchCount } of matchedRows.values()) {
-        if (matchCount < normalizedCards.length) continue;
-        allDecks.push(buildDeckSummary(row, hero, table));
-      }
-    } catch (error) {
-      console.error(`Error querying ${table}:`, error);
+      entry.matchCount += 1;
+
+      matchedDecks.set(key, entry);
     }
   }
 
-  return allDecks.sort((a, b) => a.name.localeCompare(b.name));
+  return [...matchedDecks.values()]
+    .filter(({ matchCount }) => matchCount >= requestedCards.length)
+    .map(({ row }) => buildDeckSummary(row))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, {
+        sensitivity: "base",
+      }),
+    );
 }
 
 module.exports = collectDecksWithCard;

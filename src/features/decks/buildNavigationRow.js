@@ -7,7 +7,7 @@ const {
 function buildNavigationRow(category, prevIndex, nextIndex, customIdPrefix = "nav", backPrefix = "back") {
   const navRow = new ActionRowBuilder();
 
-  if (prevIndex === 'list') {
+  if (prevIndex === "list") {
     navRow.addComponents(
       new ButtonBuilder()
         .setCustomId(`${backPrefix}_${category}`)
@@ -24,7 +24,7 @@ function buildNavigationRow(category, prevIndex, nextIndex, customIdPrefix = "na
     );
   }
 
-  if (nextIndex === 'list') {
+  if (nextIndex === "list") {
     navRow.addComponents(
       new ButtonBuilder()
         .setCustomId(`${backPrefix}_${category}`)

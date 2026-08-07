@@ -11,6 +11,7 @@ const {
 const axios = require("axios");
 const {validateDeckImage} = require('../../features/decks/validateDeckImage.js');
 const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow.js");
+const dbTableColors = require("../../lib/db/dbTableColors.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -36,7 +37,8 @@ module.exports = {
         .addChoices(
           { name: "Captain Combustible", value: "1100172143603482786" },
           { name: "Chompzilla", value: "1100171601045106819" },
-          { name: "Citron/BC", value: "1100171558263193700" },
+          {name: "Beta-Carrotina", value: "1100171558263193700"},
+          { name: "Citron", value: "1100171558263193700" },
           { name: "Grass Knuckles", value: "1100171819148906628" },
           { name: "Green Shadow", value: "1100172254983241820" },
           { name: "Night Cap", value: "1100171997167747172" },
@@ -46,7 +48,8 @@ module.exports = {
           { name: "Wall Knight", value: "1100171712391295006" },
           { name: "Brain Freeze", value: "1100170721994477668" },
           { name: "Electric Boogaloo", value: "1100171042380578857" },
-          { name: "Huge Gigantacus/SB", value: "1100170925208502282" },
+          {name: "Super Brainz", value: "1100170925208502282"},
+          { name: "Huge Gigantacus", value: "1100170925208502282" },
           { name: "Impfinity", value: "1100170791594762260" },
           { name: "Immorticia", value: "1100171253790285904" },
           { name: "Neptuna", value: "1100170647050649620" },
@@ -97,7 +100,7 @@ module.exports = {
     )
     .addStringOption((option) =>
       option
-        .setName("deck_type")
+        .setName("category")
         .setDescription("The type of deck it is (optional)")
         .setRequired(false)
         .addChoices(
@@ -111,30 +114,8 @@ module.exports = {
     try {
       const db = require("../../../index.js");
       const focusedValue = interaction.options.getFocused();
-      const [rows] = await db.query(`
-        select name FROM sbdecks    
-        union all select name from ccdecks 
-        union all select name from sfdecks 
-        union all select name from rodecks 
-        union all select name from gsdecks 
-        union all select name from wkdecks 
-        union all select name from czdecks 
-        union all select name from spdecks 
-        union all select name from ctdecks 
-        union all select name from bcdecks 
-        union all select name from gkdecks 
-        union all select name from ncdecks 
-        union all select name from hgdecks 
-        union all select name from zmdecks 
-        union all select name from smdecks 
-        union all select name from ifdecks 
-        union all select name from rbdecks 
-        union all select name from ebdecks 
-        union all select name from bfdecks 
-        union all select name from pbdecks 
-        union all select name from imdecks
-        union all select name from ntdecks
-      `);
+      const [rows] = await db.query(`SELECT name FROM tbot_decks ORDER BY name COLLATE utf8mb4_general_ci ASC`);
+
       const choices = [
         ...new Set(rows.map((r) => r.name.toLowerCase().replaceAll(/\s+/g, "")))
       ].sort((a, b) => a.localeCompare(b));
@@ -162,51 +143,28 @@ module.exports = {
     
     const db = require("../../../index.js");
         const heroDeckMap = {
-        "1100172143603482786": "ccdecks",
-        "1100171601045106819": "czdecks",
-        "1100171558263193700": "ctdecks",
-        "1100171819148906628": "gkdecks",
-        "1100172254983241820": "gsdecks",
-        "1100171997167747172": "ncdecks",
-        "1100171855316406343": "rodecks",
-        "1100171646557491220": "sfdecks",
-        "1100171758256013412": "spdecks",
-        "1100171712391295006": "wkdecks",
-        "1100170721994477668": "bfdecks",
-        "1100171042380578857": "ebdecks",
-        "1100170925208502282": "hgdecks",
-        "1100170791594762260": "ifdecks",
-        "1100171253790285904": "imdecks",
-        "1100170647050649620": "ntdecks",
-        "1100171459785150585": "rbdecks",
-        "1100171115504078901": "pbdecks",
-        "1100171177529446492": "smdecks",
-        "1100170981013729410": "zmdecks",
-      }
-      const dbTableColors = {
-        sbdecks: "#9B59B6",
-        ccdecks: "#E67E22",
-        sfdecks: "#F1C40F",
-        rodecks: "#E91E63",
-        gsdecks: "#2ECC71",
-        wkdecks: "#3498DB",
-        czdecks: "#8E44AD",
-        spdecks: "#95A5A6",
-        ctdecks: "#1ABC9C",
-        bcdecks: "#16A085",
-        gkdecks: "#27AE60",
-        ncdecks: "#8E44AD",
-        hgdecks: "#3498DB",
-        zmdecks: "#E74C3C",
-        smdecks: "#E67E22",
-        ifdecks: "#9B59B6",
-        rbdecks: "#95A5A6",
-        ebdecks: "#F39C12",
-        bfdecks: "#3498DB",
-        pbdecks: "#9B59B6",
-        imdecks: "#8E44AD",
-        ntdecks: "#3498DB",
+        "1100172143603482786": "Captain Combustible",
+        "1100171601045106819": "Chompzilla",
+        "1100171558263193700": "Citron/BC",
+        "1100171819148906628": "Grass Knuckles",
+        "1100172254983241820": "Green Shadow",
+        "1100171997167747172": "Night Cap",
+        "1100171855316406343": "Rose",
+        "1100171646557491220": "Solar Flare",
+        "1100171758256013412": "Spudow",
+        "1100171712391295006": "Wall-Knight",
+        "1100170721994477668": "Brain Freeze",
+        "1100171042380578857": "Electric Boogaloo",
+        "1100170925208502282": "Huge-Gigantacus/SB",
+        "1100170791594762260": "Impfinity",
+        "1100171253790285904": "Immorticia",
+        "1100170647050649620": "Neptuna",
+        "1100171459785150585": "Rustbolt",
+        "1100171115504078901": "Professor Brainstorm",
+        "1100171177529446492": "The Smash",
+        "1100170981013729410": "Z-Mech",
       };
+
       const heroId = interaction.options.getString("hero");
     const tableName = heroDeckMap[heroId];
     const name = interaction.options.getString("name");
@@ -220,27 +178,33 @@ module.exports = {
       });
     }
     
-    let query;
     let rows;
+    let heroName = heroDeckMap[heroId];
+
     if (heroId === "1100171558263193700") {
-      query = `
-        SELECT *, 'ctdecks' AS tableName FROM ctdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
-        UNION ALL
-        SELECT *, 'bcdecks' AS tableName FROM bcdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
-      `;
-      [rows] = await db.query(query, [normalizedName, normalizedName]);
-    } 
-    // check for hg/SB
-    else if (heroId === "1100170925208502282") {
-      query = `SELECT *, 'hgdecks' AS tableName FROM hgdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?
-        UNION ALL
-        SELECT *, 'sbdecks' AS tableName FROM sbdecks WHERE LOWER(REPLACE(name, ' ', '')) = ?`;
-      [rows] = await db.query(query, [normalizedName, normalizedName]);
+      [rows] = await db.query(
+        `SELECT * FROM tbot_decks
+         WHERE LOWER(REPLACE(name, ' ', '')) = ?
+           AND LOWER(side) = 'plants'`,
+        [normalizedName]
+      );
+    } else if (heroId === "1100170925208502282") {
+      [rows] = await db.query(
+        `SELECT * FROM tbot_decks
+         WHERE LOWER(REPLACE(name, ' ', '')) = ?
+           AND LOWER(side) = 'zombies'`,
+        [normalizedName]
+      );
+    } else {
+      [rows] = await db.query(
+        `SELECT * FROM tbot_decks
+         WHERE LOWER(hero) = LOWER(?)
+           AND LOWER(REPLACE(name, ' ', '')) = ?
+         LIMIT 1`,
+        [heroName, normalizedName]
+      );
     }
-    else {
-    [rows] = await db.query(`SELECT *, '${tableName}' AS tableName FROM ${tableName} WHERE LOWER(REPLACE(name, ' ', '')) = ?`, [normalizedName]);
-    }
-    
+
     if (rows.length === 0) {
       return interaction.editReply({
         content:
@@ -249,9 +213,9 @@ module.exports = {
       });
     }
     const deckRow = rows[0];
-    const resolvedTableName = deckRow.tableName || tableName;
+    const resolvedTableName = "tbot_decks";
     const description = interaction.options.getString("description");
-    const decktype = interaction.options.getString("deck_type");
+    const decktype = interaction.options.getString("category");
     const deckarchetype = interaction.options.getString("deck_archetype");
     const image = interaction.options.getAttachment("image");
     const deckcost = interaction.options.getInteger("deck_cost");
@@ -329,7 +293,7 @@ module.exports = {
     ];
     if (decktype) {
       fields.push({
-        name: "Deck Type",
+        name: "Category",
         value: `**__${decktype}__**`,
         inline: true,
       });

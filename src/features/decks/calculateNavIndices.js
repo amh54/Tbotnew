@@ -1,20 +1,19 @@
-function calculateNavIndices(index, listLength) {
-  if (index === 0) {
+function calculateNavIndices(currentIndex, listLength) {
+  if (listLength <= 1) {
     return {
-      prevIndex: 'list',
-      nextIndex: listLength > 1 ? 1 : 'list'
-    };
-  } else if (index === listLength - 1) {
-    return {
-      prevIndex: index - 1,
-      nextIndex: 'list'
-    };
-  } else {
-    return {
-      prevIndex: index - 1,
-      nextIndex: index + 1
+      prevIndex: 0,
+      nextIndex: 0,
     };
   }
+
+  const prevIndex = currentIndex <= 0 ? listLength - 1 : currentIndex - 1;
+
+  const nextIndex = currentIndex >= listLength - 1 ? 0 : currentIndex + 1;
+
+  return {
+    prevIndex,
+    nextIndex,
+  };
 }
 
 module.exports = calculateNavIndices;

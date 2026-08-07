@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+
 /**
  * @description Creates a category embed for a hero's decks
  * @param {*} hero the hero name
@@ -14,16 +15,16 @@ function createCategoryEmbed(hero, categoryColor, categoryName, deckNames, total
   
   // Map category names to display names
   const categoryDisplayNames = {
-    "comp": "Competitive",
-    "competitive": "Competitive",
-    "budget": "Budget",
-    "ladder": "Ladder", 
-    "meme": "Meme",
-    "aggro": "Aggro",
-    "combo": "Combo",
-    "control": "Control",
-    "midrange": "Midrange",
-    "tempo": "Tempo"
+    comp: "Competitive",
+    competitive: "Competitive",
+    budget: "Budget",
+    ladder: "Ladder",
+    meme: "Meme",
+    aggro: "Aggro",
+    combo: "Combo",
+    control: "Control",
+    midrange: "Midrange",
+    tempo: "Tempo",
   };
 
   // Get the proper display name
@@ -33,16 +34,16 @@ function createCategoryEmbed(hero, categoryColor, categoryName, deckNames, total
   const formattedDeckNames = (Array.isArray(deckNames) ? deckNames : [])
     .map((name) => {
       // Split the name to separate deck name from hero name
-      const parts = name.split('(');
+      const parts = name.split("(");
       if (parts.length === 2) {
         const deckName = parts[0].trim();
-        const heroName = parts[1].replace(')', '').trim();
+        const heroName = parts[1].replace(")", "").trim();
         // Capitalize hero name and bold the deck name
         const capitalizedHero = heroName.charAt(0).toUpperCase() + heroName.slice(1);
         return `**${deckName} (${capitalizedHero})**`;
       } else {
         // Fallback for names without hero in parentheses
-        return `**${name.toLowerCase().replaceAll(/\s+/g, "")}**`;
+        return `**${name.toLowerCase().replaceAll(/\s+/g, "") }**`;
       }
     })
     .join("\n");
@@ -51,13 +52,13 @@ function createCategoryEmbed(hero, categoryColor, categoryName, deckNames, total
     
   return new EmbedBuilder()
     .setTitle(isAll ? `${hero} Decks` : `${hero} ${displayName} Decks`)
+    .setThumbnail(thumbnail)
+    .setColor(categoryColor)
     .setDescription(
       isAll
         ? `All ${hero} decks in Tbot are:\n${description}`
         : `My ${displayName} ${hero} decks are:\n${description}`
     )
-    .setThumbnail(thumbnail)
-    .setColor(categoryColor)
     .setFooter({
       text: isAll
         ? `${hero} has ${total} total decks in Tbot\nPlease click on the buttons below to navigate through the decks.`

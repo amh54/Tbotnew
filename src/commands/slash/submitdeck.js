@@ -26,7 +26,7 @@ module.exports = {
         {name: 'Midrange Tempo', value: 'Midrange Tempo'}
       ))
           .addStringOption(option =>
-      option.setName('deck_type').setDescription('The type of deck it is').setRequired(true)
+      option.setName('category').setDescription('The type of deck it is').setRequired(true)
       .addChoices(
         {name: 'Budget', value: 'Budget'},
         { name: 'Competitive', value: 'Competitive'},
@@ -63,7 +63,7 @@ module.exports = {
   async execute(interaction) {
     const name = interaction.options.getString('name');
     const description = interaction.options.getString('description');
-    const decktype = interaction.options.getString('deck_type');
+    const decktype = interaction.options.getString('category');
     const deckarchetype = interaction.options.getString('deck_archetype');
     const image = interaction.options.getAttachment('image');
     const deckcost = interaction.options.getInteger('deck_cost');
@@ -125,7 +125,7 @@ module.exports = {
       return interaction.reply({ content: '❌ Forum channel not found or invalid.', flags: MessageFlags.Ephemeral });
     }
     const fields = [
-  { name: 'Deck Type', value: `**__${decktype}__**`, inline: true },
+  { name: 'Category', value: `**__${decktype}__**`, inline: true },
   { name: 'Deck Archetype', value: `**__${deckarchetype}__**`, inline: true },
   { name: 'Deck Cost', value: `${deckcost.toString()}<:spar:1057791557387956274>`, inline: true },
 ];

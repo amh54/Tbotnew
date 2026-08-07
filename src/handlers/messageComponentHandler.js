@@ -1,6 +1,9 @@
 const { ModalBuilder, TextInputBuilder, ActionRowBuilder, TextInputStyle, MessageFlags } = require("discord.js");
 const { handleCardInfo } = require("./cardInfoHandler.js");
-const { handleDetectDecks } = require("./detectDecksHandler.js");
+const {
+  handleDetectDecks,
+  handleDetectDecksNavigation,
+} = require("./detectDecksHandler.js");
 const { handleDeckBuilderCategory } = require("./deckBuilderHandler.js");
 const { 
   handleHeroHelp, 
@@ -24,7 +27,15 @@ async function handleMessageComponent(interaction, db, client) {
       const handled = await handleDetectDecks(interaction, db);
       if (handled) return;
     }
-    
+
+    if (
+      customId.startsWith("deckcat_") ||
+      customId.startsWith("decknav_") ||
+      customId.startsWith("decklist_")
+    ) {
+      return await handleDetectDecksNavigation(interaction, interaction.message.id, interaction.client);
+    }
+
     if (customId.startsWith("deckbuildercat_")) {
       return await handleDeckBuilderCategory(interaction);
     }

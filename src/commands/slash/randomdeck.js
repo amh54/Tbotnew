@@ -1,178 +1,102 @@
-const {EmbedBuilder, SlashCommandBuilder, MessageFlags} = require('discord.js');
-let db;
+const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js");
+const buildDeckFooter = require("../../features/decks/buildDeckFooter.js");
+
+const HERO_CHOICES = [
+  { name: "Beta-Carrotina", value: "Beta-Carrotina" },
+  { name: "Captain Combustible", value: "Captain Combustible" },
+  { name: "Chompzilla", value: "Chompzilla" },
+  { name: "Citron", value: "Citron" },
+  { name: "Grass Knuckles", value: "Grass Knuckles" },
+  { name: "Green Shadow", value: "Green Shadow" },
+  { name: "Night Cap", value: "Night Cap" },
+  { name: "Rose", value: "Rose" },
+  { name: "Solar Flare", value: "Solar Flare" },
+  { name: "Spudow", value: "Spudow" },
+  { name: "Wall-Knight", value: "Wall-Knight" },
+  { name: "Brain Freeze", value: "Brain Freeze" },
+  { name: "Electric Boogaloo", value: "Electric Boogaloo" },
+  { name: "Huge-Gigantacus", value: "Huge-Gigantus" },
+  { name: "Super Brainz", value: "Super Brainz" },
+  { name: "Impfinity", value: "Impfinity" },
+  { name: "Immorticia", value: "Immorticia" },
+  { name: "Neptuna", value: "Neptuna" },
+  { name: "Professor Brainstorm", value: "Professor Brainstorm" },
+  { name: "Rustbolt", value: "Rustbolt" },
+  { name: "The Smash", value: "The Smash" },
+  { name: "Z-Mech", value: "Z-Mech" }
+];
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('randomdeck')
-    .setDescription('Get a random deck from the Tbot database')
-    .addStringOption( option => option.setName('hero').setDescription('The hero of the wheel deck').addChoices(
-        {name: "Beta Carrotina", value: "Beta Carrotina"},
-        { name: "Captain Combustible", value: "Captain Combustible"},
-        { name: "Chompzilla", value: "Chompzilla"}, 
-        { name: "Citron", value: "Citron"}, 
-        {name: "Grass Knuckles", value: "Grass Knuckles"}, 
-        {name: "Green Shadow", value: "Green Shadow"},
-        {name: "Night Cap", value: "Night Cap"},
-        {name: "Rose", value: "Rose"},
-        {name: "Solar Flare", value: "Solar Flare"},
-        {name: "Spudow", value: "Spudow"}, 
-        {name: "Wall Knight", value: "Wall Knight"}, 
-        {name: "Brain Freeze", value: "Brain Freeze"}, 
-        {name: "Electric Boogaloo", value: "Electric Boogaloo"},
-        {name: "Huge Giganticus", value: "Huge Giganticus"},
-        {name: "Super Brainz", value: "Super Brainz"},
-        {name: "Impfinity", value: "Impfinity"}, 
-        {name: "Immorticia", value: "Immorticia"}, 
-        {name: "Neptuna", value: "Neptuna"}, 
-        {name: "Rustbolt", value: "Rustbolt"}, 
-        {name: "Professor Brainstorm", value: "Professor Brainstorm"}, 
-        {name: "Smash", value: "Smash"}, 
-        {name: "Zmech", value: "Zmech"},
-        {name: "Plants", value: "Plants"},
-        {name: "Zombies", value: "Zombies"}, 
-        {name: "na", value: "na"}
-      ).setRequired(true)),
+    .setName("randomdeck")
+    .setDescription("Get a random deck from the Tbot database")
+    .addStringOption((option) =>
+      option
+        .setName("hero")
+        .setDescription("The hero or side to get a random deck from")
+        .addChoices(
+          ...HERO_CHOICES.map((choice) => choice),
+          { name: "Plants", value: "Plants" },
+          { name: "Zombies", value: "Zombies" },
+          { name: "Any", value: "na" }
+        )
+        .setRequired(true)
+    ),
+
   async execute(interaction) {
-    if (!db) {
-      db = require("../../../index.js");
-    }
-    const heroInput = interaction.options.getString('hero');
+    const db = require("../../../index.js");
+    const heroInput = interaction.options.getString("hero");
 
-    // Helper function to get a deck and reply, avoiding repeated code
-    const getAndSendRandomDeck = async (query) => {
-      try {
-        const [result] = await db.query(query);
+    try {
+      const heroChoice = HERO_CHOICES.find((choice) => choice.value === heroInput);
+      let where = "COALESCE(category, '') NOT LIKE ?";
+      const params = ["%budget%"];
 
-        if (!result || result.length === 0 || !result[0]) {
-          throw new Error("No decks found in the database for this category.");
-        }
-        const randomRow = result[Math.floor(Math.random() * result.length)];
-        const deck = result
-  .map(row => row.image)
-  .filter(
-    value =>
-      typeof value === 'string' &&
-      (value.includes(".png") || value.includes(".jpg") || value.includes(".jpeg") || value.includes(".webp")) &&
-      !value.includes("budget")
-  );
-        for (const key in result[0]) {
-          const value = result[0][key];
-          if (
-            typeof value === 'string' &&
-            (value.includes(".png") || value.includes(".jpg") || value.includes(".jpeg") || value.includes(".webp")) &&
-            !value.includes("budget")
-          ) {
-            deck.push(value);
-          }
-        }
+      if (heroInput === "Plants" || heroInput === "Zombies") {
+        where += " AND LOWER(side) = LOWER(?)";
+        params.push(heroInput);
+      } else if (heroInput !== "na") {
+        const heroName = heroChoice?.value || heroInput;
+        where += " AND LOWER(hero) = LOWER(?)";
+        params.push(heroName);
+      }
 
-        if (deck.length === 0) {
-          throw new Error("No valid deck images found in the result.");
-        }
+      const [rows] = await db.query(
+        `SELECT * FROM tbot_decks WHERE ${where}`,
+        params
+      );
 
-        const embed = new EmbedBuilder()
-          .setTitle(randomRow.name)
-          .setDescription(randomRow.description)
-          .setColor("Random")
-          .addFields({
-            name: "Deck Type",
-            value: `**__${randomRow.type}__**`,
-            inline: true,
-          }, {
-            name: "Archetype",
-            value: `**__${randomRow.archetype}__**`,
-            inline: true,
-          }, {
-            name: "Deck Cost",
-            value: `${randomRow.cost.toString()}<:spar:1057791557387956274>`,
-            inline: true,
-          })
-          .setFooter({text: randomRow.creator})
-          .setImage(randomRow.image);
-
-        await interaction.reply({
-          embeds: [embed],
-          flags: MessageFlags.Ephemeral,
-        });
-      } catch (err) {
-        console.error(err);
-        await interaction.reply({
+      if (!rows?.length) {
+        return interaction.reply({
           content: "Oops, something went wrong or no decks were found. Please try again later.",
-          flags: MessageFlags.Ephemeral,
+          flags: MessageFlags.Ephemeral
         });
       }
-    };
 
-    const heroDeckTables = {
-      "Beta Carrotina": "bcdecks", "Citron": "ctdecks", "Captain Combustible": "ccdecks",
-      "Chompzilla": "czdecks", "Grass Knuckles": "gkdecks", "Green Shadow": "gsdecks",
-      "Night Cap": "ncdecks", "Rose": "rodecks", "Solar Flare": "sfdecks",
-      "Spudow": "spdecks", "Wall Knight": "wkdecks", "Brain Freeze": "bfdecks",
-      "Electric Boogaloo": "ebdecks", "Huge Giganticus": "hgdecks", "Impfinity": "ifdecks",
-      "Immorticia": "imdecks", "Neptuna": "ntdecks", "Professor Brainstorm": "pbdecks",
-      "Rustbolt": "rbdecks", "Smash": "smdecks", "Zmech": "zmdecks", "Super Brainz": "sbdecks",
-    };
-    const tableName = heroDeckTables[heroInput];
+      const randomRow = rows[Math.floor(Math.random() * rows.length)];
+      const embed = new EmbedBuilder()
+        .setTitle(randomRow.name || "Unknown")
+        .setDescription(randomRow.description || "")
+        .setColor("Random")
+        .addFields(
+          { name: "Category", value: `**__${randomRow.category || randomRow.type || "N/A"}__**`, inline: true },
+          { name: "Archetype", value: `**__${randomRow.archetype || "N/A"}__**`, inline: true },
+          { name: "Deck Cost", value: randomRow.cost ? `${randomRow.cost}<:spar:1057791557387956274>` : "**__N/A__**", inline: true }
+        );
 
-    if (heroInput === "na") {
-      const query = `SELECT * FROM sbdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ccdecks where type NOT LIKE '%budget%'
-      union all SELECT * from sfdecks where type NOT LIKE '%budget%'
-      union all SELECT * from rodecks where type NOT LIKE '%budget%'
-      union all SELECT * from gsdecks where type NOT LIKE '%budget%'
-      union all SELECT * from wkdecks where type NOT LIKE '%budget%'
-      union all SELECT * from czdecks where type NOT LIKE '%budget%'
-      union all SELECT * from spdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ctdecks where type NOT LIKE '%budget%'
-      union all SELECT * from bcdecks where type NOT LIKE '%budget%'
-      union all SELECT * from gkdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ncdecks where type NOT LIKE '%budget%'
-      union all SELECT * from hgdecks where type NOT LIKE '%budget%'
-      union all SELECT * from zmdecks where type NOT LIKE '%budget%'
-      union all SELECT * from smdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ifdecks where type NOT LIKE '%budget%'
-      union all SELECT * from rbdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ebdecks where type NOT LIKE '%budget%'
-      union all SELECT * from bfdecks where type NOT LIKE '%budget%'
-      union all SELECT * from pbdecks where type NOT LIKE '%budget%'
-      union all SELECT * from imdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ntdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query);
-    } else if (heroInput === "Plants") {
-      const query = `SELECT * from ccdecks where type NOT LIKE '%budget%' 
-      union all SELECT * from sfdecks where type NOT LIKE '%budget%'
-      union all SELECT * from rodecks where type NOT LIKE '%budget%'
-      union all SELECT * from gsdecks where type NOT LIKE '%budget%'
-      union all SELECT * from wkdecks where type NOT LIKE '%budget%'
-      union all SELECT * from czdecks where type NOT LIKE '%budget%'
-      union all SELECT * from spdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ctdecks where type NOT LIKE '%budget%'
-      union all SELECT * from bcdecks where type NOT LIKE '%budget%'
-      union all SELECT * from gkdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ncdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query);
-    } else if (heroInput === "Zombies") {
-      const query = `SELECT * FROM sbdecks where type NOT LIKE '%budget%' 
-      union all SELECT * from hgdecks where type NOT LIKE '%budget%' 
-      union all SELECT * from zmdecks where type NOT LIKE '%budget%'
-      union all SELECT * from smdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ifdecks where type NOT LIKE '%budget%'
-      union all SELECT * from rbdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ebdecks where type NOT LIKE '%budget%'
-      union all SELECT * from bfdecks where type NOT LIKE '%budget%'
-      union all SELECT * from pbdecks where type NOT LIKE '%budget%'
-      union all SELECT * from imdecks where type NOT LIKE '%budget%'
-      union all SELECT * from ntdecks where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query);
-    } else if (tableName) {
-      // This is now the final case for a valid hero
-      const query = `SELECT * FROM ${tableName} where type NOT LIKE '%budget%'`;
-      await getAndSendRandomDeck(query);
-    } else {
-      // This handles any other invalid input
-      await interaction.reply({
-        content: "Invalid hero name. Please try again.",
-        flags: MessageFlags.Ephemeral,
+      const footer = buildDeckFooter(randomRow);
+      if (footer) embed.setFooter({ text: footer });
+
+      if (randomRow.image?.startsWith("http")) {
+        embed.setImage(randomRow.image);
+      }
+
+      return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+    } catch (error) {
+      console.error(error);
+      return interaction.reply({
+        content: "Oops, something went wrong or no decks were found. Please try again later.",
+        flags: MessageFlags.Ephemeral
       });
     }
-  },
+  }
 };

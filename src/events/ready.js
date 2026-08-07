@@ -124,29 +124,8 @@ function getSecureRandomIndex(length) {
 async function updateDeckData(client, db) {
   try {
     console.log('Updating deck data...');
-    const [rows] = await db.query(`
-        select name FROM sbdecks    
-        union all select name from ccdecks 
-        union all select name from sfdecks 
-        union all select name from rodecks 
-        union all select name from gsdecks 
-        union all select name from wkdecks 
-        union all select name from czdecks 
-        union all select name from spdecks 
-        union all select name from ctdecks 
-        union all select name from bcdecks 
-        union all select name from gkdecks 
-        union all select name from ncdecks 
-        union all select name from hgdecks 
-        union all select name from zmdecks 
-        union all select name from smdecks 
-        union all select name from ifdecks 
-        union all select name from rbdecks 
-        union all select name from ebdecks 
-        union all select name from bfdecks 
-        union all select name from pbdecks 
-        union all select name from imdecks
-        union all select name from ntdecks`);
+    const [rows] = await db.query(`SELECT name FROM tbot_decks ORDER BY name COLLATE utf8mb4_general_ci ASC`);
+
     
     client.deckData = rows;
     console.log(`Deck data updated: ${rows.length} decks`);

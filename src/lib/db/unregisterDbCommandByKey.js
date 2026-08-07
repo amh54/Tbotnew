@@ -45,7 +45,7 @@ async function unregisterDbCommandByKey(key, options = {}) {
   const isManuallyDeleted = globalThis.manuallyDeletedDecks?.has(key);
   if (isDeck && !deckMovedToNewId && !isManuallyDeleted && info.rowData && tableConfig && dbTableColors) {
     // Use hero-specific thread channel instead of general notification channel
-    const threadChannelId = heroDeckThreadMap[tableConfig.table];
+    const threadChannelId = heroDeckThreadMap[tableConfig.table] || heroDeckThreadMap[info.rowData?.hero];
     if (threadChannelId) {
       await sendDeckNotification(client, threadChannelId, info.rowData, tableConfig, dbTableColors, { notificationType: 'delete' });
     }

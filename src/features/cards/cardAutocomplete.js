@@ -85,7 +85,10 @@ async function getCardAutocompleteResults(db, focusedValue) {
 
 async function resolveCardName(db, input) {
   const [rows] = await db.query(cardQuery);
-  const entries = buildAliasEntries(rows);
+  const entries = [
+    ...buildAliasEntries(rows),
+    ...buildNameEntries(rows),
+  ];
   const search = normalize(input);
   const match = entries.find((entry) => entry.key === search);
   return match ? match.value : null;

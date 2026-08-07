@@ -9,57 +9,32 @@ const buildDeckEmbed = require("../decks/buildDeckEmbed");
 const buildNavRow = require("../decks/buildNavRow");
 
 const HERO_MAP = {
-  bcdecks: "Beta-Carrotina",
-  ccdecks: "Captain Combustible",
-  ctdecks: "Citron",
-  czdecks: "Chompzilla",
-  gkdecks: "Grass Knuckles",
-  gsdecks: "Green Shadow",
-  ncdecks: "Night Cap",
-  rodecks: "Rose",
-  sfdecks: "Solar Flare",
-  spdecks: "Spudow",
-  wkdecks: "Wall Knight",
-  bfdecks: "Brain Freeze",
-  ebdecks: "Electric Boogaloo",
-  hgdecks: "Huge-Gigantacus",
-  ifdecks: "Impfinity",
-  imdecks: "Immorticia",
-  ntdecks: "Neptuna",
-  pbdecks: "Professor Brainstorm",
-  rbdecks: "Rustbolt",
-  sbdecks: "Super Brainz",
-  smdecks: "The Smash",
-  zmdecks: "Z-Mech",
+  "Beta-Carrotina": "Beta-Carrotina",
+  "Captain Combustible": "Captain Combustible",
+  "Citron": "Citron",
+  "Chompzilla": "Chompzilla",
+  "Grass Knuckles": "Grass Knuckles",
+  "Green Shadow": "Green Shadow",
+  "Night Cap": "Night Cap",
+  "Rose": "Rose",
+  "Solar Flare": "Solar Flare",
+  "Spudow": "Spudow",
+  "Wall-Knight": "Wall-Knight",
+  "Brain Freeze": "Brain Freeze",
+  "Electric Boogaloo": "Electric Boogaloo",
+  "Huge-Gigantacus": "Huge-Gigantacus",
+  "Impfinity": "Impfinity",
+  "Immorticia": "Immorticia",
+  "Neptuna": "Neptuna",
+  "Professor Brainstorm": "Professor Brainstorm",
+  "Rustbolt": "Rustbolt",
+  "Super Brainz": "Super Brainz",
+  "The Smash": "The Smash",
+  "Z-Mech": "Z-Mech"
 };
 
-const PLANT_TABLES = [
-  "bcdecks",
-  "ccdecks",
-  "ctdecks",
-  "czdecks",
-  "gkdecks",
-  "gsdecks",
-  "ncdecks",
-  "rodecks",
-  "sfdecks",
-  "spdecks",
-  "wkdecks",
-];
-
-const ZOMBIE_TABLES = [
-  "bfdecks",
-  "ebdecks",
-  "hgdecks",
-  "ifdecks",
-  "imdecks",
-  "ntdecks",
-  "pbdecks",
-  "rbdecks",
-  "sbdecks",
-  "smdecks",
-  "zmdecks",
-];
+const PLANT_SIDE = "Plants";
+const ZOMBIE_SIDE = "Zombies";
 
 const CATEGORIES = [
   "all",
@@ -87,34 +62,42 @@ function normalize(value) {
   return value.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
 }
 
-async function fetchDecksFromTable(db, table, type) {
+async function fetchDecksFromSide(db, side) {
   try {
     const [rows] = await db.query(
-      `SELECT * FROM ${table} ORDER BY name COLLATE utf8mb4_general_ci ASC`
+      `SELECT * FROM tbot_decks
+       WHERE LOWER(side) = LOWER(?)
+       ORDER BY name COLLATE utf8mb4_general_ci ASC`,
+      [side]
     );
 
     return (rows || []).map((row) => {
-      const rawType = (row.type || "").toString();
+      const rawCategory = (row.category || row.type || "N/A").toString();
       const rawArch = (row.archetype || "").toString();
       return {
         id: row.deckID ?? null,
         name: row.name ?? row.deckID ?? "Unnamed",
-        type: rawType,
+        category: rawCategory,
         archetype: rawArch,
-        cost: row.cost ?? row.deckcost ?? "",
-        typeNorm: normalize(rawType),
+        cost: row.cost ?? "",
+        categoryNorm: normalize(rawCategory),
         archetypeNorm: normalize(rawArch),
         description: row.description ?? "",
         image: row.image ?? null,
         creator: row.creator ?? "",
+        suggested_date: row.suggested_date ?? "",
+        updated_date: row.updated_date ?? "",
+        inspiration: row.inspiration ?? "",
+        optimization: row.optimization ?? "",
         raw: row,
-        deckType: type,
-        hero: getHeroFromTable(table),
-        table,
+        deckType: side === PLANT_SIDE ? "plant" : "zombie",
+        hero: row.hero || "Unknown",
+        side: row.side || side,
+        table: "tbot_decks",
       };
     });
   } catch (err) {
-    console.error(`Error querying table ${table}:`, err);
+    console.error(`Error querying tbot_decks for ${side}:`, err);
     return [];
   }
 }
@@ -123,12 +106,12 @@ function matchesCategory(deck, category) {
   if (category === "all") return true;
   if (category === "comp") {
     return (
-      deck.typeNorm.includes("competitive") || deck.typeNorm.includes("comp")
+      deck.categoryNorm.includes("competitive") || deck.categoryNorm.includes("comp")
     );
   }
-  if (category === "budget") return deck.typeNorm.includes("budget");
-  if (category === "ladder") return deck.typeNorm.includes("ladder");
-  if (category === "meme") return deck.typeNorm.includes("meme");
+  if (category === "budget") return deck.categoryNorm.includes("budget");
+  if (category === "ladder") return deck.categoryNorm.includes("ladder");
+  if (category === "meme") return deck.categoryNorm.includes("meme");
   if (category === "aggro") return deck.archetypeNorm.includes("aggro");
   if (category === "combo") return deck.archetypeNorm.includes("combo");
   if (category === "control") return deck.archetypeNorm.includes("control");
@@ -231,20 +214,10 @@ async function sendInteractionReply(interaction, payload) {
 
 async function runHelpDb(interaction, selectedType) {
   const db = interaction.client.db || require("../../../index.js");
-  const plantPromises = PLANT_TABLES.map((table) =>
-    fetchDecksFromTable(db, table, "plant")
-  );
-  const zombiePromises = ZOMBIE_TABLES.map((table) =>
-    fetchDecksFromTable(db, table, "zombie")
-  );
-
-  const [plantResults, zombieResults] = await Promise.all([
-    Promise.all(plantPromises),
-    Promise.all(zombiePromises),
+  const [plantDecks, zombieDecks] = await Promise.all([
+    fetchDecksFromSide(db, PLANT_SIDE),
+    fetchDecksFromSide(db, ZOMBIE_SIDE),
   ]);
-
-  const plantDecks = plantResults.flat();
-  const zombieDecks = zombieResults.flat();
   const deckLists = buildDeckLists(plantDecks, zombieDecks);
   const categoryEmbeds = buildCategoryEmbeds(deckLists);
 
