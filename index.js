@@ -35,7 +35,7 @@ const dbPool = mysql
     password: password,
     database: database,
     waitForConnections: true,
-    connectionLimit: 1,
+    connectionLimit: 10,
     queueLimit: 0,
     connectTimeout: 10000,
     idleTimeout: 5000, 
