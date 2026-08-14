@@ -3,7 +3,6 @@ COPYRIGHT (C) 2025 Tbone, Tbonegaming18@gmail.com All rights reserved.
 This project is about the Plants vs Zombies Heroes card game 
 and showcases Unique and Viable opitimized decks for the card game
 Author: Tbone Gaming 
-        Tbonegaming18@gmail.com
 */
 const {
   token,
@@ -39,7 +38,7 @@ const dbPool = mysql
     connectionLimit: 1,
     queueLimit: 0,
     connectTimeout: 10000,
-    idleTimeout: 60000,
+    idleTimeout: 5000, 
   })
   .promise();
 
