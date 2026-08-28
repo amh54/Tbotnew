@@ -147,7 +147,7 @@ module.exports = {
             deck.suggested_date || null,
           updated_date:
             deck.updated_date || null,
-          table: "tbot_decks",
+          table: "web_decks",
         }));
 
       if (allDecks.length === 0) {

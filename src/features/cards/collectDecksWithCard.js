@@ -46,7 +46,7 @@ function buildDeckSummary(row) {
     updated_date: row.updated_date ?? "",
     hero: row.hero ?? "",
     side: row.side ?? "",
-    table: "tbot_decks",
+    table: "web_decks",
     raw: row,
   };
 }

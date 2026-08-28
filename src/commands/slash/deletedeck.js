@@ -146,7 +146,7 @@ module.exports = {
             threadChannelId,
             deckData,
             {
-              table: "tbot_decks",
+              table: "web_decks",
             },
             dbTableColors,
             {
@@ -175,7 +175,7 @@ module.exports = {
       );
 
       return interaction.editReply(
-        `✅ Successfully deleted "${deckData.name}" from tbot_decks.`,
+        `✅ Successfully deleted "${deckData.name}" from web_decks.`,
       );
     } catch (error) {
       console.error("Error deleting deck:", error);

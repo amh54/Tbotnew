@@ -1,5 +1,5 @@
 const dbTableColors = {
-  tbot_decks: "Random",
+  web_decks: "Random",
   "Rustbolt": "Orange",
   "Z-Mech": "Purple",
   "Citron": "White",

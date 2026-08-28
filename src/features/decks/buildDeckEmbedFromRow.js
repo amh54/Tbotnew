@@ -2,7 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 const buildDeckFooter = require("./buildDeckFooter.js");
 
 /**
- * Builds a Discord deck embed from a tbot_decks row.
+ * Builds a Discord deck embed from a web_decks row.
  * The visual layout remains the same as the previous deck embeds.
  */
 function buildDeckEmbedFromRow(row, tableName = null, dbTableColors = {}) {
