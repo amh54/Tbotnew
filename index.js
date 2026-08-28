@@ -1,5 +1,5 @@
 /*
-COPYRIGHT (C) 2025 Tbone All rights reserved. 
+COPYRIGHT (C) 2026 Tbone All rights reserved. 
 This project is about the Plants vs Zombies Heroes card game 
 and showcases Unique and Viable opitimized decks for the card game
 Author: Tbone Gaming 
