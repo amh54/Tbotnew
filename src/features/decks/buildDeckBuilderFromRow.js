@@ -14,7 +14,7 @@ const createCategorySelectMenu = require("./createCategorySelectMenu.js");
 function buildDeckBuilderFromRow(deckbuilderRow, allDecks, client) {
   const name = deckbuilderRow.deckbuilder_name;
   const color = deckbuilderRow.color || "#FFC0CB";
-  const userId = deckbuilderRow.userID;
+  const userId = deckbuilderRow.userid;
   let thumb = null;
 
   try {

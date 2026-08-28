@@ -8,28 +8,37 @@ const {
   ButtonStyle,
   MessageFlags,
 } = require("discord.js");
+
 const axios = require("axios");
-const {validateDeckImage} = require('../../features/decks/validateDeckImage.js');
+
+const {
+  validateDeckImage,
+} = require("../../features/decks/validateDeckImage.js");
+
 const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow.js");
+
 const dbTableColors = require("../../lib/db/dbTableColors.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("submitdeckupdate")
     .setDescription("Submit an update to a PvZ Heroes decklist in Tbot")
+
     .addStringOption((option) =>
       option
         .setName("name")
         .setDescription("Name of the deck to update")
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     )
+
     .addIntegerOption((option) =>
       option
         .setName("deck_cost")
         .setDescription("The cost of the deck")
-        .setRequired(true)
+        .setRequired(true),
     )
+
     .addStringOption((option) =>
       option
         .setName("hero")
@@ -37,7 +46,7 @@ module.exports = {
         .addChoices(
           { name: "Captain Combustible", value: "1100172143603482786" },
           { name: "Chompzilla", value: "1100171601045106819" },
-          {name: "Beta-Carrotina", value: "1100171558263193700"},
+          { name: "Beta-Carrotina", value: "1100171558263193700" },
           { name: "Citron", value: "1100171558263193700" },
           { name: "Grass Knuckles", value: "1100171819148906628" },
           { name: "Green Shadow", value: "1100172254983241820" },
@@ -48,7 +57,7 @@ module.exports = {
           { name: "Wall Knight", value: "1100171712391295006" },
           { name: "Brain Freeze", value: "1100170721994477668" },
           { name: "Electric Boogaloo", value: "1100171042380578857" },
-          {name: "Super Brainz", value: "1100170925208502282"},
+          { name: "Super Brainz", value: "1100170925208502282" },
           { name: "Huge Gigantacus", value: "1100170925208502282" },
           { name: "Impfinity", value: "1100170791594762260" },
           { name: "Immorticia", value: "1100171253790285904" },
@@ -56,48 +65,53 @@ module.exports = {
           { name: "Rustbolt", value: "1100171459785150585" },
           { name: "Professor Brainstorm", value: "1100171115504078901" },
           { name: "Smash", value: "1100171177529446492" },
-          { name: "Zmech", value: "1100170981013729410" }
+          { name: "Zmech", value: "1100170981013729410" },
         )
-        .setRequired(true)
+        .setRequired(true),
     )
+
     .addStringOption((option) =>
       option
         .setName("deck_creator")
         .setDescription(
-          "Put creators name. feel free to add optimized by: your name if you want credits"
+          "Put creators name. feel free to add optimized by: your name if you want credits",
         )
-        .setRequired(true)
+        .setRequired(true),
     )
+
     .addAttachmentOption((option) =>
       option
         .setName("image")
         .setDescription("image of the decklist")
-        .setRequired(true)
+        .setRequired(true),
     )
+
     .addStringOption((option) =>
       option
         .setName("description")
         .setDescription("Short description of the deck (optional)")
-        .setRequired(false)
+        .setRequired(false),
     )
+
     .addStringOption((option) =>
       option
         .setName("deck_archetype")
         .setDescription("The archetype for the deck (optional)")
         .setRequired(false)
         .addChoices(
-          { name: 'Aggro', value: 'Aggro'},
-        { name: 'Control', value: 'Control'},
-        { name: 'Combo', value: 'Combo'},
-        { name: 'Midrange', value: 'Midrange'},
-        { name: "Tempo", value: 'Tempo'}, 
-        {name: 'Aggro Combo', value: 'Aggro Combo'},
-        {name: 'Combo Midrange', value: 'Combo Midrange'},
-        {name: 'Control Combo', value: 'Control Combo'},
-        {name: 'Combo Tempo', value: 'Combo Tempo'},
-        {name: 'Midrange Tempo', value: 'Midrange Tempo'}
-        )
+          { name: "Aggro", value: "Aggro" },
+          { name: "Control", value: "Control" },
+          { name: "Combo", value: "Combo" },
+          { name: "Midrange", value: "Midrange" },
+          { name: "Tempo", value: "Tempo" },
+          { name: "Aggro Combo", value: "Aggro Combo" },
+          { name: "Combo Midrange", value: "Combo Midrange" },
+          { name: "Control Combo", value: "Control Combo" },
+          { name: "Combo Tempo", value: "Combo Tempo" },
+          { name: "Midrange Tempo", value: "Midrange Tempo" },
+        ),
     )
+
     .addStringOption((option) =>
       option
         .setName("category")
@@ -107,136 +121,212 @@ module.exports = {
           { name: "Budget", value: "Budget" },
           { name: "Competitive", value: "Competitive" },
           { name: "Ladder", value: "Ladder" },
-          { name: "Meme", value: "Meme" }
-        )
+          { name: "Meme", value: "Meme" },
+        ),
     ),
+
   async autocomplete(interaction) {
     try {
       const db = require("../../../index.js");
+
       const focusedValue = interaction.options.getFocused();
-      const [rows] = await db.query(`SELECT name FROM tbot_decks ORDER BY name COLLATE utf8mb4_general_ci ASC`);
+
+      const result = await db.query(`
+        SELECT name
+        FROM web_decks
+        ORDER BY LOWER(name) ASC
+      `);
+
+      const rows = result.rows || [];
 
       const choices = [
-        ...new Set(rows.map((r) => r.name.toLowerCase().replaceAll(/\s+/g, "")))
+        ...new Set(
+          rows
+            .map((r) => r.name)
+            .filter(Boolean)
+            .map((name) => name.toLowerCase().replaceAll(/\s+/g, "")),
+        ),
       ].sort((a, b) => a.localeCompare(b));
+
       let filtered;
-     if (focusedValue) {
+
+      if (focusedValue) {
         filtered = choices
           .filter((choice) =>
-            choice.startsWith(focusedValue.toLowerCase().replaceAll(/\s+/g, ""))
+            choice.startsWith(
+              focusedValue.toLowerCase().replaceAll(/\s+/g, ""),
+            ),
           )
           .slice(0, 25);
       } else {
         filtered = choices.slice(0, 25);
       }
+
       await interaction.respond(
-        filtered.map((choice) => ({ name: choice, value: choice }))
+        filtered.map((choice) => ({
+          name: choice,
+          value: choice,
+        })),
       );
     } catch (err) {
       console.error("Autocomplete error:", err);
-      await interaction.respond([]);
+
+      try {
+        await interaction.respond([]);
+      } catch (respondError) {
+        console.error("Autocomplete fallback error:", respondError);
+      }
     }
   },
-  async execute(interaction) {
-    // Defer reply since validation may take time
-    await interaction.deferReply();
-    
-    const db = require("../../../index.js");
-        const heroDeckMap = {
-        "1100172143603482786": "Captain Combustible",
-        "1100171601045106819": "Chompzilla",
-        "1100171558263193700": "Citron/BC",
-        "1100171819148906628": "Grass Knuckles",
-        "1100172254983241820": "Green Shadow",
-        "1100171997167747172": "Night Cap",
-        "1100171855316406343": "Rose",
-        "1100171646557491220": "Solar Flare",
-        "1100171758256013412": "Spudow",
-        "1100171712391295006": "Wall-Knight",
-        "1100170721994477668": "Brain Freeze",
-        "1100171042380578857": "Electric Boogaloo",
-        "1100170925208502282": "Huge-Gigantacus/SB",
-        "1100170791594762260": "Impfinity",
-        "1100171253790285904": "Immorticia",
-        "1100170647050649620": "Neptuna",
-        "1100171459785150585": "Rustbolt",
-        "1100171115504078901": "Professor Brainstorm",
-        "1100171177529446492": "The Smash",
-        "1100170981013729410": "Z-Mech",
-      };
 
-      const heroId = interaction.options.getString("hero");
+  async execute(interaction) {
+    await interaction.deferReply();
+
+    const db = require("../../../index.js");
+
+    const heroDeckMap = {
+      "1100172143603482786": "Captain Combustible",
+      "1100171601045106819": "Chompzilla",
+      1100171558263193700: "Citron/BC",
+      "1100171819148906628": "Grass Knuckles",
+      "1100172254983241820": "Green Shadow",
+      "1100171997167747172": "Night Cap",
+      "1100171855316406343": "Rose",
+      "1100171646557491220": "Solar Flare",
+      "1100171758256013412": "Spudow",
+      "1100171712391295006": "Wall-Knight",
+      "1100170721994477668": "Brain Freeze",
+      "1100171042380578857": "Electric Boogaloo",
+      "1100170925208502282": "Huge-Gigantacus/SB",
+      "1100170791594762260": "Impfinity",
+      "1100171253790285904": "Immorticia",
+      "1100170647050649620": "Neptuna",
+      "1100171459785150585": "Rustbolt",
+      "1100171115504078901": "Professor Brainstorm",
+      "1100171177529446492": "The Smash",
+      "1100170981013729410": "Z-Mech",
+    };
+
+    const heroId = interaction.options.getString("hero");
     const tableName = heroDeckMap[heroId];
+
     const name = interaction.options.getString("name");
     const normalizedName = name.toLowerCase().replaceAll(/\s+/g, "");
-    
-    // Verify hero ID is valid
-    if (!tableName && heroId !== "1100171558263193700" && heroId !== "1100170925208502282") {
+
+    if (
+      !tableName &&
+      heroId !== "1100171558263193700" &&
+      heroId !== "1100170925208502282"
+    ) {
       return interaction.editReply({
         content: `❌ Invalid hero selection. Hero ID: ${heroId}`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
-    
+
     let rows;
     let heroName = heroDeckMap[heroId];
 
+    /*
+     * Citron / Beta-Carrotina share the same hero ID.
+     * Search the Plants side.
+     */
     if (heroId === "1100171558263193700") {
-      [rows] = await db.query(
-        `SELECT * FROM tbot_decks
-         WHERE LOWER(REPLACE(name, ' ', '')) = ?
-           AND LOWER(side) = 'plants'`,
-        [normalizedName]
+      const result = await db.query(
+        `
+          SELECT *
+          FROM web_decks
+          WHERE LOWER(REPLACE(name, ' ', '')) = $1
+            AND LOWER(side) = 'plants'
+        `,
+        [normalizedName],
       );
+
+      rows = result.rows || [];
     } else if (heroId === "1100170925208502282") {
-      [rows] = await db.query(
-        `SELECT * FROM tbot_decks
-         WHERE LOWER(REPLACE(name, ' ', '')) = ?
-           AND LOWER(side) = 'zombies'`,
-        [normalizedName]
+
+    /*
+     * Super Brainz / Huge-Gigantacus share the same hero ID.
+     * Search the Zombies side.
+     */
+      const result = await db.query(
+        `
+          SELECT *
+          FROM web_decks
+          WHERE LOWER(REPLACE(name, ' ', '')) = $1
+            AND LOWER(side) = 'zombies'
+        `,
+        [normalizedName],
       );
+
+      rows = result.rows || [];
     } else {
-      [rows] = await db.query(
-        `SELECT * FROM tbot_decks
-         WHERE LOWER(hero) = LOWER(?)
-           AND LOWER(REPLACE(name, ' ', '')) = ?
-         LIMIT 1`,
-        [heroName, normalizedName]
+
+    /*
+     * Normal hero lookup.
+     */
+      const result = await db.query(
+        `
+          SELECT *
+          FROM web_decks
+          WHERE LOWER(hero) = LOWER($1)
+            AND LOWER(REPLACE(name, ' ', '')) = $2
+          LIMIT 1
+        `,
+        [heroName, normalizedName],
       );
+
+      rows = result.rows || [];
     }
 
     if (rows.length === 0) {
       return interaction.editReply({
         content:
-        `❌ Invalid hero name. Please make sure the deck exists in the selected hero's commands by checking <@${interaction.client.id}> heroname.`,
-        flags: MessageFlags.Ephemeral
+          `❌ Invalid hero name. Please make sure the deck exists ` +
+          `in the selected hero's commands by checking ` +
+          `<@${interaction.client.id}> heroname.`,
+        flags: MessageFlags.Ephemeral,
       });
     }
+
     const deckRow = rows[0];
-    const resolvedTableName = "tbot_decks";
+
+    const resolvedTableName = "web_decks";
+
     const description = interaction.options.getString("description");
+
     const decktype = interaction.options.getString("category");
+
     const deckarchetype = interaction.options.getString("deck_archetype");
+
     const image = interaction.options.getAttachment("image");
+
     const deckcost = interaction.options.getInteger("deck_cost");
+
     const hero = interaction.options.getString("hero");
+
     const deckcreator = interaction.options.getString("deck_creator");
+
     const imageUrl = image.url;
 
-    // Validate the deck image
     console.log(`[updatedeck] Validating deck image for: ${name}`);
+
     const validation = await validateDeckImage(imageUrl);
-    
+
     if (!validation.isValid) {
       console.log(`[updatedeck] Validation failed:`, validation);
+
       return interaction.editReply({
-        content: `❌ **Invalid image detected!**\n\n` +
+        content:
+          `❌ **Invalid image detected!**\n\n` +
           `The uploaded image doesn't appear to be a PvZ Heroes deck screenshot.\n\n` +
           `Debug Info:\n` +
           `\`\`\`\n` +
-          `Flags: ${validation.flags?.join(', ') || 'none'}\n` +
-          `Critical Flags: ${validation.criticalFlags?.join(', ') || 'none'}\n` +
-          `Reason: ${validation.reason || 'unknown'}\n` +
+          `Flags: ${validation.flags?.join(", ") || "none"}\n` +
+          `Critical Flags: ${
+            validation.criticalFlags?.join(", ") || "none"
+          }\n` +
+          `Reason: ${validation.reason || "unknown"}\n` +
           `\`\`\`\n\n` +
           `Please ensure you're uploading:\n` +
           `• A full deck screenshot from PvZ Heroes (not cropped)\n` +
@@ -245,45 +335,65 @@ module.exports = {
           `• No annotations or overlays\n` +
           `• A clear, readable screenshot\n\n` +
           `If you believe this is an error, please contact <@625172218120372225>.`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     console.log(`[updatedeck] Validation passed for: ${name}`);
-    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
-    const buffer = Buffer.from(response.data, "utf-8");
-    const file = new AttachmentBuilder(buffer, { name: "deck.png" });
+
+    const response = await axios.get(imageUrl, {
+      responseType: "arraybuffer",
+    });
+
+    const buffer = Buffer.from(response.data);
+
+    const file = new AttachmentBuilder(buffer, {
+      name: "deck.png",
+    });
+
     const tbotServer = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setLabel("Tbot Server")
         .setStyle(ButtonStyle.Link)
-        .setURL("https://discord.gg/2NSwt96vmS")
+        .setURL("https://discord.gg/2NSwt96vmS"),
     );
+
     const editReplyResponse = await interaction.editReply({
-      content: `✅ Your deck update has  been submitted successfully! Please join the tbot server below if you haven't already to be notified of updates on your submission or of updates to the bot`,
+      content:
+        `✅ Your deck update has been submitted successfully! ` +
+        `Please join the tbot server below if you haven't already ` +
+        `to be notified of updates on your submission or of updates to the bot`,
       files: [file],
       components: [tbotServer],
       withResponse: true,
     });
-    const replyMessage = editReplyResponse.resource?.message ||
-      (typeof interaction.fetchReply === "function" ? await interaction.fetchReply() : null);
+
+    const replyMessage =
+      editReplyResponse.resource?.message ||
+      (typeof interaction.fetchReply === "function"
+        ? await interaction.fetchReply()
+        : null);
+
     if (!replyMessage) {
       return interaction.editReply({
         content: "❌ Could not fetch the submission message.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
+
     const permanentUrl = replyMessage.attachments.first().url;
+
     const forumChannel = interaction.client.channels.cache.get(
-      "1100160031128830104"
+      "1100160031128830104",
     );
 
-    if (!forumChannel || forumChannel?.type !== ChannelType.GuildForum) {
+    if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
       return interaction.editReply({
         content: "❌ Forum channel not found or invalid.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
+
     const fields = [
       {
         name: "Deck Cost",
@@ -291,34 +401,38 @@ module.exports = {
         inline: true,
       },
     ];
+
     if (decktype) {
       fields.push({
         name: "Category",
-        value: `**__${decktype}__**`,
+        value: `**___${decktype}___**`,
         inline: true,
       });
     }
+
     if (deckarchetype) {
       fields.push({
         name: "Deck Archetype",
-        value: `**__${deckarchetype}__**`,
+        value: `**___${deckarchetype}___**`,
         inline: true,
       });
     }
+
     const embed = new EmbedBuilder()
       .setTitle(`Update ${name}`)
-      .setDescription(description)
+      .setDescription(description || "")
       .addFields(fields)
       .setColor("Random")
       .setFooter({
-        text: `Created By ${deckcreator} | Submitted by ${interaction.user.tag}`,
+        text:
+          `Created By ${deckcreator} | ` +
+          `Submitted by ${interaction.user.tag}`,
       });
 
     if (image?.contentType?.startsWith("image/")) {
       embed.setImage(permanentUrl);
     }
 
-    // Create the thread in the forum
     const thread = await forumChannel.threads.create({
       name: `${name} needs an update`,
       message: {
@@ -326,14 +440,25 @@ module.exports = {
       },
       appliedTags: [hero],
     });
+
     const starterMessage = await thread.fetchStarterMessage();
+
     await starterMessage.pin();
+
     await starterMessage.react("<:upvote:1081953853903220876>");
+
     await starterMessage.react("<:downvote:1081953860534403102>");
-    const previousInfoEmbed = buildDeckEmbedFromRow(deckRow, resolvedTableName, dbTableColors);
+
+    const previousInfoEmbed = buildDeckEmbedFromRow(
+      deckRow,
+      resolvedTableName,
+      dbTableColors,
+    );
+
     const previousInfoMessage = await thread.send({
       embeds: [previousInfoEmbed],
     });
+
     await previousInfoMessage.pin();
   },
 };

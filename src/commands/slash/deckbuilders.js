@@ -21,7 +21,7 @@ module.exports = {
         .setName("name")
         .setDescription("Deckbuilder name")
         .setRequired(true)
-        .setAutocomplete(true),
+        .setAutocomplete(true)
     ),
 
   async autocomplete(interaction) {
@@ -30,12 +30,14 @@ module.exports = {
 
       const focusedValue = interaction.options.getFocused();
 
-      const results = await getDeckbuilderAutocompleteResults(db, focusedValue);
+      const results = await getDeckbuilderAutocompleteResults(
+        db,
+        focusedValue
+      );
 
       await interaction.respond(results);
     } catch (error) {
       console.error("Autocomplete error:", error);
-
       await interaction.respond([]);
     }
   },
@@ -45,20 +47,25 @@ module.exports = {
 
     const db = require("../../../index.js");
 
-    const deckbuilderInput = interaction.options.getString("name");
+    const deckbuilderInput =
+      interaction.options.getString("name");
 
     const deckbuilderName =
-      (await resolveDeckbuilderName(db, deckbuilderInput)) || deckbuilderInput;
+      (await resolveDeckbuilderName(
+        db,
+        deckbuilderInput
+      )) || deckbuilderInput;
 
     try {
-      const [builderRows] = await db.query(
+      // PostgreSQL: result.rows instead of MySQL [rows]
+      const { rows: builderRows } = await db.query(
         `
           SELECT *
-          FROM deckbuilders
-          WHERE deckbuilder_name = ?
+          FROM web_deckbuilders
+          WHERE deckbuilder_name = $1
           LIMIT 1
-          `,
-        [deckbuilderName],
+        `,
+        [deckbuilderName]
       );
 
       if (!builderRows || builderRows.length === 0) {
@@ -69,59 +76,79 @@ module.exports = {
 
       const deckbuilderRow = builderRows[0];
 
-      const searchNames = getDeckbuilderSearchNames(deckbuilderRow);
+      const searchNames =
+        getDeckbuilderSearchNames(deckbuilderRow);
 
-      const whereClause = searchNames
-        .map(
-          () =>
-            `
-      (
-        creator LIKE ?
-        OR optimization LIKE ?
-        OR inspiration LIKE ?
-      )
-      `,
-        )
-        .join(" OR ");
+      /*
+       * PostgreSQL uses $1, $2, etc.
+       *
+       * Each search name gets three parameters:
+       * creator
+       * optimization
+       * inspiration
+       */
+      const whereParts = [];
+      const params = [];
 
-      const params = searchNames.flatMap((name) => [
-        `%${name}%`,
-        `%${name}%`,
-        `%${name}%`,
-      ]);
+      searchNames.forEach((name) => {
+        const creatorParam = params.length + 1;
+        const optimizationParam = params.length + 2;
+        const inspirationParam = params.length + 3;
 
-      const [decks] = await db.query(
+        whereParts.push(`
+          (
+            creator ILIKE $${creatorParam}
+            OR optimization ILIKE $${optimizationParam}
+            OR inspiration ILIKE $${inspirationParam}
+          )
+        `);
+
+        const searchValue = `%${name}%`;
+
+        params.push(
+          searchValue,
+          searchValue,
+          searchValue
+        );
+      });
+
+      const whereClause = whereParts.join(" OR ");
+
+      const { rows: decks } = await db.query(
         `
           SELECT *
-          FROM tbot_decks
+          FROM web_decks
           WHERE ${whereClause}
-          ORDER BY name COLLATE utf8mb4_general_ci ASC
-          `,
-        params,
+          ORDER BY LOWER(name) ASC
+        `,
+        params
       );
-
 
       const allDecks = decks
         .filter((deck) => {
           const credits = `
-              ${deck.creator || ""}
-              ${deck.optimization || ""}
-              ${deck.inspiration || ""}
-            `;
-          return deckMatchesDeckbuilder(credits, deckbuilderRow);
-        })
+            ${deck.creator || ""}
+            ${deck.optimization || ""}
+            ${deck.inspiration || ""}
+          `;
 
+          return deckMatchesDeckbuilder(
+            credits,
+            deckbuilderRow
+          );
+        })
         .map((deck) => ({
           ...deck,
           category: deck.category,
           creator: deck.creator || "",
           inspiration: deck.inspiration || "",
           optimization: deck.optimization || "",
-          suggested_date: deck.suggested_date || null,
-          updated_date: deck.updated_date || null,
+          suggested_date:
+            deck.suggested_date || null,
+          updated_date:
+            deck.updated_date || null,
           table: "tbot_decks",
         }));
-
 
       if (allDecks.length === 0) {
         return interaction.editReply({
@@ -136,33 +163,39 @@ module.exports = {
         availableCategories,
         deckbuilderName: returnedDeckbuilderName,
         color,
-
         userId,
-      } = buildDeckBuilderFromRow(builderRows[0], allDecks, interaction.client);
+      } = buildDeckBuilderFromRow(
+        builderRows[0],
+        allDecks,
+        interaction.client
+      );
 
       let thumb = null;
 
       if (userId) {
         try {
-          const user = await interaction.client.users
-            .fetch(userId)
-            .catch(() => null);
+          const user =
+            await interaction.client.users
+              .fetch(userId)
+              .catch(() => null);
 
           if (user) {
             thumb = user.displayAvatarURL();
-
             embed.setThumbnail(thumb);
           }
         } catch (error) {
-          console.error("Error fetching deckbuilder avatar:", error);
+          console.error(
+            "Error fetching deckbuilder avatar:",
+            error
+          );
         }
       }
 
       const response = await interaction.editReply({
         embeds: [embed],
-
-        components: [new ActionRowBuilder().addComponents(select)],
-
+        components: [
+          new ActionRowBuilder().addComponents(select),
+        ],
         withResponse: true,
       });
 
@@ -191,9 +224,14 @@ module.exports = {
         thumb,
       });
     } catch (error) {
-      console.error("Error in deckbuilders command:", error);
+      console.error(
+        "Error in deckbuilders command:",
+        error
+      );
+
       return interaction.editReply({
-        content: "An error occurred while loading deckbuilder data.",
+        content:
+          "An error occurred while loading deckbuilder data.",
       });
     }
   },

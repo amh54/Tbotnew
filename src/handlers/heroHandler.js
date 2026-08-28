@@ -5,74 +5,108 @@ const {
   ButtonStyle,
   MessageFlags,
 } = require("discord.js");
+
 const createCategoryEmbed = require("../features/decks/createCategoryEmbed.js");
 const buildDeckEmbed = require("../features/decks/buildDeckEmbed.js");
 const categorizeHeroDecks = require("../features/heroes/categorizeHeroDecks.js");
 const createHeroSelectMenu = require("../features/heroes/createHeroSelectMenu.js");
 const buildNavigationRow = require("../features/decks/buildNavigationRow.js");
-const { commandToHeroMap, getHeroConfig } = require("../features/heroes/getHeroMappings.js");
+const {
+  commandToHeroMap,
+  getHeroConfig,
+} = require("../features/heroes/getHeroMappings.js");
 
 async function handleHeroHelp(interaction, db, client) {
   const heroCommand = interaction.customId.replace("herohelp_", "");
-  
+
   try {
     const heroName = commandToHeroMap[heroCommand];
     const heroConfig = getHeroConfig(heroCommand);
 
     if (!heroName || !heroConfig) {
       return await interaction.reply({
-        content: "Hero Data not found. Please try reclicking the button or resending command.",
-        flags: MessageFlags.Ephemeral
+        content:
+          "Hero Data not found. Please try reclicking the button or resending command.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    const [heroRows] = await db.query("SELECT * FROM herocommands WHERE heroname = ?", [heroName]);
+    const { rows: heroRows } = await db.query(
+      "SELECT * FROM herocommands WHERE heroname = $1",
+      [heroName]
+    );
+
     if (!heroRows || heroRows.length === 0) {
       return await interaction.reply({
         content: "Hero Data not found in database.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     const heroRow = heroRows[0];
-    const [decks] = await db.query(
-      `SELECT * FROM tbot_decks
-       WHERE LOWER(side) = LOWER(?)
-         AND LOWER(hero) = LOWER(?)
+
+    const { rows: decks } = await db.query(
+      `SELECT * FROM web_decks
+       WHERE LOWER(side) = LOWER($1)
+         AND LOWER(hero) = LOWER($2)
        ORDER BY name ASC`,
       [heroConfig.side, heroConfig.hero]
     );
-    
+
     if (!decks || decks.length === 0) {
       return await interaction.reply({
         content: `No ${heroName} decks found in the database.`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, "tbot_decks");
+    const {
+      normalized,
+      deckLists,
+      availableCategories,
+    } = categorizeHeroDecks(
+      decks,
+      heroName,
+      "web_decks"
+    );
 
     if (normalized.length === 1) {
-      const embed = buildDeckEmbed(normalized[0], heroRow.deck_color || "Blue");
+      const embed = buildDeckEmbed(
+        normalized[0],
+        heroRow.deck_color || "Blue"
+      );
+
       return await interaction.reply({
         embeds: [embed],
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    const select = createHeroSelectMenu(heroName, heroRow, availableCategories, deckLists, normalized.length);
-    
+    const select = createHeroSelectMenu(
+      heroName,
+      heroRow,
+      availableCategories,
+      deckLists,
+      normalized.length
+    );
+
     const initialEmbed = new EmbedBuilder()
       .setTitle(`${heroName} Deck Categories`)
       .setColor(heroRow.deck_color || "Blue")
-      .setDescription(`Select a category to view ${heroName} decks — ${heroName} has ${normalized.length} total decks.`)
+      .setDescription(
+        `Select a category to view ${heroName} decks — ${heroName} has ${normalized.length} total decks.`
+      )
       .setThumbnail(heroRow.thumbnail || null)
-      .setFooter({ text: "Use the select menu to choose a category" });
+      .setFooter({
+        text: "Use the select menu to choose a category",
+      });
 
     const response = await interaction.reply({
       embeds: [initialEmbed],
-      components: [new ActionRowBuilder().addComponents(select)],
-      flags: MessageFlags.Ephemeral
+      components: [
+        new ActionRowBuilder().addComponents(select),
+      ],
+      flags: MessageFlags.Ephemeral,
     });
 
     const responseMessage = await response.fetch();
@@ -80,49 +114,70 @@ async function handleHeroHelp(interaction, db, client) {
     if (!client.heroDecksData) {
       client.heroDecksData = new Map();
     }
+
     client.heroDecksData.set(responseMessage.id, {
       heroName,
       heroCommand,
       deckLists,
       availableCategories,
       categoryColor: heroRow.deck_color || "Blue",
-      thumbnailUrl: heroRow.thumbnail || null
+      thumbnailUrl: heroRow.thumbnail || null,
     });
-    console.log(`Stored hero decks data for message ID: ${responseMessage.id}`);
 
+    console.log(
+      `Stored hero decks data for message ID: ${responseMessage.id}`
+    );
   } catch (error) {
-    console.error("Error in hero help interaction:", error);
-    await interaction.reply({
-      content: "An error occurred while processing your request.",
-      flags: MessageFlags.Ephemeral
-    });
+    console.error(
+      "Error in hero help interaction:",
+      error
+    );
+
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.reply({
+        content:
+          "An error occurred while processing your request.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
   }
 }
 
-async function startHeroDecksByName(interaction, db, client, heroName) {
+async function startHeroDecksByName(
+  interaction,
+  db,
+  client,
+  heroName
+) {
   try {
     const heroConfig = getHeroConfig(heroName);
 
     if (!heroConfig) {
       return await interaction.reply({
-        content: "Hero Data not found. Please check the hero name and try again.",
-        flags: MessageFlags.Ephemeral
+        content:
+          "Hero Data not found. Please check the hero name and try again.",
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    const [heroRows] = await db.query("SELECT * FROM herocommands WHERE heroname = ?", [heroName]);
+    const { rows: heroRows } = await db.query(
+      "SELECT * FROM herocommands WHERE heroname = $1",
+      [heroName]
+    );
+
     if (!heroRows || heroRows.length === 0) {
       return await interaction.reply({
         content: "Hero Data not found in database.",
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
     const heroRow = heroRows[0];
-    const [decks] = await db.query(
-      `SELECT * FROM tbot_decks
-       WHERE LOWER(side) = LOWER(?)
-         AND LOWER(hero) = LOWER(?)
+
+    const { rows: decks } = await db.query(
+      `SELECT * FROM web_decks
+       WHERE LOWER(side) = LOWER($1)
+         AND LOWER(hero) = LOWER($2)
        ORDER BY name ASC`,
       [heroConfig.side, heroConfig.hero]
     );
@@ -130,31 +185,55 @@ async function startHeroDecksByName(interaction, db, client, heroName) {
     if (!decks || decks.length === 0) {
       return await interaction.reply({
         content: `No ${heroName} decks found in the database.`,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
     }
 
-    const { normalized, deckLists, availableCategories } = categorizeHeroDecks(decks, heroName, "tbot_decks");
+    const {
+      normalized,
+      deckLists,
+      availableCategories,
+    } = categorizeHeroDecks(
+      decks,
+      heroName,
+      "web_decks"
+    );
 
     if (normalized.length === 1) {
-      const embed = buildDeckEmbed(normalized[0], heroRow.deck_color || "Blue");
+      const embed = buildDeckEmbed(
+        normalized[0],
+        heroRow.deck_color || "Blue"
+      );
+
       return await interaction.reply({
-        embeds: [embed]
+        embeds: [embed],
       });
     }
 
-    const select = createHeroSelectMenu(heroName, heroRow, availableCategories, deckLists, normalized.length);
+    const select = createHeroSelectMenu(
+      heroName,
+      heroRow,
+      availableCategories,
+      deckLists,
+      normalized.length
+    );
 
     const initialEmbed = new EmbedBuilder()
       .setTitle(`${heroName} Deck Categories`)
       .setColor(heroRow.deck_color || "Blue")
-      .setDescription(`Select a category to view ${heroName} decks — ${heroName} has ${normalized.length} total decks.`)
+      .setDescription(
+        `Select a category to view ${heroName} decks — ${heroName} has ${normalized.length} total decks.`
+      )
       .setThumbnail(heroRow.thumbnail || null)
-      .setFooter({ text: "Use the select menu to choose a category" });
+      .setFooter({
+        text: "Use the select menu to choose a category",
+      });
 
     const response = await interaction.reply({
       embeds: [initialEmbed],
-      components: [new ActionRowBuilder().addComponents(select)]
+      components: [
+        new ActionRowBuilder().addComponents(select),
+      ],
     });
 
     const responseMessage = await response.fetch();
@@ -162,21 +241,32 @@ async function startHeroDecksByName(interaction, db, client, heroName) {
     if (!client.heroDecksData) {
       client.heroDecksData = new Map();
     }
+
     client.heroDecksData.set(responseMessage.id, {
       heroName,
       heroCommand: null,
       deckLists,
       availableCategories,
       categoryColor: heroRow.deck_color || "Blue",
-      thumbnailUrl: heroRow.thumbnail || null
+      thumbnailUrl: heroRow.thumbnail || null,
     });
-    console.log(`Stored hero decks data for message ID: ${responseMessage.id}`);
+
+    console.log(
+      `Stored hero decks data for message ID: ${responseMessage.id}`
+    );
   } catch (error) {
-    console.error("Error in hero decks slash command:", error);
-    await interaction.reply({
-      content: "An error occurred while processing your request.",
-      flags: MessageFlags.Ephemeral
-    });
+    console.error(
+      "Error in hero decks slash command:",
+      error
+    );
+
+    if (!interaction.replied && !interaction.deferred) {
+      await interaction.reply({
+        content:
+          "An error occurred while processing your request.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
   }
 }
 
@@ -184,19 +274,22 @@ async function handleHeroDeckCategory(interaction) {
   if (!interaction.client.heroDecksData) {
     interaction.client.heroDecksData = new Map();
   }
-  
-  const data = interaction.client.heroDecksData.get(interaction.message.id);
-  
+
+  const data = interaction.client.heroDecksData.get(
+    interaction.message.id
+  );
+
   if (!data) {
     return await interaction.reply({
-      content: "Data not found. Please try reclicking the button or resending command.",
-      flags: MessageFlags.Ephemeral
+      content:
+        "Data not found. Please try reclicking the button or resending command.",
+      flags: MessageFlags.Ephemeral,
     });
   }
 
   const category = interaction.values[0];
   const list = data.deckLists[category] || [];
-  
+
   if (list.length === 0) {
     return await interaction.reply({
       content: "No decks in that category.",
@@ -205,7 +298,11 @@ async function handleHeroDeckCategory(interaction) {
   }
 
   if (list.length === 1) {
-    const embed = buildDeckEmbed(list[0], data.categoryColor);
+    const embed = buildDeckEmbed(
+      list[0],
+      data.categoryColor
+    );
+
     return await interaction.reply({
       embeds: [embed],
       flags: MessageFlags.Ephemeral,
@@ -215,19 +312,27 @@ async function handleHeroDeckCategory(interaction) {
   const categoryEmbed = createCategoryEmbed(
     data.heroName,
     data.categoryColor,
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => deck.name.replaceAll(/\s+/g, "").toLowerCase()),
+    category.charAt(0).toUpperCase() +
+      category.slice(1),
+    list.map((deck) =>
+      deck.name.replaceAll(/\s+/g, "").toLowerCase()
+    ),
     list.length,
     data.thumbnailUrl
   );
 
   const navRow = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId(`herodknav_${category}_${list.length - 1}`)
+      .setCustomId(
+        `herodknav_${category}_${list.length - 1}`
+      )
       .setEmoji("⬅️")
       .setStyle(ButtonStyle.Primary),
+
     new ButtonBuilder()
-      .setCustomId(`herodknav_${category}_0`)
+      .setCustomId(
+        `herodknav_${category}_0`
+      )
       .setEmoji("➡️")
       .setStyle(ButtonStyle.Primary)
   );
@@ -235,19 +340,24 @@ async function handleHeroDeckCategory(interaction) {
   await interaction.reply({
     embeds: [categoryEmbed],
     components: [navRow],
-    flags: MessageFlags.Ephemeral
+    flags: MessageFlags.Ephemeral,
   });
 
   const responseMessage = await interaction.fetchReply();
-  interaction.client.heroDecksData.set(responseMessage.id, {
-    ...data,
-    currentCategory: category,
-    currentList: list
-  });
+
+  interaction.client.heroDecksData.set(
+    responseMessage.id,
+    {
+      ...data,
+      currentCategory: category,
+      currentList: list,
+    }
+  );
 }
 
 async function handleHeroDeckNavigation(interaction) {
   const parts = interaction.customId.split("_");
+
   let indexStr = parts[parts.length - 1];
   let category = parts.slice(1, -1).join("_");
 
@@ -261,16 +371,21 @@ async function handleHeroDeckNavigation(interaction) {
   if (!interaction.client.heroDecksData) {
     interaction.client.heroDecksData = new Map();
   }
-  
-  const data = interaction.client.heroDecksData.get(interaction.message.id);
+
+  const data = interaction.client.heroDecksData.get(
+    interaction.message.id
+  );
+
   if (!data) {
     return await interaction.reply({
-      content: "Data not found. Please try reclicking the button or resending command.",
-      flags: MessageFlags.Ephemeral
+      content:
+        "Data not found. Please try reclicking the button or resending command.",
+      flags: MessageFlags.Ephemeral,
     });
   }
 
   const list = data.deckLists[category] || [];
+
   if (!list[index]) {
     return await interaction.reply({
       content: "Deck not found.",
@@ -278,81 +393,118 @@ async function handleHeroDeckNavigation(interaction) {
     });
   }
 
-  const embed = buildDeckEmbed(list[index], data.categoryColor);
-  const prevIndex = index === 0 ? "list" : index - 1;
-  const nextIndex = index === list.length - 1 ? "list" : index + 1;
-  const navRow = buildNavigationRow(category, prevIndex, nextIndex, "herodknav", "herodklist");
+  const embed = buildDeckEmbed(
+    list[index],
+    data.categoryColor
+  );
+
+  const prevIndex =
+    index === 0 ? "list" : index - 1;
+
+  const nextIndex =
+    index === list.length - 1
+      ? "list"
+      : index + 1;
+
+  const navRow = buildNavigationRow(
+    category,
+    prevIndex,
+    nextIndex,
+    "herodknav",
+    "herodklist"
+  );
 
   return await interaction.update({
     embeds: [embed],
-    components: [navRow]
+    components: [navRow],
   });
 }
 
 async function handleHeroDeckBackToList(interaction) {
-  const category = interaction.customId.replace("herodklist_", "");
-  
+  const category = interaction.customId.replace(
+    "herodklist_",
+    ""
+  );
+
   if (!interaction.client.heroDecksData) {
     interaction.client.heroDecksData = new Map();
   }
-  
-  const data = interaction.client.heroDecksData.get(interaction.message.id);
-  
+
+  const data = interaction.client.heroDecksData.get(
+    interaction.message.id
+  );
+
   if (!data) {
     return await interaction.reply({
-      content: "Data not found. Please try reclicking the button or resending command.",
-      flags: MessageFlags.Ephemeral
+      content:
+        "Data not found. Please try reclicking the button or resending command.",
+      flags: MessageFlags.Ephemeral,
     });
   }
 
   const list = data.deckLists[category] || [];
-  
+
   const categoryEmbed = createCategoryEmbed(
     data.heroName,
     data.categoryColor,
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => deck.name.replaceAll(/\s+/g, "").toLowerCase()),
+    category.charAt(0).toUpperCase() +
+      category.slice(1),
+    list.map((deck) =>
+      deck.name.replaceAll(/\s+/g, "").toLowerCase()
+    ),
     list.length,
     data.thumbnailUrl
   );
 
   const navRow = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId(`herodknav_${category}_${list.length - 1}`)
+      .setCustomId(
+        `herodknav_${category}_${list.length - 1}`
+      )
       .setEmoji("⬅️")
       .setStyle(ButtonStyle.Primary),
+
     new ButtonBuilder()
-      .setCustomId(`herodknav_${category}_0`)
+      .setCustomId(
+        `herodknav_${category}_0`
+      )
       .setEmoji("➡️")
       .setStyle(ButtonStyle.Primary)
   );
 
   return await interaction.update({
     embeds: [categoryEmbed],
-    components: [navRow]
+    components: [navRow],
   });
 }
 
 async function handleHeroCategorySelect(interaction) {
-  const heroCommand = interaction.customId.replace("herocat_", "");
+  const heroCommand = interaction.customId.replace(
+    "herocat_",
+    ""
+  );
+
   const tempKey = `temp_${heroCommand}_${interaction.message.id}`;
-  
+
   if (!interaction.client.heroHelpData) {
     interaction.client.heroHelpData = new Map();
   }
-  
-  const data = interaction.client.heroHelpData.get(tempKey);
-  
+
+  const data = interaction.client.heroHelpData.get(
+    tempKey
+  );
+
   if (!data) {
     return await interaction.reply({
-      content: "Data not found. Please try reclicking the button or resending command.",
-      flags: MessageFlags.Ephemeral
+      content:
+        "Data not found. Please try reclicking the button or resending command.",
+      flags: MessageFlags.Ephemeral,
     });
   }
 
   const category = interaction.values[0];
   const list = data.deckLists[category] || [];
-  
+
   if (list.length === 0) {
     return await interaction.reply({
       content: "No decks in that category.",
@@ -361,7 +513,11 @@ async function handleHeroCategorySelect(interaction) {
   }
 
   if (list.length === 1) {
-    const embed = buildDeckEmbed(list[0], data.deckColor);
+    const embed = buildDeckEmbed(
+      list[0],
+      data.deckColor
+    );
+
     return await interaction.reply({
       embeds: [embed],
       flags: MessageFlags.Ephemeral,
@@ -371,19 +527,27 @@ async function handleHeroCategorySelect(interaction) {
   const categoryEmbed = createCategoryEmbed(
     data.heroName,
     data.categoryColor,
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => deck.name.replaceAll(/\s+/g, "").toLowerCase()),
+    category.charAt(0).toUpperCase() +
+      category.slice(1),
+    list.map((deck) =>
+      deck.name.replaceAll(/\s+/g, "").toLowerCase()
+    ),
     list.length,
     data.thumbnailUrl
   );
 
   const navRow = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId(`heronav_${category}_${list.length - 1}`)
+      .setCustomId(
+        `heronav_${category}_${list.length - 1}`
+      )
       .setEmoji("⬅️")
       .setStyle(ButtonStyle.Primary),
+
     new ButtonBuilder()
-      .setCustomId(`heronav_${category}_0`)
+      .setCustomId(
+        `heronav_${category}_0`
+      )
       .setEmoji("➡️")
       .setStyle(ButtonStyle.Primary)
   );
@@ -391,47 +555,78 @@ async function handleHeroCategorySelect(interaction) {
   await interaction.reply({
     embeds: [categoryEmbed],
     components: [navRow],
-    flags: MessageFlags.Ephemeral
+    flags: MessageFlags.Ephemeral,
   });
 
   const responseMessage = await interaction.fetchReply();
 
-  interaction.client.heroHelpData.set(responseMessage.id, {
-    ...data,
-    currentCategory: category,
-    currentList: list
-  });
+  interaction.client.heroHelpData.set(
+    responseMessage.id,
+    {
+      ...data,
+      currentCategory: category,
+      currentList: list,
+    }
+  );
 
-  setupHeroCategoryCollector(responseMessage, interaction.client);
+  setupHeroCategoryCollector(
+    responseMessage,
+    interaction.client
+  );
 }
 
 function setupHeroCategoryCollector(message, client) {
-  const filter = (i) => i.customId.startsWith("heronav_") || i.customId.startsWith("herolist_");
-  const collector = message.createMessageComponentCollector({ filter });
+  const filter = (i) =>
+    i.customId.startsWith("heronav_") ||
+    i.customId.startsWith("herolist_");
+
+  const collector =
+    message.createMessageComponentCollector({
+      filter,
+    });
 
   collector.on("collect", async (i) => {
     try {
-      const collectorData = client.heroHelpData.get(i.message.id);
+      const collectorData =
+        client.heroHelpData.get(i.message.id);
+
       if (!collectorData) {
         return await i.reply({
-          content: "Data not found. Please try reclicking the button or resending command.",
-          flags: MessageFlags.Ephemeral
+          content:
+            "Data not found. Please try reclicking the button or resending command.",
+          flags: MessageFlags.Ephemeral,
         });
       }
 
-      if (i.isButton() && i.customId.startsWith("heronav_")) {
-        await handleHeroNavButton(i, collectorData);
-      } else if (i.isButton() && i.customId.startsWith("herolist_")) {
-        await handleHeroListButton(i, collectorData);
+      if (
+        i.isButton() &&
+        i.customId.startsWith("heronav_")
+      ) {
+        await handleHeroNavButton(
+          i,
+          collectorData
+        );
+      } else if (
+        i.isButton() &&
+        i.customId.startsWith("herolist_")
+      ) {
+        await handleHeroListButton(
+          i,
+          collectorData
+        );
       }
     } catch (error) {
-      console.error("Error in hero help navigation collector:", error);
+      console.error(
+        "Error in hero help navigation collector:",
+        error
+      );
     }
   });
 }
 
 async function handleHeroNavButton(interaction, data) {
   const parts = interaction.customId.split("_");
+
   let indexStr = parts[parts.length - 1];
   let category = parts.slice(1, -1).join("_");
 
@@ -441,6 +636,7 @@ async function handleHeroNavButton(interaction, data) {
   }
 
   const index = Number.parseInt(indexStr, 10);
+
   const list = data.deckLists[category] || [];
 
   if (!list[index]) {
@@ -450,44 +646,72 @@ async function handleHeroNavButton(interaction, data) {
     });
   }
 
-  const embed = buildDeckEmbed(list[index], data.deckColor);
-  const prevIndex = index === 0 ? "list" : index - 1;
-  const nextIndex = index === list.length - 1 ? "list" : index + 1;
-  const navRow = buildNavigationRow(category, prevIndex, nextIndex, "heronav", "herolist");
+  const embed = buildDeckEmbed(
+    list[index],
+    data.deckColor
+  );
+
+  const prevIndex =
+    index === 0 ? "list" : index - 1;
+
+  const nextIndex =
+    index === list.length - 1
+      ? "list"
+      : index + 1;
+
+  const navRow = buildNavigationRow(
+    category,
+    prevIndex,
+    nextIndex,
+    "heronav",
+    "herolist"
+  );
 
   return await interaction.update({
     embeds: [embed],
-    components: [navRow]
+    components: [navRow],
   });
 }
 
 async function handleHeroListButton(interaction, data) {
-  const category = interaction.customId.replace("herolist_", "");
+  const category = interaction.customId.replace(
+    "herolist_",
+    ""
+  );
+
   const list = data.deckLists[category] || [];
-  
+
   const categoryEmbed = createCategoryEmbed(
     data.heroName,
     data.categoryColor,
-    category.charAt(0).toUpperCase() + category.slice(1),
-    list.map(deck => deck.name.replaceAll(/\s+/g, "").toLowerCase()),
+    category.charAt(0).toUpperCase() +
+      category.slice(1),
+    list.map((deck) =>
+      deck.name.replaceAll(/\s+/g, "").toLowerCase()
+    ),
     list.length,
     data.thumbnailUrl
   );
 
   const navRow = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId(`heronav_${category}_${list.length - 1}`)
+      .setCustomId(
+        `heronav_${category}_${list.length - 1}`
+      )
       .setEmoji("⬅️")
       .setStyle(ButtonStyle.Primary),
+
     new ButtonBuilder()
-      .setCustomId(`heronav_${category}_0`)
+      .setCustomId(
+        `heronav_${category}_0`
+      )
       .setEmoji("➡️")
       .setStyle(ButtonStyle.Primary)
   );
 
   return await interaction.update({
     embeds: [categoryEmbed],
-    components: [navRow]
+    components: [navRow],
   });
 }
 
@@ -497,5 +721,5 @@ module.exports = {
   handleHeroDeckCategory,
   handleHeroDeckNavigation,
   handleHeroDeckBackToList,
-  handleHeroCategorySelect
+  handleHeroCategorySelect,
 };

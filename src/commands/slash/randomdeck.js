@@ -1,4 +1,9 @@
-const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js");
+const {
+  EmbedBuilder,
+  SlashCommandBuilder,
+  MessageFlags
+} = require("discord.js");
+
 const buildDeckFooter = require("../../features/decks/buildDeckFooter.js");
 
 const HERO_CHOICES = [
@@ -25,6 +30,7 @@ const HERO_CHOICES = [
   { name: "The Smash", value: "The Smash" },
   { name: "Z-Mech", value: "Z-Mech" }
 ];
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("randomdeck")
@@ -44,57 +50,97 @@ module.exports = {
 
   async execute(interaction) {
     const db = require("../../../index.js");
+
     const heroInput = interaction.options.getString("hero");
 
     try {
-      const heroChoice = HERO_CHOICES.find((choice) => choice.value === heroInput);
-      let where = "COALESCE(category, '') NOT LIKE ?";
+      const heroChoice = HERO_CHOICES.find(
+        (choice) => choice.value === heroInput
+      );
+
+      let where = "COALESCE(category, '') NOT ILIKE $1";
       const params = ["%budget%"];
 
       if (heroInput === "Plants" || heroInput === "Zombies") {
-        where += " AND LOWER(side) = LOWER(?)";
+        where += " AND LOWER(side) = LOWER($2)";
         params.push(heroInput);
       } else if (heroInput !== "na") {
         const heroName = heroChoice?.value || heroInput;
-        where += " AND LOWER(hero) = LOWER(?)";
+
+        where += " AND LOWER(hero) = LOWER($2)";
         params.push(heroName);
       }
 
-      const [rows] = await db.query(
-        `SELECT * FROM tbot_decks WHERE ${where}`,
+      const result = await db.query(
+        `
+        SELECT *
+        FROM web_decks
+        WHERE ${where}
+        `,
         params
       );
 
+      const rows = result.rows;
+
       if (!rows?.length) {
         return interaction.reply({
-          content: "Oops, something went wrong or no decks were found. Please try again later.",
+          content:
+            "Oops, something went wrong or no decks were found. Please try again later.",
           flags: MessageFlags.Ephemeral
         });
       }
 
-      const randomRow = rows[Math.floor(Math.random() * rows.length)];
+      const randomRow =
+        rows[Math.floor(Math.random() * rows.length)];
+
       const embed = new EmbedBuilder()
         .setTitle(randomRow.name || "Unknown")
         .setDescription(randomRow.description || "")
         .setColor("Random")
         .addFields(
-          { name: "Category", value: `**__${randomRow.category || randomRow.type || "N/A"}__**`, inline: true },
-          { name: "Archetype", value: `**__${randomRow.archetype || "N/A"}__**`, inline: true },
-          { name: "Deck Cost", value: randomRow.cost ? `${randomRow.cost}<:spar:1057791557387956274>` : "**__N/A__**", inline: true }
+          {
+            name: "Category",
+            value: `**__${randomRow.category || randomRow.type || "N/A"}__**`,
+            inline: true
+          },
+          {
+            name: "Archetype",
+            value: `**__${randomRow.archetype || "N/A"}__**`,
+            inline: true
+          },
+          {
+            name: "Deck Cost",
+            value: randomRow.cost
+              ? `${randomRow.cost}<:spar:1057791557387956274>`
+              : "**__N/A__**",
+            inline: true
+          }
         );
 
       const footer = buildDeckFooter(randomRow);
-      if (footer) embed.setFooter({ text: footer });
 
-      if (randomRow.image?.startsWith("http")) {
+      if (footer) {
+        embed.setFooter({ text: footer });
+      }
+
+      if (
+        randomRow.image &&
+        typeof randomRow.image === "string" &&
+        randomRow.image.startsWith("http")
+      ) {
         embed.setImage(randomRow.image);
       }
 
-      return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+      return interaction.reply({
+        embeds: [embed],
+        flags: MessageFlags.Ephemeral
+      });
     } catch (error) {
       console.error(error);
+
       return interaction.reply({
-        content: "Oops, something went wrong or no decks were found. Please try again later.",
+        content:
+          "Oops, something went wrong or no decks were found. Please try again later.",
         flags: MessageFlags.Ephemeral
       });
     }

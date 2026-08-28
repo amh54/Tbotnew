@@ -1,6 +1,26 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
-const dbTableColors = require("../../lib/db/dbTableColors.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
+
+
 const buildCardEmbedFromRow = require("../../features/cards/buildCardEmbedFromRow.js");
+
+const CLASS_COLORS = {
+  guardian: "#964B00",
+  kabloom: "Red",
+  megagrow: "Green",
+  smarty: "White",
+  solar: "Yellow",
+  beastly: "Blue",
+  brainy: "Purple",
+  crazy: "Purple",
+  hearty: "Orange",
+  sneaky: "#000000",
+};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,107 +38,102 @@ module.exports = {
           { name: "Smarty", value: "smarty" },
           { name: "Solar", value: "solar" },
           { name: "Beastly", value: "beastly" },
-           { name: "Brainy", value: "brainy" },
+          { name: "Brainy", value: "brainy" },
           { name: "Crazy", value: "crazy" },
           { name: "Hearty", value: "hearty" },
           { name: "Sneaky", value: "sneaky" },
-        )
+        ),
     ),
 
   async execute(interaction) {
     const db = require("../../../index.js");
+
     const selectedClass = interaction.options.getString("class");
 
     try {
-      // Acknowledge the interaction without sending a message yet
       await interaction.deferReply();
 
-      // Map class to database tables
-      const classMap = {
-        guardian: { cards: "guardiancards", tricks: "guardiantricks" },
-        smarty: { cards: "smartycards", tricks: "smartytricks" },
-        kabloom: { cards: "kabloomcards", tricks: "kabloomtricks" },
-        megagrow: { cards: "megagrowcards", tricks: "megagrowtricks" },
-        solar: { cards: "solarcards", tricks: "solartricks" },
-        sneaky: { cards: "sneakycards", tricks: "sneakytricks" },
-        beastly: { cards: "beastlycards", tricks: "beastlytricks" },
-        crazy: { cards: "crazycards", tricks: "crazytricks" },
-        brainy: { cards: "brainycards", tricks: "brainytricks" },
-        hearty: { cards: "heartycards", tricks: "heartytricks" }
-      };
-
-      const tables = classMap[selectedClass];
-      if (!tables) {
-        return interaction.editReply("Invalid class selected.");
-      }
-
-      // Fetch cards and tricks from the database
-      const [cardRows] = await db.query(
-        `SELECT * FROM \`${tables.cards}\``
+      const classDisplayName =
+        selectedClass.charAt(0).toUpperCase() + selectedClass.slice(1);
+      const result = await db.query(
+        `
+        SELECT *
+        FROM "web_cards"
+        WHERE EXISTS (
+          SELECT 1
+          FROM unnest(string_to_array(card_type, ',')) AS class_value
+          WHERE LOWER(TRIM(class_value)) = LOWER($1)
+        )
+        AND LOWER(COALESCE(set_rarity, '')) NOT LIKE '%hero%'
+        ORDER BY card_name ASC
+        `,
+        [classDisplayName],
       );
 
-      const [trickRows] = await db.query(
-        `SELECT * FROM \`${tables.tricks}\``
-      );
+      const allCards = (result.rows || []).map((row) => ({
+        ...row,
+        cardType: String(row.card_type || "")
+          .toLowerCase()
+          .includes("trick")
+          ? "Trick"
+          : "Minion",
+      }));
 
-      // Combine all cards with their full data
-      const allCards = [
-        ...cardRows.map(row => ({ ...row, cardType: "Minion" })),
-        ...trickRows.map(row => ({ ...row, cardType: "Trick" }))
-      ];
-
-      // Sort all cards by cost (first number in stats field)
+      /*
+       * Sort cards by the first number in stats,
+       * then by card name.
+       */
       allCards.sort((a, b) => {
-        // Extract the first number from stats (before any space or special character)
         const statsA = a.stats ? a.stats.toString().trim() : "";
+
         const statsB = b.stats ? b.stats.toString().trim() : "";
-        
+
         const costA = Number.parseInt(statsA.match(/^\d+/)?.[0] || "0", 10);
+
         const costB = Number.parseInt(statsB.match(/^\d+/)?.[0] || "0", 10);
-        
+
         if (costA !== costB) {
           return costA - costB;
         }
-        // Secondary sort by card name if costs are equal
-        return (a.card_name || "").localeCompare(b.card_name || "");
+
+        return (a.card_name || "").localeCompare(b.card_name || "", undefined, {
+          sensitivity: "base",
+        });
       });
 
       if (allCards.length === 0) {
-        return interaction.editReply(`No cards found for the ${selectedClass} class.`);
+        return interaction.editReply(
+          `No cards found for the ${classDisplayName} class.`,
+        );
       }
 
-      // Create embed for first page
-      let currentPage = null; // null means show the list
-      const tableNameForCards = classMap[selectedClass].cards;
-      const classNameFormatted = selectedClass.charAt(0).toUpperCase() + selectedClass.slice(1);
+      let currentPage = null;
+
+      const classColor = CLASS_COLORS[selectedClass] || "#00FF00";
 
       const createListEmbed = () => {
-        const cardNames = allCards.map(card => card.card_name).join("\n");
-        
-        const embed = new EmbedBuilder()
-          .setTitle(`${classNameFormatted} Cards Database`)
-          .setDescription(cardNames)
-          .setColor(dbTableColors[tableNameForCards] || "#00FF00")
-          .setFooter({
-            text: `Total Cards: ${allCards.length}`
-          });
+        const cardNames = allCards.map((card) => card.card_name).join("\n");
 
-        return embed;
+        return new EmbedBuilder()
+          .setTitle(`${classDisplayName} Cards Database`)
+          .setDescription(cardNames)
+          .setColor(classColor)
+          .setFooter({
+            text: `Total Cards: ${allCards.length}`,
+          });
       };
 
       const createCardEmbed = (cardIndex) => {
         const card = allCards[cardIndex];
 
         if (!card) {
-          return new EmbedBuilder()
-            .setTitle("No Card")
-            .setColor(dbTableColors[tableNameForCards] || "#00FF00");
+          return new EmbedBuilder().setTitle("No Card").setColor(classColor);
         }
 
-        const embed = buildCardEmbedFromRow(card, tableNameForCards, dbTableColors);
-        
+        const embed = buildCardEmbedFromRow(card, classColor);
+
         embed.setFooter({
-          text: `Card ${cardIndex + 1} of ${allCards.length}`
+          text: `Card ${cardIndex + 1} of ${allCards.length}`,
         });
 
         return embed;
@@ -128,37 +143,45 @@ module.exports = {
         if (currentPage === null) {
           return createListEmbed();
         }
+
         return createCardEmbed(currentPage);
       };
 
-      // Create navigation buttons
       const createButtons = () => {
         const row = new ActionRowBuilder();
 
         if (currentPage === null) {
-          // On list view, show "View Details" button
           row.addComponents(
             new ButtonBuilder()
               .setCustomId(`carddatabase_viewdetails_${selectedClass}_0`)
               .setLabel("View Details →")
-              .setStyle(ButtonStyle.Primary)
+              .setStyle(ButtonStyle.Primary),
           );
         } else {
-          // On card view, show navigation buttons
-          // Previous button: goes to previous card, or back to list if on first card
           row.addComponents(
             new ButtonBuilder()
-              .setCustomId(`carddatabase_prev_${selectedClass}_${currentPage > 0 ? currentPage - 1 : "list"}`)
+              .setCustomId(
+                `carddatabase_prev_${selectedClass}_${
+                  currentPage > 0 ? currentPage - 1 : "list"
+                }`,
+              )
               .setLabel(currentPage === 0 ? "Back to List" : "← Previous Card")
-              .setStyle(ButtonStyle.Primary)
+              .setStyle(ButtonStyle.Primary),
           );
 
-          // Next button: goes to next card, or back to list if on last card
           row.addComponents(
             new ButtonBuilder()
-              .setCustomId(`carddatabase_next_${selectedClass}_${currentPage < allCards.length - 1 ? currentPage + 1 : "list"}`)
-              .setLabel(currentPage === allCards.length - 1 ? "Back to List" : "Next Card →")
-              .setStyle(ButtonStyle.Primary)
+              .setCustomId(
+                `carddatabase_next_${selectedClass}_${
+                  currentPage < allCards.length - 1 ? currentPage + 1 : "list"
+                }`,
+              )
+              .setLabel(
+                currentPage === allCards.length - 1
+                  ? "Back to List"
+                  : "Next Card →",
+              )
+              .setStyle(ButtonStyle.Primary),
           );
         }
 
@@ -168,43 +191,56 @@ module.exports = {
       const embed = createEmbed();
       const buttons = createButtons();
 
-      let message;
-      if (buttons) {
-        message = await interaction.editReply({ embeds: [embed], components: [buttons] });
-      } else {
-        message = await interaction.editReply({ embeds: [embed] });
-      }
+      const message = await interaction.editReply({
+        embeds: [embed],
+        components: buttons ? [buttons] : [],
+      });
 
-      // Handle button interactions
       const filter = (i) =>
-        i.customId.startsWith(`carddatabase_`) && i.user.id === interaction.user.id;
+        i.customId.startsWith("carddatabase_") &&
+        i.user.id === interaction.user.id;
 
       const collector = message.createMessageComponentCollector({
-        filter
+        filter,
       });
 
       collector.on("collect", async (buttonInteraction) => {
-        const parts = buttonInteraction.customId.split("_");
-        const cardIndexOrAction = parts[3];
+        try {
+          const parts = buttonInteraction.customId.split("_");
 
-        if (cardIndexOrAction === "list") {
-          currentPage = null;
-        } else {
-          currentPage = Number.parseInt(cardIndexOrAction, 10);
-        }
+          const cardIndexOrAction = parts[3];
 
-        const updatedEmbed = createEmbed();
-        const updatedButtons = createButtons();
+          if (cardIndexOrAction === "list") {
+            currentPage = null;
+          } else {
+            currentPage = Number.parseInt(cardIndexOrAction, 10);
+          }
 
-        if (updatedButtons) {
-          await buttonInteraction.update({ embeds: [updatedEmbed], components: [updatedButtons] });
-        } else {
-          await buttonInteraction.update({ embeds: [updatedEmbed], components: [] });
+          const updatedEmbed = createEmbed();
+
+          const updatedButtons = createButtons();
+
+          await buttonInteraction.update({
+            embeds: [updatedEmbed],
+            components: updatedButtons ? [updatedButtons] : [],
+          });
+        } catch (error) {
+          console.error("Error handling carddatabase button:", error);
+
+          if (!buttonInteraction.replied && !buttonInteraction.deferred) {
+            await buttonInteraction.reply({
+              content: "An error occurred.",
+              ephemeral: true,
+            });
+          }
         }
       });
     } catch (error) {
       console.error("Error in carddatabase command:", error);
-      return interaction.editReply("An error occurred while fetching card data.");
+
+      return interaction.editReply(
+        "An error occurred while fetching card data.",
+      );
     }
-  }
+  },
 };

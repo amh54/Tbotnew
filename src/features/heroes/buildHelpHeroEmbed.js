@@ -1,6 +1,5 @@
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require("discord.js");
 const createHelpEmbed = require("../help/createHelpEmbed");
-const matchesCategory = require("../decks/matchesCategory");
 
 /**
  * @description Builds a hero help embed with dynamic select menu

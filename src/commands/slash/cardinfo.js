@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require("discord.js");
 const { startCardInfoByName } = require("../../handlers/cardInfoHandler.js");
 const {
   getCardAutocompleteResults,
-  resolveCardName
+  resolveCardName,
 } = require("../../features/cards/cardAutocomplete.js");
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
         .setName("card")
         .setDescription("Card name")
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     ),
   async autocomplete(interaction) {
     try {
@@ -32,5 +32,5 @@ module.exports = {
     const cardInput = interaction.options.getString("card");
     const cardName = (await resolveCardName(db, cardInput)) || cardInput;
     return startCardInfoByName(interaction, db, cardName, false);
-  }
+  },
 };
