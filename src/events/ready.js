@@ -1,6 +1,7 @@
-
 const { Events, ActivityType } = require("discord.js");
-
+const {
+  startDeckSuggestionWatcher,
+} = require("../features/decks/processDeckSuggestions.js");
 const crypto = require("node:crypto");
 const XLSX = require("xlsx");
 const path = require("node:path");
@@ -10,7 +11,6 @@ module.exports = {
 
   async run(client) {
     const db = require("../../index.js");
-
     // Store data on client for periodic updates
     client.deckData = [];
     client.statusData = [];
@@ -18,7 +18,7 @@ module.exports = {
     // Initial load of deck and status data
     await updateDeckData(client, db);
     await updateStatusData(client, db);
-
+    startDeckSuggestionWatcher(client);
     console.log(`Tbot is in ${client.guilds.cache.size} servers`);
 
     const totalMembers = client.guilds.cache
@@ -81,24 +81,17 @@ module.exports = {
 
     // Set activity status every 5 minutes
     setInterval(() => {
-      const randomYoutubers =
-        youtubers[getSecureRandomIndex(youtubers.length)];
+      const randomYoutubers = youtubers[getSecureRandomIndex(youtubers.length)];
 
-      const randomTourney =
-        tourneys[getSecureRandomIndex(tourneys.length)];
+      const randomTourney = tourneys[getSecureRandomIndex(tourneys.length)];
 
       const randomDeck =
-        client.deckData[
-          getSecureRandomIndex(client.deckData.length)
-        ];
+        client.deckData[getSecureRandomIndex(client.deckData.length)];
 
-      const randomStreamers =
-        streamers[getSecureRandomIndex(streamers.length)];
+      const randomStreamers = streamers[getSecureRandomIndex(streamers.length)];
 
       // Use current status data from client
-      const customStatus = client.statusData.map(
-        (row) => row.status,
-      );
+      const customStatus = client.statusData.map((row) => row.status);
 
       // Add dynamic statuses that use variables
       const dynamicStatuses = [
@@ -116,19 +109,13 @@ module.exports = {
       ];
 
       // Combine database statuses with dynamic ones
-      const allStatuses = [
-        ...customStatus,
-        ...dynamicStatuses,
-      ];
+      const allStatuses = [...customStatus, ...dynamicStatuses];
 
       if (!allStatuses.length) {
         return;
       }
 
-      const status =
-        allStatuses[
-          getSecureRandomIndex(allStatuses.length)
-        ];
+      const status = allStatuses[getSecureRandomIndex(allStatuses.length)];
 
       client.user.setActivity({
         type: ActivityType.Custom,
@@ -145,9 +132,7 @@ function getSecureRandomIndex(length) {
   const randomBytes = crypto.randomBytes(4);
   const randomValue = randomBytes.readUInt32BE(0);
 
-  return Math.floor(
-    (randomValue / 0x100000000) * length,
-  );
+  return Math.floor((randomValue / 0x100000000) * length);
 }
 
 // Function to update deck data from PostgreSQL
@@ -165,14 +150,9 @@ async function updateDeckData(client, db) {
 
     client.deckData = rows;
 
-    console.log(
-      `Deck data updated: ${rows.length} decks`,
-    );
+    console.log(`Deck data updated: ${rows.length} decks`);
   } catch (error) {
-    console.error(
-      "Error updating deck data:",
-      error,
-    );
+    console.error("Error updating deck data:", error);
   }
 }
 
@@ -204,10 +184,7 @@ async function updateStatusData(client, db) {
     // Always update the Excel file
     await createStatusExcel(statusRows);
   } catch (error) {
-    console.error(
-      "Error updating status data:",
-      error,
-    );
+    console.error("Error updating status data:", error);
   }
 }
 
@@ -218,10 +195,7 @@ async function createStatusExcel(statusData) {
 
     const data = [
       ["Status", "Creator"],
-      ...statusData.map((row) => [
-        row.status,
-        row.creator,
-      ]),
+      ...statusData.map((row) => [row.status, row.creator]),
     ];
 
     const worksheet = XLSX.utils.aoa_to_sheet(data);
@@ -231,23 +205,13 @@ async function createStatusExcel(statusData) {
     const colWidths = [
       {
         wch: Math.min(
-          Math.max(
-            ...data.map(
-              (row) =>
-                (row[0] || "").toString().length,
-            ),
-          ),
+          Math.max(...data.map((row) => (row[0] || "").toString().length)),
           maxWidth,
         ),
       },
       {
         wch: Math.min(
-          Math.max(
-            ...data.map(
-              (row) =>
-                (row[1] || "").toString().length,
-            ),
-          ),
+          Math.max(...data.map((row) => (row[1] || "").toString().length)),
           maxWidth,
         ),
       },
@@ -255,32 +219,16 @@ async function createStatusExcel(statusData) {
 
     worksheet["!cols"] = colWidths;
 
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      "Custom Statuses",
-    );
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Custom Statuses");
 
-    const filePath = path.join(
-      __dirname,
-      "..",
-      "..",
-      "custom_statuses.xlsx",
-    );
+    const filePath = path.join(__dirname, "..", "..", "custom_statuses.xlsx");
 
     XLSX.writeFile(workbook, filePath);
 
-    console.log(
-      `Excel file updated: ${filePath}`,
-    );
+    console.log(`Excel file updated: ${filePath}`);
 
-    console.log(
-      `Total statuses: ${statusData.length}`,
-    );
+    console.log(`Total statuses: ${statusData.length}`);
   } catch (error) {
-    console.error(
-      "Error creating Excel file:",
-      error,
-    );
+    console.error("Error creating Excel file:", error);
   }
 }
