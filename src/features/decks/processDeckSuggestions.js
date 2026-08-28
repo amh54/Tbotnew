@@ -94,7 +94,6 @@ function normalizeHero(hero) {
     .toLowerCase();
 }
 
-
 async function startDeckSuggestionWatcher(client) {
   if (watcherRunning) {
     console.log("[Deck Suggestions] Watcher already running.");
@@ -115,27 +114,14 @@ async function startDeckSuggestionWatcher(client) {
 async function processDeckSuggestions(client) {
   try {
     const db = require("../../../index.js");
-
-    /*
-     * ------------------------------------------------------------
-     * STEP 1
-     * Send consent requests to deck creators.
-     *
-     * We intentionally DO NOT check consent_request_sent_at here
-     * because that column does not currently exist in the database.
-     *
-     * Once the consent request is sent, consent_status is changed
-     * by the consent handler when the creator responds.
-     * ------------------------------------------------------------
-     */
-
     const consentResult = await db.query(`
-      SELECT *
-      FROM user_deck_suggestions
-      WHERE status = 'pending'
-        AND consent_status = 'awaiting_creator'
-      ORDER BY created_at ASC
-    `);
+  SELECT *
+  FROM user_deck_suggestions
+  WHERE status = 'pending'
+    AND consent_status = 'awaiting_creator'
+    AND consent_request_sent = FALSE
+  ORDER BY created_at ASC
+`);
 
     const consentSuggestions = consentResult.rows || [];
 
@@ -215,11 +201,14 @@ async function processDeckSuggestions(client) {
 
 async function sendConsentRequest(client, db, suggestion) {
   try {
+    if (suggestion.consent_request_sent) {
+      return;
+    }
+
     if (!suggestion.consent_creator_discord_id) {
       console.error(
         `[Deck Suggestions] Suggestion #${suggestion.id} has no creator Discord ID.`,
       );
-
       return;
     }
 
@@ -278,22 +267,21 @@ async function sendConsentRequest(client, db, suggestion) {
         .setStyle(ButtonStyle.Danger),
     );
 
+    // Send the DM first.
     await creator.send({
       embeds: [embed],
       components: [buttons],
     });
 
-    /*
-     * NOTE:
-     * Your current database does not have consent_request_sent_at.
-     *
-     * We therefore do not update that column here.
-     *
-     * The important state is consent_status.
-     *
-     * If you want a persistent "request already sent" flag,
-     * add a column for it later.
-     */
+    // Only mark it as sent AFTER Discord successfully accepts the DM.
+    await db.query(
+      `
+        UPDATE user_deck_suggestions
+        SET consent_request_sent = TRUE
+        WHERE id = $1
+      `,
+      [suggestion.id],
+    );
 
     console.log(
       `[Deck Suggestions] Sent consent request for suggestion #${suggestion.id} to ${creator.tag}.`,
@@ -305,7 +293,6 @@ async function sendConsentRequest(client, db, suggestion) {
     );
   }
 }
-
 async function processSingleSuggestion(db, forumChannel, suggestion) {
   try {
     console.log(
@@ -345,9 +332,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
 
     const embed = new EmbedBuilder()
       .setTitle(`${suggestion.deck_name}`)
-      .setDescription(
-        suggestion.description || "No description provided.",
-      )
+      .setDescription(suggestion.description || "No description provided.")
       .addFields(fields)
       .setColor("Random")
       .setFooter({
@@ -378,9 +363,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
     const availableTags = forumChannel.availableTags || [];
 
     const validTags = appliedTags.filter((tagId) =>
-      availableTags.some(
-        (tag) => String(tag.id) === String(tagId),
-      ),
+      availableTags.some((tag) => String(tag.id) === String(tagId)),
     );
 
     if (!validTags.length) {
@@ -388,10 +371,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
         `[Deck Suggestions] Configured hero tag for "${suggestion.hero}" does not exist on forum channel ${forumChannel.id}.`,
       );
 
-      console.error(
-        "[Deck Suggestions] Configured tag IDs:",
-        appliedTags,
-      );
+      console.error("[Deck Suggestions] Configured tag IDs:", appliedTags);
 
       console.error(
         "[Deck Suggestions] Available tag IDs:",
@@ -408,7 +388,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
      */
 
     const thread = await forumChannel.threads.create({
-      name: `${suggestion.deck_name} - Suggested`,
+      name: `${suggestion.deck_name}`,
       autoArchiveDuration: 10080,
       appliedTags: validTags,
 
@@ -423,19 +403,14 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
      * ------------------------------------------------------------
      */
 
-    const starterMessage =
-      await thread.fetchStarterMessage();
+    const starterMessage = await thread.fetchStarterMessage();
 
     if (starterMessage) {
       await starterMessage.pin();
 
-      await starterMessage.react(
-        "<:upvote:1081953853903220876>",
-      );
+      await starterMessage.react("<:upvote:1081953853903220876>");
 
-      await starterMessage.react(
-        "<:downvote:1081953860534403102>",
-      );
+      await starterMessage.react("<:downvote:1081953860534403102>");
     }
 
     /*
