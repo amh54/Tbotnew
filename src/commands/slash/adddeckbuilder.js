@@ -46,7 +46,7 @@ async function sendDeckbuilderLog(client, row, addedBy) {
     );
   }
 
-  const user = await client.users.fetch(row.user_id).catch(() => null);
+  const user = await client.users.fetch(row.userid).catch(() => null);
 
   const embed = new EmbedBuilder()
     .setTitle(`${row.deckbuilder_name} added as deckbuilder`)
@@ -59,7 +59,7 @@ async function sendDeckbuilderLog(client, row, addedBy) {
       },
       {
         name: "Discord User",
-        value: `<@${row.user_id}>`,
+        value: `<@${row.userid}>`,
         inline: true,
       },
       {
@@ -187,7 +187,7 @@ module.exports = {
           (
             deckbuilder_name,
             color,
-            "userID",
+            "userid",
             aliases,
             numb_of_decks
           )

@@ -41,8 +41,8 @@ async function sendDeckbuilderDeleteLog(client, row, deletedBy) {
     );
   }
 
-  const user = row.user_id
-    ? await client.users.fetch(row.user_id).catch(() => null)
+  const user = row.userid
+    ? await client.users.fetch(row.userid).catch(() => null)
     : null;
 
   const embed = new EmbedBuilder()
@@ -56,7 +56,7 @@ async function sendDeckbuilderDeleteLog(client, row, deletedBy) {
       },
       {
         name: "Discord User",
-        value: formatUser(row.user_id),
+        value: formatUser(row.userid),
         inline: true,
       },
       {
