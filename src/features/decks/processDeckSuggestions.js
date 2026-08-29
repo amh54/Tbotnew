@@ -93,12 +93,12 @@ function buildSuggestionEmbed(suggestion) {
   const fields = [
     {
       name: "Category",
-      value: `***${suggestion.category || "Unknown"}***`,
+      value: `**__${suggestion.category || "Unknown"}__**`,
       inline: true,
     },
     {
       name: "Deck Archetype",
-      value: `***${suggestion.archetype || "Unknown"}***`,
+      value: `**__${suggestion.archetype || "Unknown"}__**`,
       inline: true,
     },
     {
