@@ -7,7 +7,7 @@ async function handleDeckSuggestionConsent(interaction, db) {
   try {
     const parts = interaction.customId.split("_");
 
-    // decksuggestion_consent_yes_123
+    // decksugrgestion_consent_yes_123
     // decksuggestion_consent_no_123
     const action = parts[2];
     const suggestionId = Number(parts[3]);
