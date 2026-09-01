@@ -1,30 +1,52 @@
-const { SlashCommandBuilder, ActionRowBuilder, MessageFlags } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  ActionRowBuilder,
+  MessageFlags,
+} = require("discord.js");
+
 const {
   buildNotificationRoleEmbed,
   buildNotificationRoleSelectMenu,
-  getAvailableNotificationRoles,
 } = require("../../features/misc/notificationRoles.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("notifications")
     .setDescription("Choose which notification roles you want to receive"),
-  async execute(interaction) {
-    const embed = buildNotificationRoleEmbed();
-    const availableRoles = await getAvailableNotificationRoles(interaction.guild);
 
-    if (!availableRoles.size) {
-      return await interaction.reply({
+  async execute(interaction) {
+    if (!interaction.inGuild() || !interaction.guild) {
+      return interaction.reply({
         content:
           "Use this command in the tbot server to select your notification roles.",
         flags: MessageFlags.Ephemeral,
       });
     }
 
-    const selectMenu = await buildNotificationRoleSelectMenu(interaction.guild);
+    const embed = buildNotificationRoleEmbed();
+
+    let selectMenu;
+
+    try {
+      selectMenu = await buildNotificationRoleSelectMenu(
+        interaction.guild
+      );
+    } catch (error) {
+      console.error(
+        "Failed to build notification role menu:",
+        error
+      );
+
+      return interaction.reply({
+        content:
+          "I could not find the notification roles in this server. Please make sure they exist and try again.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
     const row = new ActionRowBuilder().addComponents(selectMenu);
 
-    await interaction.reply({
+    return interaction.reply({
       embeds: [embed],
       components: [row],
       flags: MessageFlags.Ephemeral,

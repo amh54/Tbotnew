@@ -1,17 +1,30 @@
-const { EmbedBuilder, MessageFlags, StringSelectMenuBuilder } = require("discord.js");
-const { ownerId, guildId} = require("../../../config.json");
+const {
+  EmbedBuilder,
+  MessageFlags,
+  StringSelectMenuBuilder,
+} = require("discord.js");
 
-const NOTIFICATION_ROLE_NAMES = ["tbotping", "tbotyt", "tbottwitch", "tbotpolls"];
+const { guildId } = require("../../../config.json");
+
+const NOTIFICATION_ROLE_NAMES = [
+  "tbotping",
+  "tbotyt",
+  "tbottwitch",
+  "tbotpolls",
+];
 
 function buildNotificationRoleEmbed() {
-  const roleList = NOTIFICATION_ROLE_NAMES.map((name) => `**${name}**`).join(", ");
+  const roleList = NOTIFICATION_ROLE_NAMES.map((name) => `**${name}**`).join(
+    ", ",
+  );
 
   return new EmbedBuilder()
     .setColor("Blurple")
     .setTitle("Notification Roles")
     .setDescription(
-      "Choose which notification roles you want on your account. The roles listed below can be used for updates and announcements.\n\nAvailable roles: " +
-        roleList
+      "Choose which notification roles you want on your account. The roles listed below can be used for updates and announcements.\n\n" +
+        "Available roles: " +
+        roleList,
     )
     .setFooter({
       text: "Select the roles you want, then submit your choices to update your preferences.",
@@ -19,12 +32,21 @@ function buildNotificationRoleEmbed() {
 }
 
 async function buildNotificationRoleSelectMenu(guild) {
+  if (!guild) {
+    throw new Error("buildNotificationRoleSelectMenu: guild was not provided.");
+  }
+
   const availableRoles = await getAvailableNotificationRoles(guild);
+
   const options = availableRoles.map((role) => ({
     label: role.name,
     value: role.id,
     description: "Notification role",
   }));
+
+  if (!options.length) {
+    throw new Error(`No notification roles were found in guild ${guild.id}.`);
+  }
 
   return new StringSelectMenuBuilder()
     .setCustomId("notification-role-select")
@@ -35,9 +57,16 @@ async function buildNotificationRoleSelectMenu(guild) {
 }
 
 async function getAvailableNotificationRoles(guild) {
+  if (!guild) {
+    throw new Error("getAvailableNotificationRoles: guild was not provided.");
+  }
+
   const roles = await guild.roles.fetch();
+
   return roles.filter((role) =>
-    NOTIFICATION_ROLE_NAMES.includes(role.name.toLowerCase())
+    NOTIFICATION_ROLE_NAMES.some(
+      (name) => name.toLowerCase() === role.name.toLowerCase(),
+    ),
   );
 }
 
@@ -57,6 +86,7 @@ async function handleNotificationRoleSelection(interaction) {
   }
 
   const availableRoles = await getAvailableNotificationRoles(interaction.guild);
+
   if (!availableRoles.size) {
     return interaction.reply({
       content:
@@ -65,13 +95,47 @@ async function handleNotificationRoleSelection(interaction) {
     });
   }
 
+  /*
+   * Check the bot's permissions and role hierarchy before
+   * attempting to modify the member.
+   */
+  const botMember = await interaction.guild.members.fetchMe();
+
+  if (!botMember.permissions.has("ManageRoles")) {
+    return interaction.reply({
+      content:
+        "I cannot update notification roles because I do not have the **Manage Roles** permission.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
+  const unmanageableRoles = Array.from(availableRoles.values()).filter(
+    (role) => !role.editable,
+  );
+
+  if (unmanageableRoles.length) {
+    return interaction.reply({
+      content:
+        "I cannot manage these notification roles: " +
+        unmanageableRoles.map((role) => `**${role.name}**`).join(", ") +
+        ".\n\nPlease move my highest role **above** the notification roles in Server Settings → Roles.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
   const selectedRoleIds = interaction.values || [];
+
   const availableRoleIds = new Set(availableRoles.map((role) => role.id));
+
   const eligibleRoleIds = Array.from(availableRoleIds);
 
-  const rolesToAdd = selectedRoleIds.filter((id) => eligibleRoleIds.includes(id));
+  const rolesToAdd = selectedRoleIds.filter((id) =>
+    eligibleRoleIds.includes(id),
+  );
+
   const rolesToRemove = eligibleRoleIds.filter(
-    (id) => !selectedRoleIds.includes(id) && interaction.member.roles.cache.has(id)
+    (id) =>
+      !selectedRoleIds.includes(id) && interaction.member.roles.cache.has(id),
   );
 
   try {
@@ -84,9 +148,10 @@ async function handleNotificationRoleSelection(interaction) {
     }
   } catch (error) {
     console.error("Failed to update notification roles", error);
+
     return interaction.reply({
       content:
-        "I could not update your roles. Please make sure the bot has Manage Roles permission and that its role is above the notification roles.",
+        "I could not update your notification roles. Please make sure my bot role is above the notification roles and that I have **Manage Roles** permission.",
       flags: MessageFlags.Ephemeral,
     });
   }
@@ -103,7 +168,9 @@ async function handleNotificationRoleSelection(interaction) {
     .setColor("Green")
     .setTitle("Notification Roles Updated")
     .setDescription(summary)
-    .setFooter({ text: "You can update your choices again later if needed." });
+    .setFooter({
+      text: "You can update your choices again later if needed.",
+    });
 
   return interaction.reply({
     embeds: [statusEmbed],
