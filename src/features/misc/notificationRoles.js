@@ -1,7 +1,7 @@
 const { EmbedBuilder, MessageFlags, StringSelectMenuBuilder } = require("discord.js");
 const { ownerId, guildId} = require("../../../config.json");
 
-const NOTIFICATION_ROLE_NAMES = ["tbotping", "tbotyt", "tbottwitch"];
+const NOTIFICATION_ROLE_NAMES = ["tbotping", "tbotyt", "tbottwitch", "tbotpolls"];
 
 function buildNotificationRoleEmbed() {
   const roleList = NOTIFICATION_ROLE_NAMES.map((name) => `**${name}**`).join(", ");
