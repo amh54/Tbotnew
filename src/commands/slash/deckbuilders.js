@@ -85,7 +85,6 @@ module.exports = {
        * Each search name gets three parameters:
        * creator
        * optimization
-       * inspiration
        */
       const whereParts = [];
       const params = [];
@@ -93,13 +92,11 @@ module.exports = {
       searchNames.forEach((name) => {
         const creatorParam = params.length + 1;
         const optimizationParam = params.length + 2;
-        const inspirationParam = params.length + 3;
 
         whereParts.push(`
           (
             creator ILIKE $${creatorParam}
             OR optimization ILIKE $${optimizationParam}
-            OR inspiration ILIKE $${inspirationParam}
           )
         `);
 
@@ -108,7 +105,6 @@ module.exports = {
         params.push(
           searchValue,
           searchValue,
-          searchValue
         );
       });
 
@@ -129,7 +125,6 @@ module.exports = {
           const credits = `
             ${deck.creator || ""}
             ${deck.optimization || ""}
-            ${deck.inspiration || ""}
           `;
 
           return deckMatchesDeckbuilder(
@@ -141,7 +136,6 @@ module.exports = {
           ...deck,
           category: deck.category,
           creator: deck.creator || "",
-          inspiration: deck.inspiration || "",
           optimization: deck.optimization || "",
           suggested_date:
             deck.suggested_date || null,
