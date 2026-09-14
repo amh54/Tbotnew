@@ -7,7 +7,21 @@ const {
 } = require("discord.js");
 
 const SUGGESTION_CHECK_INTERVAL = 30 * 1000;
-const SUGGESTION_FORUM_ID = "1100160031128830104";
+
+const DECK_SUGGESTION_FORUM_ID = "1100160031128830104";
+
+const WEBSITE_SUGGESTION_FORUM_ID = "1547224571676196964";
+
+const WEBSITE_SUGGESTION_TAG_MAP = {
+  improvement: "1548396026736672828",
+  ui: "1548396183574020126",
+  feature: "1548396322141372466",
+  performance: "1548396738199425055",
+  other: "1548396818013094039",
+};
+
+const UPVOTE_EMOJI = "<:upvote:1081953853903220876>";
+const DOWNVOTE_EMOJI = "<:downvote:1081953860534403102>";
 
 let watcherRunning = false;
 
@@ -74,13 +88,8 @@ function suggestionNeedsUpdate(suggestion, deck) {
   };
 
   return fields.some((field) => {
-    const suggestionField =
-      fieldMap[field] || field;
-
-    return valuesDiffer(
-      deck[field],
-      suggestion[suggestionField],
-    );
+    const suggestionField = fieldMap[field] || field;
+    return valuesDiffer(deck[field], suggestion[suggestionField]);
   });
 }
 
@@ -108,10 +117,7 @@ function buildSuggestionEmbed(suggestion) {
     },
   ];
 
-  if (
-    suggestion.aliases &&
-    suggestion.aliases.trim() !== ""
-  ) {
+  if (suggestion.aliases && suggestion.aliases.trim() !== "") {
     fields.push({
       name: "Aliases",
       value: suggestion.aliases,
@@ -120,13 +126,8 @@ function buildSuggestionEmbed(suggestion) {
   }
 
   const embed = new EmbedBuilder()
-    .setTitle(
-      suggestion.deck_name || "Untitled Deck",
-    )
-    .setDescription(
-      suggestion.description ||
-        "No description provided.",
-    )
+    .setTitle(suggestion.deck_name || "Untitled Deck")
+    .setDescription(suggestion.description || "No description provided.")
     .addFields(fields)
     .setColor("Random")
     .setFooter({
@@ -142,24 +143,76 @@ function buildSuggestionEmbed(suggestion) {
   return embed;
 }
 
+function getWebsiteSuggestionCategoryLabel(category) {
+  const labels = {
+    improvement: "Improvement",
+    ui: "UI / Design",
+    feature: "Feature",
+    performance: "Performance",
+    other: "Other",
+  };
+
+  return labels[String(category || "").toLowerCase()] || "Other";
+}
+
+function getWebsiteSuggestionTag(category) {
+  const normalizedCategory = String(category || "")
+    .trim()
+    .toLowerCase();
+
+  return WEBSITE_SUGGESTION_TAG_MAP[normalizedCategory] || null;
+}
+
+function buildWebsiteSuggestionEmbed(suggestion) {
+  const category = String(suggestion.category || "")
+    .trim()
+    .toLowerCase();
+
+  const categoryLabel = getWebsiteSuggestionCategoryLabel(category);
+  const suggestedBy = suggestion.discord_username || "Unknown user";
+
+  const fields = [
+    {
+      name: "Category",
+      value: `**__${categoryLabel}__**`,
+      inline: true,
+    },
+  ];
+
+  if (category === "improvement" && suggestion.page_url) {
+    fields.push({
+      name: "Page",
+      value: suggestion.page_url,
+      inline: false,
+    });
+  }
+
+  return new EmbedBuilder()
+    .setTitle(suggestion.title || "Website Suggestion")
+    .setDescription(suggestion.description || "No description provided.")
+    .addFields(fields)
+    .setColor("Random")
+    .setFooter({
+      text: `Suggested by ${suggestedBy}`,
+    });
+}
+
 async function startDeckSuggestionWatcher(client) {
   if (watcherRunning) {
-    console.log(
-      "[Deck Suggestions] Watcher already running.",
-    );
+    console.log("[Suggestions] Watcher already running.");
     return;
   }
 
   watcherRunning = true;
 
-  console.log(
-    "[Deck Suggestions] Watcher started.",
-  );
+  console.log("[Suggestions] Watcher started.");
 
   await processDeckSuggestions(client);
+  await processWebsiteSuggestions(client);
 
   setInterval(async () => {
     await processDeckSuggestions(client);
+    await processWebsiteSuggestions(client);
   }, SUGGESTION_CHECK_INTERVAL);
 }
 
@@ -176,29 +229,16 @@ async function processDeckSuggestions(client) {
       ORDER BY created_at ASC
     `);
 
-    const consentSuggestions =
-      consentResult.rows || [];
+    const consentSuggestions = consentResult.rows || [];
 
     for (const suggestion of consentSuggestions) {
-      await sendConsentRequest(
-        client,
-        db,
-        suggestion,
-      );
+      await sendConsentRequest(client, db, suggestion);
     }
 
-    const forumChannel =
-      client.channels.cache.get(
-        SUGGESTION_FORUM_ID,
-      );
+    const forumChannel = client.channels.cache.get(DECK_SUGGESTION_FORUM_ID);
 
-    if (
-      !forumChannel ||
-      forumChannel.type !== ChannelType.GuildForum
-    ) {
-      console.error(
-        "[Deck Suggestions] Forum channel not found or invalid.",
-      );
+    if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
+      console.error("[Deck Suggestions] Forum channel not found or invalid.");
       return;
     }
 
@@ -214,32 +254,17 @@ async function processDeckSuggestions(client) {
 
     for (const suggestion of suggestions) {
       if (!suggestion.discord_thread_id) {
-        await processSingleSuggestion(
-          db,
-          forumChannel,
-          suggestion,
-        );
+        await processSingleSuggestion(db, forumChannel, suggestion);
       } else {
-        await syncExistingSuggestion(
-          db,
-          forumChannel,
-          suggestion,
-        );
+        await syncExistingSuggestion(db, forumChannel, suggestion);
       }
     }
   } catch (error) {
-    console.error(
-      "[Deck Suggestions] Error processing suggestions:",
-      error,
-    );
+    console.error("[Deck Suggestions] Error processing suggestions:", error);
   }
 }
 
-async function sendConsentRequest(
-  client,
-  db,
-  suggestion,
-) {
+async function sendConsentRequest(client, db, suggestion) {
   try {
     if (suggestion.consent_request_sent) {
       return;
@@ -262,9 +287,7 @@ async function sendConsentRequest(
       "Unknown user";
 
     const embed = new EmbedBuilder()
-      .setTitle(
-        "Deck Suggestion Permission Request",
-      )
+      .setTitle("Deck Suggestion Permission Request")
       .setDescription(
         `**${suggestedBy}** wants to suggest your deck **${suggestion.deck_name}** to the Tbot Discord deck suggestion forum.\n\n` +
           "Do you give permission for this deck to be suggested?",
@@ -287,8 +310,7 @@ async function sendConsentRequest(
         },
         {
           name: "Archetype",
-          value:
-            suggestion.archetype || "Unknown",
+          value: suggestion.archetype || "Unknown",
           inline: true,
         },
       )
@@ -298,33 +320,30 @@ async function sendConsentRequest(
       embed.setImage(suggestion.image);
     }
 
-    const buttons =
-      new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId(
-            `decksuggestion_consent_yes_${suggestion.id}`,
-          )
-          .setLabel("Yes, Allow")
-          .setStyle(ButtonStyle.Success),
-
-        new ButtonBuilder()
-          .setCustomId(
-            `decksuggestion_consent_no_${suggestion.id}`,
-          )
-          .setLabel("No, Decline")
-          .setStyle(ButtonStyle.Danger),
-      );
+    const buttons = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`decksuggestion_consent_yes_${suggestion.id}`)
+        .setLabel("Yes, Allow")
+        .setStyle(ButtonStyle.Success),
+      new ButtonBuilder()
+        .setCustomId(`decksuggestion_consent_no_${suggestion.id}`)
+        .setLabel("No, Decline")
+        .setStyle(ButtonStyle.Danger),
+    );
 
     await creator.send({
       embeds: [embed],
       components: [buttons],
     });
 
-    await db.query(`
-      UPDATE user_deck_suggestions
-      SET consent_request_sent = TRUE
-      WHERE id = $1
-    `, [suggestion.id]);
+    await db.query(
+      `
+        UPDATE user_deck_suggestions
+        SET consent_request_sent = TRUE
+        WHERE id = $1
+      `,
+      [suggestion.id],
+    );
 
     console.log(
       `[Deck Suggestions] Sent consent request for suggestion #${suggestion.id} to ${creator.tag}.`,
@@ -337,19 +356,13 @@ async function sendConsentRequest(
   }
 }
 
-async function processSingleSuggestion(
-  db,
-  forumChannel,
-  suggestion,
-) {
+async function processSingleSuggestion(db, forumChannel, suggestion) {
   try {
     console.log(
       `[Deck Suggestions] Processing suggestion #${suggestion.id}: ${suggestion.deck_name}`,
     );
 
-    const appliedTags = getHeroTags(
-      suggestion.hero,
-    );
+    const appliedTags = getHeroTags(suggestion.hero);
 
     if (!appliedTags.length) {
       console.error(
@@ -358,15 +371,10 @@ async function processSingleSuggestion(
       return;
     }
 
-    const availableTags =
-      forumChannel.availableTags || [];
+    const availableTags = forumChannel.availableTags || [];
 
-    const validTags = appliedTags.filter(
-      (tagId) =>
-        availableTags.some(
-          (tag) =>
-            String(tag.id) === String(tagId),
-        ),
+    const validTags = appliedTags.filter((tagId) =>
+      availableTags.some((tag) => String(tag.id) === String(tagId)),
     );
 
     if (!validTags.length) {
@@ -376,49 +384,39 @@ async function processSingleSuggestion(
       return;
     }
 
-    const embed =
-      buildSuggestionEmbed(suggestion);
+    const embed = buildSuggestionEmbed(suggestion);
 
-    const thread =
-      await forumChannel.threads.create({
-        name:
-          suggestion.deck_name ||
-          "Deck Suggestion",
-        autoArchiveDuration: 10080,
-        appliedTags: validTags,
-        message: {
-          embeds: [embed],
-        },
-      });
+    const thread = await forumChannel.threads.create({
+      name: suggestion.deck_name || "Deck Suggestion",
+      autoArchiveDuration: 10080,
+      appliedTags: validTags,
+      message: {
+        embeds: [embed],
+      },
+    });
 
-    const starterMessage =
-      await thread.fetchStarterMessage();
+    const starterMessage = await thread.fetchStarterMessage();
 
     if (starterMessage) {
       await starterMessage.pin();
-
-      await starterMessage.react(
-        "<:upvote:1081953853903220876>",
-      );
-
-      await starterMessage.react(
-        "<:downvote:1081953860534403102>",
-      );
+      await starterMessage.react(UPVOTE_EMOJI);
+      await starterMessage.react(DOWNVOTE_EMOJI);
     }
 
-    await db.query(`
-      UPDATE user_deck_suggestions
-      SET
-        discord_thread_id = $1,
-        discord_message_id = $2
-      WHERE id = $3
-    `, [
-      thread.id,
-      starterMessage
-        ? starterMessage.id
-        : null,
-      suggestion.id,
-    ]);
+    await db.query(
+      `
+        UPDATE user_deck_suggestions
+        SET
+          discord_thread_id = $1,
+          discord_message_id = $2
+        WHERE id = $3
+      `,
+      [
+        thread.id,
+        starterMessage ? starterMessage.id : null,
+        suggestion.id,
+      ],
+    );
 
     console.log(
       `[Deck Suggestions] Created thread ${thread.id} for suggestion #${suggestion.id}.`,
@@ -431,18 +429,17 @@ async function processSingleSuggestion(
   }
 }
 
-async function syncExistingSuggestion(
-  db,
-  forumChannel,
-  suggestion,
-) {
+async function syncExistingSuggestion(db, forumChannel, suggestion) {
   try {
-    const deckResult = await db.query(`
-      SELECT *
-      FROM user_decks
-      WHERE id = $1
-      LIMIT 1
-    `, [suggestion.deck_id]);
+    const deckResult = await db.query(
+      `
+        SELECT *
+        FROM user_decks
+        WHERE id = $1
+        LIMIT 1
+      `,
+      [suggestion.deck_id],
+    );
 
     const deck = deckResult.rows?.[0];
 
@@ -453,10 +450,7 @@ async function syncExistingSuggestion(
       return;
     }
 
-    if (!suggestionNeedsUpdate(
-      suggestion,
-      deck,
-    )) {
+    if (!suggestionNeedsUpdate(suggestion, deck)) {
       return;
     }
 
@@ -466,7 +460,6 @@ async function syncExistingSuggestion(
 
     const updatedSuggestion = {
       ...suggestion,
-
       deck_name: deck.name,
       hero: deck.hero,
       side: deck.side,
@@ -485,12 +478,9 @@ async function syncExistingSuggestion(
       deck_doc: deck.deck_doc,
     };
 
-    const thread =
-      await forumChannel.threads
-        .fetch(
-          suggestion.discord_thread_id,
-        )
-        .catch(() => null);
+    const thread = await forumChannel.threads
+      .fetch(suggestion.discord_thread_id)
+      .catch(() => null);
 
     if (!thread) {
       console.error(
@@ -499,27 +489,18 @@ async function syncExistingSuggestion(
       return;
     }
 
-    const embed =
-      buildSuggestionEmbed(
-        updatedSuggestion,
-      );
+    const embed = buildSuggestionEmbed(updatedSuggestion);
 
     let starterMessage = null;
 
     if (suggestion.discord_message_id) {
-      starterMessage =
-        await thread.messages
-          .fetch(
-            suggestion.discord_message_id,
-          )
-          .catch(() => null);
+      starterMessage = await thread.messages
+        .fetch(suggestion.discord_message_id)
+        .catch(() => null);
     }
 
     if (!starterMessage) {
-      starterMessage =
-        await thread
-          .fetchStarterMessage()
-          .catch(() => null);
+      starterMessage = await thread.fetchStarterMessage().catch(() => null);
     }
 
     if (starterMessage) {
@@ -533,111 +514,80 @@ async function syncExistingSuggestion(
       return;
     }
 
-    if (
-      valuesDiffer(
-        suggestion.deck_name,
-        updatedSuggestion.deck_name,
-      )
-    ) {
-      await thread.setName(
-        updatedSuggestion.deck_name ||
-          "Deck Suggestion",
-      );
+    if (valuesDiffer(suggestion.deck_name, updatedSuggestion.deck_name)) {
+      await thread.setName(updatedSuggestion.deck_name || "Deck Suggestion");
     }
 
-    const appliedTags =
-      getHeroTags(
-        updatedSuggestion.hero,
-      );
+    const appliedTags = getHeroTags(updatedSuggestion.hero);
+    const availableTags = forumChannel.availableTags || [];
 
-    const availableTags =
-      forumChannel.availableTags || [];
-
-    const validTags =
-      appliedTags.filter(
-        (tagId) =>
-          availableTags.some(
-            (tag) =>
-              String(tag.id) ===
-              String(tagId),
-          ),
-      );
+    const validTags = appliedTags.filter((tagId) =>
+      availableTags.some((tag) => String(tag.id) === String(tagId)),
+    );
 
     if (validTags.length) {
-      const currentTags =
-        thread.appliedTags || [];
-
-      const normalizedCurrentTags =
-        currentTags.map((tagId) =>
-          String(tagId),
-        );
-
-      const normalizedValidTags =
-        validTags.map((tagId) =>
-          String(tagId),
-        );
+      const currentTags = thread.appliedTags || [];
+      const normalizedCurrentTags = currentTags.map((tagId) => String(tagId));
+      const normalizedValidTags = validTags.map((tagId) => String(tagId));
 
       const tagsChanged =
-        normalizedCurrentTags.length !==
-          normalizedValidTags.length ||
+        normalizedCurrentTags.length !== normalizedValidTags.length ||
         normalizedCurrentTags.some(
-          (tagId) =>
-            !normalizedValidTags.includes(
-              tagId,
-            ),
+          (tagId) => !normalizedValidTags.includes(tagId),
         );
 
       if (tagsChanged) {
-        await thread.setAppliedTags(
-          validTags,
-        );
+        await thread.setAppliedTags(validTags);
       }
     }
 
-    await db.query(`
-      UPDATE user_deck_suggestions
-      SET
-        deck_name = $1,
-        hero = $2,
-        side = $3,
-        category = $4,
-        archetype = $5,
-        creator = $6,
-        description = $7,
-        image = $8,
-        cost = $9,
-        aliases = $10,
-        cards = $11,
-        inspiration = $12,
-        optimization = $13,
-        suggested_date = $14,
-        updated_date = $15,
-        deck_doc = $16,
-        discord_message_id = $17,
-        updated_at = NOW()
-      WHERE id = $18
-    `, [
-      updatedSuggestion.deck_name,
-      updatedSuggestion.hero,
-      updatedSuggestion.side,
-      updatedSuggestion.category,
-      updatedSuggestion.archetype,
-      updatedSuggestion.creator,
-      updatedSuggestion.description,
-      updatedSuggestion.image,
-      updatedSuggestion.cost,
-      updatedSuggestion.aliases,
-      updatedSuggestion.cards,
-      updatedSuggestion.inspiration,
-      updatedSuggestion.optimization,
-      updatedSuggestion.suggested_date,
-      updatedSuggestion.updated_date,
-      updatedSuggestion.deck_doc,
-      starterMessage
-        ? starterMessage.id
-        : suggestion.discord_message_id,
-      suggestion.id,
-    ]);
+    await db.query(
+      `
+        UPDATE user_deck_suggestions
+        SET
+          deck_name = $1,
+          hero = $2,
+          side = $3,
+          category = $4,
+          archetype = $5,
+          creator = $6,
+          description = $7,
+          image = $8,
+          cost = $9,
+          aliases = $10,
+          cards = $11,
+          inspiration = $12,
+          optimization = $13,
+          suggested_date = $14,
+          updated_date = $15,
+          deck_doc = $16,
+          discord_message_id = $17,
+          updated_at = NOW()
+        WHERE id = $18
+      `,
+      [
+        updatedSuggestion.deck_name,
+        updatedSuggestion.hero,
+        updatedSuggestion.side,
+        updatedSuggestion.category,
+        updatedSuggestion.archetype,
+        updatedSuggestion.creator,
+        updatedSuggestion.description,
+        updatedSuggestion.image,
+        updatedSuggestion.cost,
+        updatedSuggestion.aliases,
+        updatedSuggestion.cards,
+        updatedSuggestion.inspiration,
+        updatedSuggestion.optimization,
+        updatedSuggestion.suggested_date,
+        updatedSuggestion.updated_date,
+        updatedSuggestion.deck_doc,
+        starterMessage
+          ? starterMessage.id
+          : suggestion.discord_message_id,
+        suggestion.id,
+      ],
+    );
 
     console.log(
       `[Deck Suggestions] Updated Discord thread ${thread.id} for suggestion #${suggestion.id}.`,
@@ -650,6 +600,147 @@ async function syncExistingSuggestion(
   }
 }
 
+async function processWebsiteSuggestions(client) {
+  try {
+    const db = require("../../../index.js");
+
+    const forumChannel = client.channels.cache.get(
+      WEBSITE_SUGGESTION_FORUM_ID,
+    );
+
+    if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
+      console.error(
+        "[Website Suggestions] Forum channel not found or invalid.",
+      );
+      return;
+    }
+
+    const result = await db.query(`
+      SELECT *
+      FROM user_suggestions
+      WHERE status = 'pending'
+        AND discord_thread_id IS NULL
+      ORDER BY created_at ASC
+    `);
+
+    const suggestions = result.rows || [];
+
+    for (const suggestion of suggestions) {
+      await processSingleWebsiteSuggestion(
+        db,
+        forumChannel,
+        suggestion,
+      );
+    }
+  } catch (error) {
+    console.error(
+      "[Website Suggestions] Error processing suggestions:",
+      error,
+    );
+  }
+}
+
+async function processSingleWebsiteSuggestion(
+  db,
+  forumChannel,
+  suggestion,
+) {
+  try {
+    console.log(
+      `[Website Suggestions] Processing suggestion #${suggestion.id}: ${suggestion.title}`,
+    );
+
+    const tagId = getWebsiteSuggestionTag(suggestion.category);
+
+    if (!tagId) {
+      console.error(
+        `[Website Suggestions] No forum tag configured for category "${suggestion.category}" on suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    const availableTags = forumChannel.availableTags || [];
+
+    const validTag = availableTags.find(
+      (tag) => String(tag.id) === String(tagId),
+    );
+
+    if (!validTag) {
+      console.error(
+        `[Website Suggestions] Configured tag ${tagId} does not exist on forum channel ${forumChannel.id} for suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    const embed = buildWebsiteSuggestionEmbed(suggestion);
+
+    const thread = await forumChannel.threads.create({
+      name: suggestion.title || "Website Suggestion",
+      autoArchiveDuration: 10080,
+      appliedTags: [validTag.id],
+      message: {
+        embeds: [embed],
+      },
+    });
+
+    const starterMessage = await thread.fetchStarterMessage();
+
+    if (starterMessage) {
+      await starterMessage.pin();
+      await starterMessage.react(UPVOTE_EMOJI);
+      await starterMessage.react(DOWNVOTE_EMOJI);
+    }
+
+    const discordThreadUrl = `https://discord.com/channels/${thread.guild.id}/${thread.id}`;
+
+    console.log(
+      `[Website Suggestions] Saving Discord thread data for suggestion #${suggestion.id}:`,
+      {
+        threadId: thread.id,
+        messageId: starterMessage ? starterMessage.id : null,
+        threadUrl: discordThreadUrl,
+      },
+    );
+
+    const updateResult = await db.query(
+      `
+        UPDATE user_suggestions
+        SET
+          discord_thread_id = $1,
+          discord_message_id = $2,
+          discord_thread_url = $3,
+          updated_at = NOW()
+        WHERE id = $4
+      `,
+      [
+        thread.id,
+        starterMessage ? starterMessage.id : null,
+        discordThreadUrl,
+        suggestion.id,
+      ],
+    );
+
+    console.log(
+      `[Website Suggestions] Database update affected ${updateResult.rowCount} row(s) for suggestion #${suggestion.id}.`,
+    );
+
+    if (updateResult.rowCount !== 1) {
+      console.error(
+        `[Website Suggestions] WARNING: Discord thread was created, but database update affected ${updateResult.rowCount} rows for suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    console.log(
+      `[Website Suggestions] Created thread ${thread.id} for suggestion #${suggestion.id} and saved Discord metadata.`,
+    );
+  } catch (error) {
+    console.error(
+      `[Website Suggestions] Failed to process suggestion #${suggestion.id}:`,
+      error,
+    );
+  }
+}
 module.exports = {
   startDeckSuggestionWatcher,
 };
