@@ -64,23 +64,17 @@ function valuesDiffer(a, b) {
 }
 
 function suggestionNeedsUpdate(suggestion, deck) {
-  const fields = [
-    "name",
-    "hero",
-    "side",
-    "category",
-    "archetype",
-    "creator",
-    "description",
-    "image",
-    "cost",
-    "aliases",
-    "cards",
-    "inspiration",
-    "optimization",
-    "suggested_date",
-    "updated_date",
-    "deck_doc",
+    const fields = [
+    ["deck_name", "name"],
+    ["hero", "hero"],
+    ["side", "side"],
+    ["category", "category"],
+    ["archetype", "archetype"],
+    ["creator", "creator"],
+    ["description", "description"],
+    ["image", "image"],
+    ["cost", "cost"],
+    ["aliases", "aliases"],
   ];
 
   const fieldMap = {
