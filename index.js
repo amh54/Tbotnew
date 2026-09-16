@@ -166,10 +166,8 @@ const deckNotificationTargets = {
   updateDeckThreadId: updateDeckNotificationThreadId
 };
 
-// initial load - skip notifications to prevent spam on startup
 scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors, deckNotificationTargets, true);
 
-// poll every 30s (adjust as needed) - enable notifications for real changes
 setInterval(() => {
   scanAllTablesAndSync(db, dbTables, client, dbCommandMap, dbTableColors, deckNotificationTargets, false);
-}, 30_000);
+}, 60_000);

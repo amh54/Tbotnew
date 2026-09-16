@@ -104,10 +104,6 @@ function isDeckTrulyNew(isDeck, existing, row, tableConfig, dbCommandMap) {
 
   return true;
 }
-
-/**
- * Detects changed fields on a row.
- */
 function detectChangedFields(existing, row) {
   const changedFields = [];
 
@@ -124,9 +120,11 @@ function detectChangedFields(existing, row) {
       changedFields.push("image");
     }
 
-    const prevCategory = existing.rowData.category ?? existing.rowData.type;
+    const prevCategory =
+      existing.rowData.category ?? existing.rowData.type;
 
-    const nextCategory = row.category ?? row.type;
+    const nextCategory =
+      row.category ?? row.type;
 
     if (prevCategory !== nextCategory) {
       changedFields.push("category");
@@ -134,6 +132,10 @@ function detectChangedFields(existing, row) {
 
     if (existing.rowData.type !== row.type) {
       changedFields.push("type");
+    }
+
+    if (existing.rowData.updated_date !== row.updated_date) {
+      changedFields.push("updated date");
     }
   }
 
