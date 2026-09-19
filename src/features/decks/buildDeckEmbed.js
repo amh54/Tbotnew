@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+
 const buildDeckFooter = require("./buildDeckFooter.js");
 
 function buildDeckEmbed(row, deckColor) {
@@ -18,11 +19,21 @@ function buildDeckEmbed(row, deckColor) {
       },
       {
         name: "Deck Cost",
-        value: row.cost ? `${row.cost} <:spar:1057791557387956274>` : "**N/A**",
+        value: row.cost
+          ? `${Number(row.cost).toLocaleString()} <:spar:1057791557387956274>`
+          : "**N/A**",
         inline: true,
       },
     )
     .setColor(deckColor);
+
+  if (row.deck_doc && typeof row.deck_doc === "string") {
+    embed.addFields({
+      name: "Deck Tutorial",
+      value: `[deck guide](${row.deck_doc})`,
+      inline: true,
+    });
+  }
 
   const footerText = buildDeckFooter(row);
 

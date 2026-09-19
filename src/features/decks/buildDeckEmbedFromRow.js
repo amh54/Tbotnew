@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
+
 const buildDeckFooter = require("./buildDeckFooter.js");
 
 /**
@@ -8,41 +9,51 @@ const buildDeckFooter = require("./buildDeckFooter.js");
 function buildDeckEmbedFromRow(row, tableName = null, dbTableColors = {}) {
   const color =
     dbTableColors[row.hero] ||
-    (tableName && dbTableColors[tableName] ? dbTableColors[tableName] : "Random");
+    (tableName && dbTableColors[tableName]
+      ? dbTableColors[tableName]
+      : "Random");
 
-  const embed = new EmbedBuilder()
-    .setTitle(row.name || row.title || "Deck");
+  const embed = new EmbedBuilder().setTitle(row.name || row.title || "Deck");
 
   if (row.description && row.description.trim().length > 0) {
     embed.setDescription(row.description);
   }
 
   const footerText = buildDeckFooter(row);
+
   if (footerText) {
     embed.setFooter({ text: footerText });
   }
 
-  embed
-    .addFields(
-      {
-        name: "Category",
-        value: `**__${row.category || "N/A"}__**`,
-        inline: true,
-      },
-      {
-        name: "Archetype",
-        value: `**__${row.archetype || "N/A"}__**`,
-        inline: true,
-      },
-      {
-        name: "Cost",
-        value: row.cost
-          ? `${row.cost} <:spar:1057791557387956274>`
-          : "**__N/A__**",
-        inline: true,
-      }
-    )
-    .setColor(color);
+  const fields = [
+    {
+      name: "Category",
+      value: `**__${row.category || "N/A"}__**`,
+      inline: true,
+    },
+    {
+      name: "Archetype",
+      value: `**__${row.archetype || "N/A"}__**`,
+      inline: true,
+    },
+    {
+      name: "Cost",
+      value: row.cost
+        ? `${Number(row.cost).toLocaleString()} <:spar:1057791557387956274>`
+        : "**__N/A__**",
+      inline: true,
+    },
+  ];
+
+  if (row.deck_doc && typeof row.deck_doc === "string") {
+    fields.push({
+      name: "Deck Tutorial",
+      value: `[deck guide](${row.deck_doc})`,
+      inline: true,
+    });
+  }
+
+  embed.addFields(fields).setColor(color);
 
   if (
     row.image &&
