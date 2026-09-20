@@ -138,7 +138,9 @@ async function startCardInfoByName(
       `
       SELECT *
       FROM "web_cards"
-      WHERE card_name = $1
+      WHERE
+        card_name = $1
+        OR LOWER(TRIM(card_name)) = LOWER(TRIM($1))
       LIMIT 1
       `,
       [cardName],
