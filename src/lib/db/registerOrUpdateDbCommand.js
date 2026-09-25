@@ -357,7 +357,7 @@ async function updateDeckbuilderCounts(db, creator, delta) {
     for (const name of deckbuilderNames) {
       await db.query(
         `
-        UPDATE deckbuilders
+        UPDATE web_deckbuilders
         SET numb_of_decks =
           GREATEST(
             COALESCE(numb_of_decks, 0) + $1,

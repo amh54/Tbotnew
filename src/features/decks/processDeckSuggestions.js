@@ -11,7 +11,9 @@ const SUGGESTION_CHECK_INTERVAL = 30 * 1000;
 const DECK_SUGGESTION_FORUM_ID = "1100160031128830104";
 
 const WEBSITE_SUGGESTION_FORUM_ID = "1547224571676196964";
+const SITE_UPDATES_CHANNEL_ID = "1532126385873616976";
 
+let latestSiteUpdateId = null;
 const WEBSITE_SUGGESTION_TAG_MAP = {
   improvement: "1548396026736672828",
   ui: "1548396183574020126",
@@ -64,7 +66,7 @@ function valuesDiffer(a, b) {
 }
 
 function suggestionNeedsUpdate(suggestion, deck) {
-    const fields = [
+  const fields = [
     ["deck_name", "name"],
     ["hero", "hero"],
     ["side", "side"],
@@ -136,7 +138,132 @@ function buildSuggestionEmbed(suggestion) {
 
   return embed;
 }
+function getSiteUpdateCategoryLabel(category) {
+  const labels = {
+    new_feature: "New Feature",
+    improvement: "Improvement",
+    bug_fix: "Bug Fix",
+    data: "Data",
+    announcement: "Announcement",
+    ui_design: "UI / Design",
+    new_deck: "New Deck",
+    deck_update: "Deck Update",
+    deleted_deck: "Deleted Deck",
+    other: "Other",
+  };
 
+  const normalizedCategory = String(category || "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    labels[normalizedCategory] ||
+    normalizedCategory
+      .replace(/[_-]+/g, " ")
+      .replace(/\b\w/g, (character) => character.toUpperCase()) ||
+    "Update"
+  );
+}
+
+function buildSiteUpdateEmbed(update) {
+  const fields = [
+    {
+      name: "Category",
+      value: `**___${getSiteUpdateCategoryLabel(update.category)}___**`,
+      inline: true,
+    },
+  ];
+
+  if (update.page_url) {
+    fields.push({
+      name: "Related Page",
+      value: `[View Page](${update.page_url})`,
+      inline: true,
+    });
+  }
+
+  return new EmbedBuilder()
+    .setTitle(update.title || "Tbot Site Update")
+    .setDescription(update.content || "No update description provided.")
+    .addFields(fields)
+    .setColor("Random")
+    .setFooter({
+      text: `Tbot Site Update #${update.id}`,
+    });
+}
+
+async function initializeSiteUpdateWatcher(client) {
+  try {
+    const db = require("../../../index.js");
+
+    const result = await db.query(`
+      SELECT id
+      FROM site_updates
+      WHERE published = TRUE
+      ORDER BY id DESC
+      LIMIT 1
+    `);
+
+    latestSiteUpdateId = result.rows?.[0]?.id ? Number(result.rows[0].id) : 0;
+
+    console.log(
+      `[Site Updates] Watcher initialized at update #${latestSiteUpdateId}.`,
+    );
+  } catch (error) {
+    console.error(
+      "[Site Updates] Failed to initialize site update watcher:",
+      error,
+    );
+    latestSiteUpdateId = 0;
+  }
+}
+
+async function processSiteUpdates(client) {
+  try {
+    const db = require("../../../index.js");
+
+    const channel = client.channels.cache.get(SITE_UPDATES_CHANNEL_ID);
+
+    if (!channel || channel.type !== ChannelType.PublicThread) {
+  console.error("[Site Updates] Thread channel not found or invalid.");
+  return;
+}
+
+    if (latestSiteUpdateId === null) {
+      await initializeSiteUpdateWatcher(client);
+      return;
+    }
+
+    const result = await db.query(
+      `
+        SELECT *
+        FROM site_updates
+        WHERE published = TRUE
+          AND id > $1
+        ORDER BY id ASC
+      `,
+      [latestSiteUpdateId],
+    );
+
+    const updates = result.rows || [];
+
+    for (const update of updates) {
+      const embed = buildSiteUpdateEmbed(update);
+
+      await channel.send({
+        embeds: [embed],
+      });
+
+      latestSiteUpdateId = Number(update.id);
+
+      console.log(
+        `[Site Updates] Posted site update #${update.id}: ${update.title}`,
+      );
+    }
+  } catch (error) {
+    console.error("[Site Updates] Error processing site updates:", error);
+  }
+}
 function getWebsiteSuggestionCategoryLabel(category) {
   const labels = {
     improvement: "Improvement",
@@ -201,12 +328,16 @@ async function startDeckSuggestionWatcher(client) {
 
   console.log("[Suggestions] Watcher started.");
 
+  await initializeSiteUpdateWatcher(client);
+
   await processDeckSuggestions(client);
   await processWebsiteSuggestions(client);
+  await processSiteUpdates(client);
 
   setInterval(async () => {
     await processDeckSuggestions(client);
     await processWebsiteSuggestions(client);
+    await processSiteUpdates(client);
   }, SUGGESTION_CHECK_INTERVAL);
 }
 
@@ -405,11 +536,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
           discord_message_id = $2
         WHERE id = $3
       `,
-      [
-        thread.id,
-        starterMessage ? starterMessage.id : null,
-        suggestion.id,
-      ],
+      [thread.id, starterMessage ? starterMessage.id : null, suggestion.id],
     );
 
     console.log(
@@ -521,8 +648,8 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
 
     if (validTags.length) {
       const currentTags = thread.appliedTags || [];
-      const normalizedCurrentTags = currentTags.map((tagId) => String(tagId));
-      const normalizedValidTags = validTags.map((tagId) => String(tagId));
+      const normalizedCurrentTags = currentTags.map(String);
+      const normalizedValidTags = validTags.map(String);
 
       const tagsChanged =
         normalizedCurrentTags.length !== normalizedValidTags.length ||
@@ -576,9 +703,7 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
         updatedSuggestion.suggested_date,
         updatedSuggestion.updated_date,
         updatedSuggestion.deck_doc,
-        starterMessage
-          ? starterMessage.id
-          : suggestion.discord_message_id,
+        starterMessage ? starterMessage.id : suggestion.discord_message_id,
         suggestion.id,
       ],
     );
@@ -598,9 +723,7 @@ async function processWebsiteSuggestions(client) {
   try {
     const db = require("../../../index.js");
 
-    const forumChannel = client.channels.cache.get(
-      WEBSITE_SUGGESTION_FORUM_ID,
-    );
+    const forumChannel = client.channels.cache.get(WEBSITE_SUGGESTION_FORUM_ID);
 
     if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
       console.error(
@@ -620,25 +743,14 @@ async function processWebsiteSuggestions(client) {
     const suggestions = result.rows || [];
 
     for (const suggestion of suggestions) {
-      await processSingleWebsiteSuggestion(
-        db,
-        forumChannel,
-        suggestion,
-      );
+      await processSingleWebsiteSuggestion(db, forumChannel, suggestion);
     }
   } catch (error) {
-    console.error(
-      "[Website Suggestions] Error processing suggestions:",
-      error,
-    );
+    console.error("[Website Suggestions] Error processing suggestions:", error);
   }
 }
 
-async function processSingleWebsiteSuggestion(
-  db,
-  forumChannel,
-  suggestion,
-) {
+async function processSingleWebsiteSuggestion(db, forumChannel, suggestion) {
   try {
     console.log(
       `[Website Suggestions] Processing suggestion #${suggestion.id}: ${suggestion.title}`,
