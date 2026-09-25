@@ -169,7 +169,7 @@ function buildSiteUpdateEmbed(update) {
   const fields = [
     {
       name: "Category",
-      value: `**___${getSiteUpdateCategoryLabel(update.category)}___**`,
+      value: `**__${getSiteUpdateCategoryLabel(update.category)}__**`,
       inline: true,
     },
   ];
