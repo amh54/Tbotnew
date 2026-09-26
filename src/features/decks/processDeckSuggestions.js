@@ -79,16 +79,13 @@ function suggestionNeedsUpdate(suggestion, deck) {
     ["aliases", "aliases"],
   ];
 
-  const fieldMap = {
-    name: "deck_name",
-  };
-
-  return fields.some((field) => {
-    const suggestionField = fieldMap[field] || field;
-    return valuesDiffer(deck[field], suggestion[suggestionField]);
+  return fields.some(([suggestionField, deckField]) => {
+    return valuesDiffer(
+      suggestion[suggestionField],
+      deck[deckField]
+    );
   });
 }
-
 function buildSuggestionEmbed(suggestion) {
   const suggestedBy =
     suggestion.suggested_by_display_name ||
