@@ -31,6 +31,7 @@ const dbPool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+  application_name: "tbot_discord_bot",
   max: 3,
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 10000,
