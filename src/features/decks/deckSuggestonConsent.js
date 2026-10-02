@@ -6,9 +6,6 @@ const {
 async function handleDeckSuggestionConsent(interaction, db) {
   try {
     const parts = interaction.customId.split("_");
-
-    // decksuggestion_consent_yes_123
-    // decksuggestion_consent_no_123
     const action = parts[2];
     const suggestionId = Number(parts[3]);
 
@@ -38,8 +35,6 @@ async function handleDeckSuggestionConsent(interaction, db) {
       });
     }
 
-    // SECURITY CHECK:
-    // Only the actual deck owner may approve/deny the suggestion.
     if (
       String(interaction.user.id) !==
       String(suggestion.consent_creator_discord_id)
@@ -51,7 +46,6 @@ async function handleDeckSuggestionConsent(interaction, db) {
       });
     }
 
-    // Prevent the same suggestion from being processed twice.
     if (suggestion.consent_status !== "awaiting_creator") {
       return await interaction.reply({
         content: "This suggestion has already been processed.",
@@ -59,17 +53,14 @@ async function handleDeckSuggestionConsent(interaction, db) {
       });
     }
 
-    // ============================================================
-    // APPROVE
-    // ============================================================
-
     if (action === "yes") {
       await db.query(
         `
           UPDATE user_deck_suggestions
           SET
             consent_status = 'confirmed',
-            consent_given_at = NOW()
+            consent_given_at = NOW(),
+            updated_at = NOW()
           WHERE id = $1
         `,
         [suggestionId],
@@ -89,17 +80,14 @@ async function handleDeckSuggestionConsent(interaction, db) {
       });
     }
 
-    // ============================================================
-    // DECLINE
-    // ============================================================
-
     if (action === "no") {
       await db.query(
         `
           UPDATE user_deck_suggestions
           SET
             consent_status = 'denied',
-            status = 'denied'
+            consent_denied_at = NOW(),
+            updated_at = NOW()
           WHERE id = $1
         `,
         [suggestionId],
@@ -117,10 +105,6 @@ async function handleDeckSuggestionConsent(interaction, db) {
         components: [],
       });
     }
-
-    // ============================================================
-    // INVALID ACTION
-    // ============================================================
 
     return await interaction.reply({
       content: "Invalid consent action.",
