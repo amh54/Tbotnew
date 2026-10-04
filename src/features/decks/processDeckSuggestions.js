@@ -163,7 +163,12 @@ function getSiteUpdateCategoryLabel(category) {
     "Update"
   );
 }
-
+function formatSiteUpdateDiscordContent(content) {
+  return String(content || "").replace(
+    /\]\((\/[^)\s]*)\)/g,
+    "](https://pvzhtbot.com$1)",
+  );
+}
 function buildSiteUpdateEmbed(update) {
   const fields = [
     {
@@ -183,7 +188,11 @@ function buildSiteUpdateEmbed(update) {
 
   return new EmbedBuilder()
     .setTitle(update.title || "Tbot Site Update")
-    .setDescription(update.content || "No update description provided.")
+    .setDescription(
+      formatSiteUpdateDiscordContent(
+        update.content || "No update description provided.",
+      ),
+    )
     .addFields(fields)
     .setColor("Random")
     .setFooter({
@@ -395,7 +404,145 @@ async function processDeckSuggestions(client) {
     console.error("[Deck Suggestions] Error processing suggestions:", error);
   }
 }
+async function syncExistingSuggestion(db, forumChannel, suggestion) {
+  try {
+    const deckResult = await db.query(
+      `
+        SELECT *
+        FROM user_decks
+        WHERE id = $1
+        LIMIT 1
+      `,
+      [suggestion.deck_id],
+    );
 
+    const deck = deckResult.rows?.[0];
+
+    if (!deck) {
+      console.error(
+        `[Deck Suggestions] Could not find user deck #${suggestion.deck_id} for suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    if (!suggestionNeedsUpdate(suggestion, deck)) {
+      return;
+    }
+
+    const thread = await forumChannel.threads
+      .fetch(suggestion.discord_thread_id)
+      .catch(() => null);
+
+    if (!thread) {
+      console.error(
+        `[Deck Suggestions] Could not fetch existing thread ${suggestion.discord_thread_id} for suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    const message = await thread.messages
+      .fetch(suggestion.discord_message_id)
+      .catch(() => null);
+
+    if (!message) {
+      console.error(
+        `[Deck Suggestions] Could not fetch existing message ${suggestion.discord_message_id} for suggestion #${suggestion.id}.`,
+      );
+      return;
+    }
+
+    const updatedSuggestion = {
+      ...suggestion,
+      deck_name: deck.name,
+      hero: deck.hero,
+      side: deck.side,
+      category: deck.category,
+      archetype: deck.archetype,
+      creator: deck.creator,
+      description: deck.description,
+      image: deck.image,
+      cost: deck.cost,
+      aliases: deck.aliases,
+    };
+
+    const embed = buildSuggestionEmbed(updatedSuggestion);
+
+    await message.edit({
+      embeds: [embed],
+    });
+
+    const expectedThreadName =
+      deck.name || "Deck Suggestion";
+
+    if (thread.name !== expectedThreadName) {
+      await thread.setName(expectedThreadName);
+    }
+
+    const appliedTags = getHeroTags(deck.hero);
+    const availableTags = forumChannel.availableTags || [];
+
+    const validTags = appliedTags.filter((tagId) =>
+      availableTags.some(
+        (tag) => String(tag.id) === String(tagId),
+      ),
+    );
+
+    if (validTags.length) {
+      const currentTagIds = thread.appliedTags || [];
+
+      const tagsChanged =
+        currentTagIds.length !== validTags.length ||
+        currentTagIds.some(
+          (tagId) => !validTags.includes(String(tagId)),
+        );
+
+      if (tagsChanged) {
+        await thread.setAppliedTags(validTags);
+      }
+    }
+
+    await db.query(
+      `
+        UPDATE user_deck_suggestions
+        SET
+          deck_name = $1,
+          hero = $2,
+          side = $3,
+          category = $4,
+          archetype = $5,
+          creator = $6,
+          description = $7,
+          image = $8,
+          cost = $9,
+          aliases = $10,
+          updated_at = NOW()
+        WHERE id = $11
+      `,
+      [
+        deck.name,
+        deck.hero,
+        deck.side,
+        deck.category,
+        deck.archetype,
+        deck.creator,
+        deck.description,
+        deck.image,
+        deck.cost,
+        deck.aliases,
+        suggestion.id,
+      ],
+    );
+
+    console.log(
+      `[Deck Suggestions] Synced changed suggestion #${suggestion.id}.`,
+    );
+  } catch (error) {
+    console.error(
+      `[Deck Suggestions] Failed to sync existing suggestion #${suggestion.id}:`,
+      error,
+    );
+  }
+}
 async function processCompletedAndDeclinedSuggestions(db, forumChannel) {
   try {
     const result = await db.query(`
