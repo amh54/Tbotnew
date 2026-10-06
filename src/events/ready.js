@@ -48,25 +48,27 @@ module.exports = {
     const youtubers = [
       "FryEmUp",
       "PvzTryHard",
-      "Tbonegaming344",
-      "CardShark73",
-      "Daily_PvZ",
+      "PVZHTbot",
+      "AirheadZ",
+      "SurferZombieFan",
+      "Mr. AP",
+      "Outcastsage",
+      "zagzig",
+      "Xenoblast",
+      "Sustained_x",
       "TinyGargantuar",
       "SybertoxGaming",
       "Something_From_Space",
       "stormallan",
       "creeperblade711",
-      "Autony",
       "Highlight Em Up",
     ];
 
     const streamers = [
       "FryEmUp",
-      "CardShark73",
-      "firsthero",
-      "bluzacy_hipokryta",
-      "stormallan",
-      "Antonio009_PVZ",
+      "first hero",
+      "Sustained_x",
+      "SurferZombieFan",
     ];
 
     // Update status data every 30 minutes
