@@ -324,10 +324,10 @@ function buildWebsiteSuggestionEmbed(suggestion) {
     },
   ];
 
-  if (category === "improvement" && suggestion.page_url) {
+ if (suggestion.page_url) {
     fields.push({
       name: "Page",
-      value: suggestion.page_url,
+      value: `[View Page](${suggestion.page_url})`,
       inline: false,
     });
   }
