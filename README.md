@@ -1,4 +1,4 @@
-# 🌱 TBot - Plants vs Zombies Heroes Discord Bot
+#  Tbot - Plants vs Zombies Heroes Discord Bot
 
 
 <div align="center">
