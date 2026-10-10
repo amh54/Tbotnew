@@ -72,7 +72,7 @@ function shouldSendNotification(notificationType, changedFields) {
   return safeChangedFields.includes('image') || safeChangedFields.includes('description') || safeChangedFields.includes('type') || safeChangedFields.includes('category');
 }
 
-function getNotificationRoleName(notificationType, tableConfig) {
+function getNotificationRoleName(notificationType) {
 
   const roleMap = {
     new: "new deck",
@@ -134,8 +134,20 @@ async function sendDeckNotification(client, notificationChannelId, row, tableCon
     if (row.image && typeof row.image === "string" && row.image.startsWith("http")) {
       embed.setImage(row.image);
     }
-    
-    await channel.send({ embeds: [embed] });
+const roleName = getNotificationRoleName(notificationType);
+const role = roleName
+  ? channel.guild?.roles.cache.find(
+      (guildRole) => guildRole.name.toLowerCase() === roleName.toLowerCase()
+    )
+  : null;
+
+await channel.send({
+  content: role ? `<@&${role.id}>` : undefined,
+  embeds: [embed],
+  allowedMentions: {
+    roles: role ? [role.id] : [],
+  },
+});
   } catch (error) {
     console.error("Failed to send deck notification:", error);
     throw error;
