@@ -38,8 +38,6 @@ function getStatusText(notificationType, changedFields) {
   if (statusMap[notificationType]) {
     return statusMap[notificationType];
   }
-
-  // Update cases
   const safeChangedFields = Array.isArray(changedFields) ? changedFields : [];
   const hasDescription = safeChangedFields.includes('description');
   const hasType = safeChangedFields.includes('type') || safeChangedFields.includes('category');
@@ -72,6 +70,17 @@ function shouldSendNotification(notificationType, changedFields) {
   if (notificationType !== 'update') return true;
   const safeChangedFields = Array.isArray(changedFields) ? changedFields : [];
   return safeChangedFields.includes('image') || safeChangedFields.includes('description') || safeChangedFields.includes('type') || safeChangedFields.includes('category');
+}
+
+function getNotificationRoleName(notificationType, tableConfig) {
+
+  const roleMap = {
+    new: "new deck",
+    update: "deck update",
+    delete: "deleted deck",
+  };
+
+  return roleMap[notificationType] || null;
 }
 
 /**

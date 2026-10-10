@@ -1,4 +1,3 @@
-
 const {
   ChannelType,
   EmbedBuilder,
@@ -212,9 +211,7 @@ async function initializeSiteUpdateWatcher(client) {
       LIMIT 1
     `);
 
-    latestSiteUpdateId = result.rows?.[0]?.id
-      ? Number(result.rows[0].id)
-      : 0;
+    latestSiteUpdateId = result.rows?.[0]?.id ? Number(result.rows[0].id) : 0;
 
     console.log(
       `[Site Updates] Watcher initialized at update #${latestSiteUpdateId}.`,
@@ -232,7 +229,6 @@ async function initializeSiteUpdateWatcher(client) {
 async function processSiteUpdates(client) {
   try {
     const db = require("../../../index.js");
-
     const channel = client.channels.cache.get(SITE_UPDATES_CHANNEL_ID);
 
     if (!channel || channel.type !== ChannelType.PublicThread) {
@@ -258,11 +254,27 @@ async function processSiteUpdates(client) {
 
     const updates = result.rows || [];
 
-    for (const update of updates) {
+    if (!updates.length) {
+      return;
+    }
+
+    const roles = await channel.guild.roles.fetch();
+    const role = roles.find(
+      (guildRole) => guildRole.name.toLowerCase() === "web updates",
+    );
+
+    await updates.reduce(async (previousUpdate, update) => {
+      await previousUpdate;
+
       const embed = buildSiteUpdateEmbed(update);
 
       await channel.send({
+        content: role?.id ? `<@&${role.id}>` : undefined,
         embeds: [embed],
+        allowedMentions: {
+          parse: [],
+          roles: role?.id ? [role.id] : [],
+        },
       });
 
       latestSiteUpdateId = Number(update.id);
@@ -270,7 +282,7 @@ async function processSiteUpdates(client) {
       console.log(
         `[Site Updates] Posted site update #${update.id}: ${update.title}`,
       );
-    }
+    }, Promise.resolve());
   } catch (error) {
     console.error("[Site Updates] Error processing site updates:", error);
   }
@@ -396,10 +408,7 @@ async function processDeckSuggestions(client) {
       }
     }
 
-    await processCompletedAndDeclinedSuggestions(
-      db,
-      forumChannel,
-    );
+    await processCompletedAndDeclinedSuggestions(db, forumChannel);
   } catch (error) {
     console.error("[Deck Suggestions] Error processing suggestions:", error);
   }
@@ -471,8 +480,7 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
       embeds: [embed],
     });
 
-    const expectedThreadName =
-      deck.name || "Deck Suggestion";
+    const expectedThreadName = deck.name || "Deck Suggestion";
 
     if (thread.name !== expectedThreadName) {
       await thread.setName(expectedThreadName);
@@ -482,9 +490,7 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
     const availableTags = forumChannel.availableTags || [];
 
     const validTags = appliedTags.filter((tagId) =>
-      availableTags.some(
-        (tag) => String(tag.id) === String(tagId),
-      ),
+      availableTags.some((tag) => String(tag.id) === String(tagId)),
     );
 
     if (validTags.length) {
@@ -492,9 +498,7 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
 
       const tagsChanged =
         currentTagIds.length !== validTags.length ||
-        currentTagIds.some(
-          (tagId) => !validTags.includes(String(tagId)),
-        );
+        currentTagIds.some((tagId) => !validTags.includes(String(tagId)));
 
       if (tagsChanged) {
         await thread.setAppliedTags(validTags);
@@ -591,8 +595,7 @@ async function processCompletedAndDeclinedSuggestions(db, forumChannel) {
       }
 
       if (suggestion.status === "declined") {
-        const hasDeclinedReaction =
-          message.reactions.cache.has(DECLINED_EMOJI);
+        const hasDeclinedReaction = message.reactions.cache.has(DECLINED_EMOJI);
 
         if (!hasDeclinedReaction) {
           await message.react(DECLINED_EMOJI);
@@ -825,15 +828,11 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
   }
 }
 
-
-
 async function processWebsiteSuggestions(client) {
   try {
     const db = require("../../../index.js");
 
-    const forumChannel = client.channels.cache.get(
-      WEBSITE_SUGGESTION_FORUM_ID,
-    );
+    const forumChannel = client.channels.cache.get(WEBSITE_SUGGESTION_FORUM_ID);
 
     if (!forumChannel || forumChannel.type !== ChannelType.GuildForum) {
       console.error(
@@ -856,10 +855,7 @@ async function processWebsiteSuggestions(client) {
       await processSingleWebsiteSuggestion(db, forumChannel, suggestion);
     }
   } catch (error) {
-    console.error(
-      "[Website Suggestions] Error processing suggestions:",
-      error,
-    );
+    console.error("[Website Suggestions] Error processing suggestions:", error);
   }
 }
 

@@ -85,8 +85,19 @@ async function sendDeckbuilderLog(client, row, addedBy) {
     });
   }
 
+  const roles = await thread.guild.roles.fetch();
+
+  const role = roles.find(
+    (guildRole) => guildRole.name.toLowerCase() === "deckbuilders ping",
+  );
+
   await thread.send({
+    content: role ? `<@&${role.id}>` : undefined,
     embeds: [embed],
+    allowedMentions: {
+      parse: [],
+      roles: role ? [role.id] : [],
+    },
   });
 }
 

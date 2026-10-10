@@ -1,4 +1,4 @@
-# 🌱 TBot - Plants vs Zombies Heroes Discord Bot
+# Tbot - Plants vs Zombies Heroes Discord Bot
 
 
 <div align="center">
@@ -8,28 +8,28 @@
 
 **A friendly Discord bot for Plants vs Zombies Heroes players**
 
-TBot helps you find decks fast, learn cards, and explore hero strategies right inside Discord.
+Tbot helps you find decks fast, learn cards, and explore hero strategies right inside Discord.
 
 <br><br>
 <a href="https://discord.com/api/oauth2/authorize?client_id=1043528908148052089&permissions=378944&scope=bot">
-<img src="https://img.shields.io/badge/Invite%20TBot%20to%20your%20server-5865F2?style=for-the-badge&logo=discord" alt="Invite TBot">
+<img src="https://img.shields.io/badge/Invite%20Tbot%20to%20your%20server-5865F2?style=for-the-badge&logo=discord" alt="Invite Tbot">
 </a>
 
 </div>
 
 ---
 
-## Meet TBot
+## Meet Tbot
 
-TBot is a community PVZH bot built for quick answers. Search decks by hero, look up any card, and use helpful tools without leaving your server. Everything is optimized for fast search, autocomplete, and clean results.
+Tbot is a community PVZH bot built for quick answers. Search decks by hero, look up any card, and use helpful tools without leaving your server. Everything is optimized for fast search, autocomplete, and clean results.
 
 ## Quick Start (For Players)
 
-1) In any server where TBot is installed, type `/help`.
-2) Use autocomplete to find the exact deck or TBot is a community PVZH bot built for quick answers. Search decks by hero, look up any card, and use helpful tools without leaving your servercard you want.
+1) In any server where Tbot is installed, type `/help`.
+2) Use autocomplete to find the exact deck or Tbot is a community PVZH bot built for quick answers. Search decks by hero, look up any card, and use helpful tools without leaving your servercard you want.
 3) Click buttons or select menus to browse and paginate results.
 
-## What You Can Do With TBot
+## What You Can Do With Tbot
 
 - **Find hero decks** by hero and deck name.
 - **Search cards** and see detailed card info.
@@ -44,10 +44,10 @@ TBot is a community PVZH bot built for quick answers. Search decks by hero, look
 | `/help` | Shows categories and all slash commands | `/help` |
 | `/herodecks` | Browse hero deck categories | `/herodecks` |
 | `/gsdecks` | Green Shadow decks | `/gsdecks deck: shadowfather` |
-| `/rbdecks` | Rustbolt decks | `/rbdecks deck: boltbolt` |
+| `/rbdecks` | RusTbotlt decks | `/rbdecks deck: boltbolt` |
 | `/cardinfo` | Full card details | `/cardinfo card: pineclone` |
 | `/cardsearch` | Find decks that include a card | `/cardsearch card: pineclone` |
-| `/deckbuilders` | Find decks by creator | `/deckbuilders name: tbone` |
+| `/deckbuilders` | Find decks by creator | `/deckbuilders name: Tbone` |
 | `/bugreport` | Report a bug | `/bugreport command_name: cardinfo bug_description: ...` |
 | `/8ball` | Ask the magic 8-ball | `/8ball Will I win?` |
 
@@ -68,7 +68,7 @@ TBot is a community PVZH bot built for quick answers. Search decks by hero, look
 
 - **Bug reports**: use `/bugreport` and include the exact command that failed.
 - **Suggestions**: join the discord server at https://discord.gg/2NSwt96vmS 
-- **Support the bot**: https://buymeacoffee.com/tbotpvzh
+- **Support the bot**: https://buymeacoffee.com/Tbotpvzh
 
 ---
 

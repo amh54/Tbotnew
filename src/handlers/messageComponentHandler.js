@@ -26,8 +26,8 @@ const {
 } = require("./heroHandler.js");
 
 const {
-  handleNotificationRoleSelection,
-} = require("../features/misc/notificationRoles.js");
+  handleTbotRoleSelection,
+} = require("../features/misc/tbotRoles.js");
 
 const {
   handleDeckbuilderPager,
@@ -145,11 +145,8 @@ async function handleMessageComponent(
       );
     }
 
-    if (
-      customId ===
-      "notification-role-select"
-    ) {
-      return await handleNotificationRoleSelection(
+       if (customId === "tbot_roles") {
+      return await handleTbotRoleSelection(
         interaction,
       );
     }
