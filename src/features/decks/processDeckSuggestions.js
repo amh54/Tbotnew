@@ -28,7 +28,8 @@ const UPVOTE_EMOJI = "<:upvote:1081953853903220876>";
 const DOWNVOTE_EMOJI = "<:downvote:1081953860534403102>";
 
 let watcherRunning = false;
-
+const buildDeckEmbedFromRow = require("../../features/decks/buildDeckEmbedFromRow.js");
+const dbTableColors = require("../../lib/db/dbTableColors.js");
 function getHeroTags(hero) {
   const normalizedHero = String(hero || "")
     .trim()
@@ -85,8 +86,9 @@ function suggestionNeedsUpdate(suggestion, deck) {
     return valuesDiffer(suggestion[suggestionField], deck[deckField]);
   });
 }
+function buildSuggestionEmbed(suggestion, existingDeck = null) {
+  const isUpdate = suggestion.suggestion_type === "update";
 
-function buildSuggestionEmbed(suggestion) {
   const suggestedBy =
     suggestion.suggested_by_display_name ||
     suggestion.suggested_by_username ||
@@ -105,7 +107,7 @@ function buildSuggestionEmbed(suggestion) {
     },
     {
       name: "Deck Cost",
-      value: `${suggestion.cost || "Unknown"}<:spar:1057791557387956274>`,
+      value: `${suggestion.cost ?? "Unknown"}<:spar:1057791557387956274>`,
       inline: true,
     },
   ];
@@ -119,14 +121,16 @@ function buildSuggestionEmbed(suggestion) {
   }
 
   const embed = new EmbedBuilder()
-    .setTitle(suggestion.deck_name || "Untitled Deck")
+    .setTitle(
+      isUpdate
+        ? `Update ${existingDeck?.name || "Untitled Deck"}`
+        : suggestion.deck_name || "Untitled Deck",
+    )
     .setDescription(suggestion.description || "No description provided.")
     .addFields(fields)
     .setColor("Random")
     .setFooter({
-      text: `Created By ${
-        suggestion.creator || "Unknown"
-      } | Suggested by ${suggestedBy}`,
+      text: `Created By ${suggestion.creator || "Unknown"} | Suggested by ${suggestedBy}`,
     });
 
   if (suggestion.image) {
@@ -413,29 +417,55 @@ async function processDeckSuggestions(client) {
     console.error("[Deck Suggestions] Error processing suggestions:", error);
   }
 }
+
 async function syncExistingSuggestion(db, forumChannel, suggestion) {
   try {
-    const deckResult = await db.query(
-      `
-        SELECT *
-        FROM user_decks
-        WHERE id = $1
-        LIMIT 1
-      `,
-      [suggestion.deck_id],
-    );
+    const isUpdate = suggestion.suggestion_type === "update";
 
-    const deck = deckResult.rows?.[0];
+    let deck;
 
-    if (!deck) {
-      console.error(
-        `[Deck Suggestions] Could not find user deck #${suggestion.deck_id} for suggestion #${suggestion.id}.`,
+    if (isUpdate) {
+      if (!suggestion.published_deckid) {
+        console.error(
+          `[Deck Suggestions] Update proposal #${suggestion.id} has no published_deckid.`,
+        );
+        return;
+      }
+
+      const deckResult = await db.query(
+        `
+          SELECT *
+          FROM web_decks
+          WHERE deckid = $1
+          LIMIT 1
+        `,
+        [suggestion.published_deckid],
       );
-      return;
-    }
 
-    if (!suggestionNeedsUpdate(suggestion, deck)) {
-      return;
+      deck = deckResult.rows?.[0];
+
+      if (!deck) {
+        console.error(
+          `[Deck Suggestions] Published deck #${suggestion.published_deckid} not found for proposal #${suggestion.id}.`,
+        );
+        return;
+      }
+    } else {
+      const deckResult = await db.query(
+        `
+          SELECT *
+          FROM user_decks
+          WHERE id = $1
+          LIMIT 1
+        `,
+        [suggestion.deck_id],
+      );
+
+      deck = deckResult.rows?.[0];
+
+      if (!deck || !suggestionNeedsUpdate(suggestion, deck)) {
+        return;
+      }
     }
 
     const thread = await forumChannel.threads
@@ -444,7 +474,7 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
 
     if (!thread) {
       console.error(
-        `[Deck Suggestions] Could not fetch existing thread ${suggestion.discord_thread_id} for suggestion #${suggestion.id}.`,
+        `[Deck Suggestions] Could not fetch thread for suggestion #${suggestion.id}.`,
       );
       return;
     }
@@ -455,38 +485,24 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
 
     if (!message) {
       console.error(
-        `[Deck Suggestions] Could not fetch existing message ${suggestion.discord_message_id} for suggestion #${suggestion.id}.`,
+        `[Deck Suggestions] Could not fetch message for suggestion #${suggestion.id}.`,
       );
       return;
     }
 
-    const updatedSuggestion = {
-      ...suggestion,
-      deck_name: deck.name,
-      hero: deck.hero,
-      side: deck.side,
-      category: deck.category,
-      archetype: deck.archetype,
-      creator: deck.creator,
-      description: deck.description,
-      image: deck.image,
-      cost: deck.cost,
-      aliases: deck.aliases,
-    };
-
-    const embed = buildSuggestionEmbed(updatedSuggestion);
-
     await message.edit({
-      embeds: [embed],
+      embeds: [buildSuggestionEmbed(suggestion, isUpdate ? deck : null)],
     });
 
-    const expectedThreadName = deck.name || "Deck Suggestion";
+    const expectedThreadName = isUpdate
+      ? `${deck.name || "Untitled Deck"} needs an update`
+      : deck.name || "Deck Suggestion";
 
     if (thread.name !== expectedThreadName) {
       await thread.setName(expectedThreadName);
     }
 
-    const appliedTags = getHeroTags(deck.hero);
+    const appliedTags = getHeroTags(suggestion.hero);
     const availableTags = forumChannel.availableTags || [];
 
     const validTags = appliedTags.filter((tagId) =>
@@ -498,55 +514,60 @@ async function syncExistingSuggestion(db, forumChannel, suggestion) {
 
       const tagsChanged =
         currentTagIds.length !== validTags.length ||
-        currentTagIds.some((tagId) => !validTags.includes(String(tagId)));
+        currentTagIds.some(
+          (tagId) => !validTags.includes(String(tagId)),
+        );
 
       if (tagsChanged) {
         await thread.setAppliedTags(validTags);
       }
     }
 
-    await db.query(
-      `
-        UPDATE user_deck_suggestions
-        SET
-          deck_name = $1,
-          hero = $2,
-          side = $3,
-          category = $4,
-          archetype = $5,
-          creator = $6,
-          description = $7,
-          image = $8,
-          cost = $9,
-          aliases = $10,
-          updated_at = NOW()
-        WHERE id = $11
-      `,
-      [
-        deck.name,
-        deck.hero,
-        deck.side,
-        deck.category,
-        deck.archetype,
-        deck.creator,
-        deck.description,
-        deck.image,
-        deck.cost,
-        deck.aliases,
-        suggestion.id,
-      ],
-    );
+    if (!isUpdate) {
+      await db.query(
+        `
+          UPDATE user_deck_suggestions
+          SET
+            deck_name = $1,
+            hero = $2,
+            side = $3,
+            category = $4,
+            archetype = $5,
+            creator = $6,
+            description = $7,
+            image = $8,
+            cost = $9,
+            aliases = $10,
+            updated_at = NOW()
+          WHERE id = $11
+        `,
+        [
+          deck.name,
+          deck.hero,
+          deck.side,
+          deck.category,
+          deck.archetype,
+          deck.creator,
+          deck.description,
+          deck.image,
+          deck.cost,
+          deck.aliases,
+          suggestion.id,
+        ],
+      );
+    }
 
     console.log(
-      `[Deck Suggestions] Synced changed suggestion #${suggestion.id}.`,
+      `[Deck Suggestions] Synced ${isUpdate ? "update proposal" : "suggestion"} #${suggestion.id}.`,
     );
   } catch (error) {
     console.error(
-      `[Deck Suggestions] Failed to sync existing suggestion #${suggestion.id}:`,
+      `[Deck Suggestions] Failed to sync suggestion #${suggestion.id}:`,
       error,
     );
   }
 }
+
 async function processCompletedAndDeclinedSuggestions(db, forumChannel) {
   try {
     const result = await db.query(`
@@ -734,10 +755,15 @@ async function sendConsentRequest(client, db, suggestion) {
   }
 }
 
+
 async function processSingleSuggestion(db, forumChannel, suggestion) {
   try {
+    const isUpdate = suggestion.suggestion_type === "update";
+
     console.log(
-      `[Deck Suggestions] Processing suggestion #${suggestion.id}: ${suggestion.deck_name}`,
+      `[Deck Suggestions] Processing ${
+        isUpdate ? "update proposal" : "new suggestion"
+      } #${suggestion.id}: ${suggestion.deck_name}`,
     );
 
     const appliedTags = getHeroTags(suggestion.hero);
@@ -757,19 +783,48 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
 
     if (!validTags.length) {
       console.error(
-        `[Deck Suggestions] Configured hero tag for "${suggestion.hero}" does not exist on forum channel ${forumChannel.id}.`,
+        `[Deck Suggestions] Hero tag for "${suggestion.hero}" is unavailable on forum ${forumChannel.id}.`,
       );
       return;
     }
 
-    const embed = buildSuggestionEmbed(suggestion);
+    let existingDeck = null;
+
+    if (isUpdate) {
+      if (!suggestion.published_deckid) {
+        console.error(
+          `[Deck Suggestions] Update proposal #${suggestion.id} has no published_deckid.`,
+        );
+        return;
+      }
+
+      const deckResult = await db.query(
+        `
+          SELECT *
+          FROM web_decks
+          WHERE deckid = $1
+          LIMIT 1
+        `,
+        [suggestion.published_deckid],
+      );
+
+      existingDeck = deckResult.rows?.[0];
+
+      if (!existingDeck) {
+        console.error(
+          `[Deck Suggestions] Published deck #${suggestion.published_deckid} not found for proposal #${suggestion.id}.`,
+        );
+        return;
+      }
+    }
 
     const thread = await forumChannel.threads.create({
-      name: suggestion.deck_name || "Deck Suggestion",
-      autoArchiveDuration: 10080,
+    name: isUpdate
+  ? `${existingDeck.name} needs an update`
+  : suggestion.deck_name || "Deck Suggestion",
       appliedTags: validTags,
       message: {
-        embeds: [embed],
+        embeds: [buildSuggestionEmbed(suggestion, existingDeck)],
       },
     });
 
@@ -779,6 +834,20 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
       await starterMessage.pin();
       await starterMessage.react(UPVOTE_EMOJI);
       await starterMessage.react(DOWNVOTE_EMOJI);
+    }
+
+    if (isUpdate) {
+      const previousInfoEmbed = buildDeckEmbedFromRow(
+        existingDeck,
+        "web_decks",
+        dbTableColors,
+      );
+
+      const previousInfoMessage = await thread.send({
+        embeds: [previousInfoEmbed],
+      });
+
+      await previousInfoMessage.pin();
     }
 
     const discordThreadUrl = `https://discord.com/channels/${thread.guild.id}/${thread.id}`;
@@ -801,24 +870,17 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
       ],
     );
 
-    console.log(
-      `[Deck Suggestions] Saving Discord thread data for suggestion #${suggestion.id}:`,
-      {
-        threadId: thread.id,
-        messageId: starterMessage ? starterMessage.id : null,
-        threadUrl: discordThreadUrl,
-      },
-    );
-
     if (updateResult.rowCount !== 1) {
       console.error(
-        `[Deck Suggestions] WARNING: Discord thread was created, but database update affected ${updateResult.rowCount} rows for suggestion #${suggestion.id}.`,
+        `[Deck Suggestions] Thread created, but database update affected ${updateResult.rowCount} rows for suggestion #${suggestion.id}.`,
       );
       return;
     }
 
     console.log(
-      `[Deck Suggestions] Created thread ${thread.id} for suggestion #${suggestion.id} and saved Discord metadata.`,
+      `[Deck Suggestions] Created ${
+        isUpdate ? "update proposal" : "suggestion"
+      } thread ${thread.id} for suggestion #${suggestion.id}.`,
     );
   } catch (error) {
     console.error(
@@ -827,6 +889,7 @@ async function processSingleSuggestion(db, forumChannel, suggestion) {
     );
   }
 }
+
 
 async function processWebsiteSuggestions(client) {
   try {
@@ -891,7 +954,6 @@ async function processSingleWebsiteSuggestion(db, forumChannel, suggestion) {
 
     const thread = await forumChannel.threads.create({
       name: suggestion.title || "Website Suggestion",
-      autoArchiveDuration: 10080,
       appliedTags: [validTag.id],
       message: {
         embeds: [embed],
