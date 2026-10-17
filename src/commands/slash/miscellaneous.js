@@ -9,7 +9,7 @@ const miscCommands = {
   donate: require("../../features/misc/donate.js"),
   flip: require("../../features/misc/flip.js"),
   hang: require("../../features/misc/hang.js"),
-  tourneys: require("../../features/misc/tourneys.js"),
+  discord_servers: require("../../features/misc/discord_servers.js"),
   vote: require("../../features/misc/vote.js"),
   zombieleap: require("../../features/misc/zombieleap.js")
 };
@@ -30,7 +30,7 @@ const builder = new SlashCommandBuilder()
         { name: "Support Tbot", value: "donate" },
         { name: "Flip a coin", value: "flip" },
         { name: "Play hangman", value: "hang" },
-        { name: "PVZH tournament servers", value: "tourneys" },
+        { name: "PVZH servers", value: "discord_servers" },
         { name: "Vote for Tbot", value: "vote" },
         { name: "Zombie leap", value: "zombieleap" }
       )

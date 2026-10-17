@@ -1,8 +1,7 @@
 const {
-  ButtonBuilder,
-  ButtonStyle,
   ContainerBuilder,
   SectionBuilder,
+  ThumbnailBuilder,
   SeparatorSpacingSize,
   TextDisplayBuilder,
   MessageFlags,
@@ -41,14 +40,13 @@ module.exports = {
     try {
       const result = await db.query(`
     SELECT
-      serverid,
-      servername,
+      id,
+      name,
       description,
-      label,
       discord_url,
-      image_link
-    FROM tourneys
-    ORDER BY serverid ASC
+      server_icon
+    FROM discord_servers
+    ORDER BY name ASC
   `);
 
       rows = result.rows || [];
@@ -78,33 +76,27 @@ module.exports = {
       );
 
       serverRows.forEach((row) => {
-        const serverName = row.servername || "Unnamed Server";
+        const serverName = row.name || "Unnamed Server";
         const description = row.description || "No description available.";
-        const buttonLabel = row.label || serverName;
         const serverUrl = row.discord_url;
-        const imageLink = row.image_link;
+        const imageLink = row.server_icon;
 
-        const details = [`# ${serverName}`, description]
+        const details = [
+          `# ${serverName}`,
+          description,
+          serverUrl ? `[Join ${serverName} Server](${serverUrl})` : null,
+        ]
           .filter(Boolean)
           .join("\n");
 
-        const serverText = new TextDisplayBuilder().setContent(details);
-
         const section = new SectionBuilder().addTextDisplayComponents(
-          serverText,
+          new TextDisplayBuilder().setContent(details),
         );
 
-        if (serverUrl) {
-          const button = new ButtonBuilder()
-            .setLabel(buttonLabel.substring(0, 80))
-            .setStyle(ButtonStyle.Link)
-            .setURL(serverUrl);
-
-          if (imageLink) {
-            button.setEmoji(imageLink);
-          }
-
-          section.setButtonAccessory(button);
+        if (imageLink) {
+          section.setThumbnailAccessory(
+            new ThumbnailBuilder().setURL(imageLink),
+          );
         }
 
         container.addSectionComponents(section);
@@ -124,8 +116,10 @@ module.exports = {
 
       const title =
         start === 0
-          ? "# Looking for Tournaments for PvZ Heroes? Below are some servers that host tournaments for PvZ Heroes!"
-          : "# More PvZ Heroes tournament servers:";
+          ? `# Looking for PvZ Heroes Discord servers? 
+Here are some great communities to join, including tournament servers and other places to connect with fellow players!
+Note: New servers are added on a case by case basis and must be discussed with Tbone prior to being added.`
+          : "# More PvZ Heroes Discord servers:";
 
       const container = buildTourneysContainer(chunk, title);
 
