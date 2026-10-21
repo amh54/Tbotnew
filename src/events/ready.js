@@ -11,14 +11,11 @@ module.exports = {
 
   async run(client) {
     const db = require("../../index.js");
-    // Store data on client for periodic updates
     client.deckData = [];
     client.statusData = [];
-
-    // Initial load of deck and status data
     await updateDeckData(client, db);
     await updateStatusData(client, db);
-    startDeckSuggestionWatcher(client);
+    await startDeckSuggestionWatcher(client);
     console.log(`Tbot is in ${client.guilds.cache.size} servers`);
 
     const totalMembers = client.guilds.cache
@@ -71,17 +68,16 @@ module.exports = {
       "SurferZombieFan",
     ];
 
-    // Update status data every 30 minutes
     setInterval(async () => {
       await updateStatusData(client, db);
     }, 1800000);
 
-    // Update deck data every hour
+
     setInterval(async () => {
       await updateDeckData(client, db);
     }, 3600000);
 
-    // Set activity status every 5 minutes
+
     setInterval(() => {
       const randomYoutubers = youtubers[getSecureRandomIndex(youtubers.length)];
 
@@ -92,10 +88,8 @@ module.exports = {
 
       const randomStreamers = streamers[getSecureRandomIndex(streamers.length)];
 
-      // Use current status data from client
       const customStatus = client.statusData.map((row) => row.status);
 
-      // Add dynamic statuses that use variables
       const dynamicStatuses = [
         `Watching every ${randomYoutubers} video`,
         `Waiting for ${randomYoutubers} next post`,
@@ -110,7 +104,6 @@ module.exports = {
         `Stream Sniping ${randomStreamers}`,
       ];
 
-      // Combine database statuses with dynamic ones
       const allStatuses = [...customStatus, ...dynamicStatuses];
 
       if (!allStatuses.length) {
@@ -127,7 +120,6 @@ module.exports = {
   },
 };
 
-// Function to get a secure random array index
 function getSecureRandomIndex(length) {
   if (!length) return 0;
 
@@ -158,7 +150,6 @@ async function updateDeckData(client, db) {
   }
 }
 
-// Function to update status data from PostgreSQL
 async function updateStatusData(client, db) {
   try {
     console.log("Updating status data...");
@@ -166,31 +157,31 @@ async function updateStatusData(client, db) {
     const result = await db.query(`
       SELECT status, creator
       FROM customstatus
+      ORDER BY creator, status
     `);
 
     const statusRows = result.rows || [];
 
-    // Check if data has changed
-    const currentCount = client.statusData.length;
-    const newCount = statusRows.length;
+    const hasChanged =
+      JSON.stringify(client.statusData) !== JSON.stringify(statusRows);
 
-    if (currentCount !== newCount) {
-      console.log(
-        `Status data changed: ${currentCount} → ${newCount} statuses`,
-      );
+    if (!hasChanged) {
+      console.log("Status data unchanged. Skipping Excel update.");
+      return;
     }
 
-    // Update client data
+    console.log(
+      `Status data changed: ${client.statusData.length} → ${statusRows.length} statuses`,
+    );
+
     client.statusData = statusRows;
 
-    // Always update the Excel file
     await createStatusExcel(statusRows);
   } catch (error) {
     console.error("Error updating status data:", error);
   }
 }
 
-// Function to create/update Excel file with status data
 async function createStatusExcel(statusData) {
   try {
     const workbook = XLSX.utils.book_new();

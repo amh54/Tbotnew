@@ -34,7 +34,8 @@ module.exports = {
 Check decks in database through the [Tbot decklists page](https://pvzhtbot.com/decklists)`,
         `5. You may still submit and replace a similar deck if you think yours is significantly better using the [public decks page](https://pvzhtbot.com/publicdecks) or your personal decks page. Click on a deck to view the deck modal then click suggest deck. 
 Find the deck you want to update through the Update Existing Deck tab.
-You can also use the discord bot command version through </submitdeckupdate:1518044716640243792> but website is the preferred option.`,
+You can also use the discord bot command version through the
+</submitdeckupdate:1518044716640243792> command but website is the preferred option.`,
         "6. The deck types all have their own requirements:",
    "    - **Budget decks** should be cheap lists within the 2k-15k range. These are made and optimized for ranked gameplay",
    "    - **Competitive decks** requires actual testing data to validate as one of the best decks for a hero", 
