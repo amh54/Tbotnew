@@ -405,7 +405,7 @@ module.exports = {
     if (decktype) {
       fields.push({
         name: "Category",
-        value: `**___${decktype}___**`,
+        value: `**__${decktype}__**`,
         inline: true,
       });
     }
@@ -413,7 +413,7 @@ module.exports = {
     if (deckarchetype) {
       fields.push({
         name: "Deck Archetype",
-        value: `**___${deckarchetype}___**`,
+        value: `**__${deckarchetype}__**`,
         inline: true,
       });
     }
