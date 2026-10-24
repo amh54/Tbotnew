@@ -95,7 +95,7 @@ module.exports = {
         `Waiting for ${randomYoutubers} next post`,
         `Playing ${randomDeck?.name || "PvZ Heroes"}`,
         `Throwing in ${randomTourney}`,
-        `@Tbot help in ${client.guilds.cache.size} servers and serving decklists to ${totalMembers} users`,
+        `/help in ${client.guilds.cache.size} servers and serving decklists to ${totalMembers} users`,
         `Watching ${randomYoutubers}'s Lastest Video`,
         `Watching ${randomStreamers}'s Lastest stream`,
         `Waiting for ${randomStreamers}'s next Stream`,
